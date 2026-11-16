@@ -1,18 +1,18 @@
-# QA Sentinel — Phase 0 Review Bundle (revision 5)
+# QA Sentinel — Phase 0 Review Bundle (revision 6)
 
 This bundle is a **read-only copy** prepared for independent review. It is not one of the six Phase 0 deliverables and it changes none of them. The files in this folder remain authoritative; every embedded copy below carries a SHA-256 so it can be checked against the file on disk.
 
 ## Status statement (read first)
 
 - Phase 0 is **not approved**. Phase 1 has **not started**. No code, dependencies or target connection exists.
-- **Git history (documented in PHASE_0_CHECKLIST.md §11):** branch `main` is at `ddbb7c6` ("Initial commit", revision 3 content); branch `changes` is at `4aa540c` ("Update project docs", revision 4 content, parent `ddbb7c6`); both exist on `origin`. On both commits the **author and committer** is Gaurav Raj; Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer** (co-author, not author). These commits were made outside this session's tool calls. This session ran only read-only git commands and has staged, committed, pushed and branched nothing; the revision 5 edits are uncommitted working-tree changes on `changes`.
+- **Git history (documented in PHASE_0_CHECKLIST.md §11):** three commits in a line: `ddbb7c6` ("Initial commit", revision 3) → `4aa540c` ("Update project docs", revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", revision 5). `main`, `changes`, `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. On all three commits the **author and committer** is Gaurav Raj; Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer** (co-author, not author). These commits were made outside this session's tool calls. This session ran only read-only git commands and has staged, committed, pushed and branched nothing; the revision 6 edits are uncommitted working-tree changes.
 - **No guarantee is Implemented, Tested or Independently verified.** There is no code to implement or test, and no independent review of an implementation has taken place. Every protective mechanism in these documents is **Designed** only. Worker denial, DNS containment and L2 enforcement are **not** implemented or tested.
-- Revision 5 is documentation-only: it corrects the git description, the deliverables table labels and the architecture deliverable description, and re-runs the consistency check. It changes no design, requirement, acceptance criterion or register entry, and removes no limitation. **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.** The independent review of revision 4 is recorded only as the user reported it; no per-document independent sign-off or approval is recorded.
+- Revision 6 is documentation-only: it makes the Release 0.1 and 0.1-preview conditions identical in every document, adds regression checks for them, and updates the git description. It changes no design, requirement, acceptance criterion or register entry, weakens no criterion (AC-22, AC-39, AC-46 and AC-49 are byte-identical to revision 5), and removes no limitation. **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed; the unqualified Release 0.1 is blocked while any of them is.** A preview is permitted only if the blocker is AC-38, AC-39 or AC-49, AC-22 and AC-46 have passed, the owner approves, it runs only in `l1_only`, and its wording claims no containment and implies nothing about worker denial or worker-WebSocket control beyond recorded results. The independent reviews of revisions 4 and 5 are recorded only as the user reported them; no per-document independent sign-off or approval is recorded.
 
 ## Contents
 
 1. Verification of this bundle (file hashes) and change statistics
-2. Revision 5 before/after change summary (the revision 4 and 3 summaries stay below it in the checklist)
+2. Revision 6 before/after change summary (the earlier summaries stay below it in the checklist)
 3. Open questions register and proposed defaults (complete)
 4. Guarantee Register (complete, each status preserved)
 5. Gap resolution G-01 to G-16 and review-3 findings
@@ -21,7 +21,7 @@ This bundle is a **read-only copy** prepared for independent review. It is not o
 8. Fresh cross-document review output
 9. Known limitations and untested assumptions
 10. Complete documents: Brain.md, prd.md, design_system.md, architecture.md, AGENT_ROLES.md, PHASE_0_CHECKLIST.md, README.md
-11. Unified diff, revision 4 to revision 5
+11. Unified diff, revision 5 to revision 6
 
 ---
 
@@ -30,43 +30,42 @@ This bundle is a **read-only copy** prepared for independent review. It is not o
 File hashes at generation time:
 
 ```
-76843cec2337c9eac677659462f7d096304b4abd449974dca0dfa64fcd7f90bf  Brain.md               100 lines
-a855bbacb0ea557a6d5f49433effa97c36053635c9ae42717c4d88800a0806c6  prd.md                 242 lines
-438aa012ea9cb7f15f1540dea5882637dcdfd0ee720229f871cb4def1752b361  design_system.md       181 lines
-9cef2d9ad3e769e20d8f219f901c55175351027cef9e4d64739d64caef8d85e9  architecture.md        656 lines
-cefff1d0c1e4329d88416914983c55b4313907c8c1669335383edc86a79e472e  AGENT_ROLES.md         151 lines
-1a500ec94d1ed32301faab829a5acb5f495f6f6fa016b076c36e28971d978424  PHASE_0_CHECKLIST.md   441 lines
-b87bb0aa8902a08b08eff64669330a2decb7b12aafffee4745b732d074f3e910  README.md              25 lines
+4cda2bc74aedf8d64f3eddd52e09526158d54e023130b32c9ff8fe7c640a5202  Brain.md               100 lines
+925d3ad2245d55b0197753d07778fa2e19e13982ce430bfc5488edb62314a57a  prd.md                 242 lines
+fc8d843fc4ce6a619bf64798bc400468c671acd885aeff92e3f3eddbd0fe39e2  design_system.md       181 lines
+8b9ce2f5b2391cf4405a2e2b45d2dbae761b52457408a7df757ae9b0c09d28a0  architecture.md        662 lines
+aa7df09d09f79c162023e42a12aca85091796f372f1ae0e532139218dbeae7a9  AGENT_ROLES.md         151 lines
+0238a79de9bbb784e63176c857bf18d0eba8d7af1a583aee70818831482bcf95  PHASE_0_CHECKLIST.md   480 lines
+48edd7415c1b0eeba7bdfc8d804c6b8ea153170535b0ca58a885e4b1895a63de  README.md              25 lines
 ```
 
-Change statistics, revision 4 to revision 5 (lines, from a unified diff of the files):
+Change statistics, revision 5 to revision 6 (lines, from a unified diff of the files):
 
-| File | Rev 4 lines | Rev 5 lines | Added / removed |
+| File | Rev 5 lines | Rev 6 lines | Added / removed |
 |------|-------------|-------------|-----------------|
-| Brain.md | 100 | 100 | +1 / -1 |
-| prd.md | 242 | 242 | +1 / -1 |
-| design_system.md | 181 | 181 | +1 / -1 |
-| architecture.md | 656 | 656 | +2 / -2 |
+| Brain.md | 100 | 100 | +2 / -2 |
+| prd.md | 242 | 242 | +8 / -8 |
+| design_system.md | 181 | 181 | +2 / -2 |
+| architecture.md | 656 | 662 | +14 / -8 |
 | AGENT_ROLES.md | 151 | 151 | +1 / -1 |
-| PHASE_0_CHECKLIST.md | 411 | 441 | +67 / -37 |
+| PHASE_0_CHECKLIST.md | 441 | 480 | +71 / -32 |
 | README.md | 25 | 25 | +1 / -1 |
 
-The complete unified diff is embedded in section 11 and also saved outside the project at `/private/tmp/claude-501/-Users-roop-Desktop-myProjects/1dfb48a0-cd59-4868-b259-c02ead363404/scratchpad/PHASE_0_REVISION5.diff`.
+The complete unified diff is embedded in section 11 and also saved outside the project at `/private/tmp/claude-501/-Users-roop-Desktop-myProjects/1dfb48a0-cd59-4868-b259-c02ead363404/scratchpad/PHASE_0_REVISION6.diff`.
 
 ---
 
-## 2. Revision 5 before/after change summary (verbatim from PHASE_0_CHECKLIST.md §2)
+## 2. Revision 6 before/after change summary (verbatim from PHASE_0_CHECKLIST.md §2)
 
-Documentation-only. No design, requirement, acceptance criterion or register entry was changed.
+Documentation-only. No acceptance criterion, requirement, design or register assurance level was changed or weakened.
 
-| Review finding | Before (revision 4) | After (revision 5) |
+| Review finding | Before (revision 5) | After (revision 6) |
 |----------------|---------------------|--------------------|
-| **1. §11 git history** | "A git repository exists with one commit (`ddbb7c6`)" | Two commits: `main` at `ddbb7c6`; `changes` at `4aa540c` (revision 4, parent `ddbb7c6`); both on `origin`. Author and committer Gaurav Raj; Claude Sonnet 5.5 only as a `Co-Authored-By` trailer. Header, Q-01 and §11 agree; revision 5 edits are uncommitted |
-| **2. §1 cross-review labels** | Column "Cross-reviewed (rev. 3)" | Column "Cross-checked by script (rev. 5)" with a note that this is not independent review; independent review is recorded only as you reported it for `4aa540c`; no approval implied |
-| **3. §1 architecture description** | Mentioned §5.1 and §7.9 only | Lists §7.10 DNS and name resolution and the revision 4 additions (§4 run status and profile fields, §7.3 worker denial, §7.8, §11 screenshot limits, §17 blocking items, 32-entry register, §20); other documents' rows list their revision 4 additions |
-| **4. Consistency check** | 119 checks | Re-run with new checks (git description, no independent-review overclaim, five blockers unpassed, no Implemented/Tested wording for worker denial, DNS containment or L2 enforcement); results in §6 |
+| **Release 0.1 preview conditions** | Several places said a 0.1-preview was available "only if L2 fails AC-39"; AC-38 and AC-49 (also mandatory L2/DNS criteria) and the L1 criteria AC-22 and AC-46 were not part of the condition | **One rule, stated identically everywhere (Brain §5, prd F3/FR-019/release table/usable test/AC-38/AC-44, architecture §7.7/§7.9/§17/GR-29, design_system, checklist D-15/D-36/Q-24):** the unqualified 0.1 requires all five of AC-22, AC-38, AC-39, AC-46, AC-49 and is blocked if any is unpassed. A preview is permitted only if (1) the blocker is AC-38, AC-39 or AC-49, (2) AC-22, AC-46 and every other preview criterion have passed, so if AC-22 or AC-46 is unpassed **nothing ships**, (3) the owner approves (Q-24), (4) it runs only in `l1_only`, (5) wording claims no containment, shows AC-38/39/49 as not evaluated and implies nothing about worker denial or worker-WebSocket control beyond recorded AC-22/AC-46 results |
+| **Regression checks** | Five blockers checked in the release row and §17 only | New checks fail on any remaining "only if L2 fails" wording, require the five-criteria rule and the preview conditions in the same terms in every document, require AC-46 in the preview row and AC-44, and forbid preview wording that implies worker denial or WebSocket control |
+| **Git description** | Two-commit state (`4aa540c`) | Three commits; `7863d3a` ("Bump Phase 0 docs to revision 5") is on `main`, `changes` and both `origin` branches; author and committer Gaurav Raj; Claude only as `Co-Authored-By` |
 
-Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; every unresolved limitation and open question is preserved.
+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; every unresolved limitation and open question is preserved; Phase 1 has not started.
 
 ---
 
@@ -74,7 +73,7 @@ Unchanged and re-verified: all 32 register entries are Designed (31) or not clai
 
 | ID | Question | Default if unanswered | Needed by | Status |
 |----|----------|-----------------------|-----------|--------|
-| Q-01 | Git already exists (created outside this session): `main` at `ddbb7c6`, `changes` at `4aa540c` (revision 4), both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 5 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a`; `main`, `changes` and both `origin` branches at `7863d3a`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 6 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
 | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
 | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
 | Q-04 | Allow a login `POST` in audit mode? | No; pre-provisioned session | Phase 2 | ❓ |
@@ -97,7 +96,7 @@ Unchanged and re-verified: all 32 register entries are Designed (31) or not clai
 | Q-21 | Who may attest read-only POST rules; is `custom-allowlist` needed in 0.1? | Profile owner; GraphQL only in 0.1 | Phase 3 | ❓ |
 | Q-22 | Confirm the reordered release train (authorization last, Release 1.0) | As written | Phase 0 approval | ❓ |
 | Q-23 | Is L2 mandatory for Release 0.1? | **Resolved by D-36**: mandatory for the unqualified 0.1; an L1-only run is only a labelled preview | — | ✅ (confirm via D-36) |
-| Q-24 | If L2 fails AC-39 at the end of Phase 2, should a labelled 0.1-preview be released at all, or should 0.1 be held? | Owner decides at that point; no preview without approval | Phase 2 | ❓ **new** |
+| Q-24 | If the unqualified 0.1 is blocked at the end of Phase 2 because AC-38, AC-39 or AC-49 cannot be passed (and AC-22, AC-46 and the other preview criteria have passed), should a labelled 0.1-preview in `l1_only` mode be released at all, or should 0.1 be held? (If AC-22 or AC-46 is unpassed nothing ships.) | Owner decides at that point; no preview without approval | Phase 2 | ❓ revised |
 | Q-25 | How is AC-38's independent, system-wide outbound observation (packet capture or an isolated namespace, covering TCP, UDP, QUIC **and DNS**, for all run processes and resolver processes acting for them) done on each OS? Is it practical without privileged tools? Per-process socket listing is not sufficient for DNS (§7.10) | Decide in the Phase 2 spike; if impractical, AC-38 and AC-49 stay unpassed and 0.1 is not unqualified | Phase 2 | ❓ **revised** |
 | Q-26 | Is there any acceptable tested strategy for authenticated traces (strip payloads, screenshots-only), or should they never exist? | None; authenticated traces stay unavailable | post-1.0 | ❓ **new** |
 | Q-27 | Should an `independently_attested` mechanism (verifiable signed build attestation) ever be designed? | No; the basis name is reserved only | post-1.0 | ❓ **new** |
@@ -141,7 +140,7 @@ Assurance as of this revision. "Needed for Tested" lists the acceptance criteria
 | GR-26 | Authenticated traces are not captured in Release 0.1; unauthenticated opt-in traces are labelled `not_redacted` | Designed | AC-40 |
 | GR-27 | Reports state the audit-only limitation and never imply state immutability | Designed | AC-41 |
 | GR-28 | Identity basis and confidence are reported accurately; `target_reported` is never described as attested | Designed | AC-30 |
-| GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38 as not evaluated | Designed | AC-44 |
+| GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38, AC-39 and AC-49 as not evaluated | Designed | AC-44 |
 | GR-30 | The self-contained HTML report meets the accessibility criteria | Designed | AC-42 |
 | GR-31 | Worker-originated WebSockets cannot be opened because dedicated and shared workers are denied by two independent in-browser measures. **No L2 backstop exists** (L2 cannot block a WebSocket to an allowed origin in a TLS tunnel). Not claimable with `workers: allow` | Designed | AC-46 |
 | GR-32 | A run ends in exactly one of `completed`, `partial`, `aborted`, `errored`; terminal statuses are immutable; a crashed or guard-failed run is never `completed` | Designed | AC-47 |
@@ -208,7 +207,7 @@ All resolutions are **Designed**; none is Implemented or Tested.
 | D-12 | Confirmation | **Superseded by D-26** | — | — | — | superseded |
 | D-13 | Verification gating | **Superseded by D-27/D-40** | — | — | — | superseded |
 | D-14 | Grants human-only | **Refined by D-25** | — | — | — | refined |
-| D-15 | MVP scope | MVP complete = Release 1.0; Release 0.1 first usable **and requires full guard mode (AC-38, AC-39)** | Audit-only MVP after Phase 3 | Brief requires authorization and verification; early value via D-29 | Long runway; preview only if L2 fails | 🟡 (revised) |
+| D-15 | MVP scope | MVP complete = Release 1.0; Release 0.1 first usable **and requires full guard mode (AC-22, AC-38, AC-39, AC-46, AC-49)** | Audit-only MVP after Phase 3 | Brief requires authorization and verification; early value via D-29 | Long runway; preview only if L2 fails | 🟡 (revised) |
 | D-16 | Roadmap | Phases 0–8 per `Brain.md` §5 | Fewer, larger phases | Distinct approval points | Scope-creep risk R-06 | 🟡 |
 | D-17 | AI in MVP | None; see D-30 | LLM-first | Deterministic | No natural-language specs | 🟡 |
 | D-18 | Data location | `data/` in repo (gitignored, `QA_SENTINEL_HOME`), profiles in `config/targets/` | `~/.qa-sentinel` | Self-contained | Risk of committing evidence | 🟡 |
@@ -229,7 +228,7 @@ All resolutions are **Designed**; none is Implemented or Tested.
 | D-33 | CLI binary name | `qa-sentinel` everywhere (including `design_system.md`) | `sentinel`, `qas` | Avoids npm name clash | Longer to type | 🟡 |
 | D-34 | NFR-011 scope | Minimal deps for core/CLI/runner/reporter; dashboard deps isolated | Blanket rule | Honest | Separate supply chain | 🟡 |
 | D-35 | Roles document name | `AGENT_ROLES.md` | Keep `agents.md`; add `CLAUDE.md` | Avoids `AGENTS.md` auto-load | Fresh-session check pending (R-07) | ✅ directive |
-| D-36 | Guard modes and release labelling | `full` (L1+L2, default) vs `l1_only` (explicit `--guard l1-only`); unqualified 0.1 requires `full` with **AC-22, AC-38, AC-39, AC-46 and AC-49 passed**; otherwise a **0.1-preview** that claims no containment; no silent downgrade; traffic-class coverage table in `architecture.md` §7.9 | Ship 0.1 L1-only with a footnote; make L2 optional | Directive from review: no equivalent-containment claim without tests | Possible delay or preview-only release; AC-38 needs independent OS-level observation (Q-25) | 🟡 directive (revised) |
+| D-36 | Guard modes and release labelling | `full` (L1+L2, default) vs `l1_only` (explicit `--guard l1-only`). The unqualified 0.1 requires **AC-22, AC-38, AC-39, AC-46 and AC-49 to pass and is blocked if any remains unpassed**. A **0.1-preview** (l1_only) is permitted only when AC-38, AC-39 or AC-49 cannot be passed **and** AC-22, AC-46 and every other preview criterion have passed **and** the owner approves (Q-24); if AC-22 or AC-46 is unpassed nothing ships. A preview claims no containment, shows AC-38/39/49 as not evaluated, and implies nothing about worker denial or worker-WebSocket control beyond recorded results. No silent downgrade; coverage table in `architecture.md` §7.9; conditions in §17 | Ship 0.1 L1-only with a footnote; make L2 optional; allow a preview whenever L2 fails AC-39 only | Directive from review: no equivalent-containment claim without tests; AC-38 and AC-49 are equally mandatory | Possible delay or no release; AC-38 and AC-49 need independent system-wide observation (Q-25) | 🟡 directive (revised)
 | D-37 | Traces | Off by default for every run; `--trace` opt-in; **authenticated traces refused in Release 0.1**; unauthenticated opt-in traces `restricted`, `not_redacted`, encrypted, 7 days, never exported | Traces on failure; claim redaction of traces | Traces cannot be reliably redacted | Less debugging data on authenticated targets (R-24); tested handling strategy needed before ever enabling (Q-26) | 🟡 directive |
 | D-38 | Redaction vs encryption | Separate `redactionStatus` and `encrypted`; exact-value secret-removal claims (AC-19/32, GR-16) cover **only `redacted` text artifacts**, DB, logs, reports; screenshots are `partially_redacted` with no claim (D-44); AC-33 is storage-only | One combined "protected" notion | Prevent false assurance | More labels to maintain and display | 🟡 directive (revised) |
 | D-39 | Audit-only definition | No intentional, known state-changing actions; **not** state immutability; GET side effects, Set-Cookie sessions, read-only POST side effects, background work stated; every report carries the statement | "No mutations" wording | Accurate; avoids overclaiming | Users must read the limitation; fixture needs a state-changing GET (AC-41) | 🟡 directive |
@@ -281,19 +280,27 @@ All resolutions are **Designed**; none is Implemented or Tested.
 
 ## 8. Fresh cross-document review output (verbatim from PHASE_0_CHECKLIST.md §6)
 
-**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with revision 5 checks and re-run across all seven documents and the folder: everything from the revision 4 review (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers and DNS, approval-list coverage, filesystem safety) plus: the documented git history against the actual repository (two commits, parent link, author and committer versus `Co-Authored-By`, checked-out branch); no "one commit" wording in live text; the §1 table labelling and its absence of independent-review claims; the architecture row's §7.10 and revision 4 additions; no document claiming worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed; and AC-22, AC-46, AC-38, AC-39 and AC-49 not marked passed. This is a script check, **not** an independent review.
+**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with release-condition regression checks and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, approval-list coverage, git description against the real repository, filesystem safety). This is a script check, **not** an independent review.
 
-**Revision 4 run (recorded in commit `4aa540c`):** 119 checks, 0 failed.
+**Revision 5 run:** 130 checks, 0 failed (`7863d3a`).
 
-**Revision 5, first run of the extended script: 130 checks, 1 failed.** The failure was a real wording ambiguity, not a script defect: the Release 0.1 row in `architecture.md` §17 read "with AC-22, AC-38, AC-39, AC-46 and AC-49 passed", which could be taken as a present claim. It now reads "required to pass (each currently unpassed)". No requirement or criterion changed.
+**New release-condition regression checks (revision 6):**
+- No remaining "only if L2 fails" / "if the egress layer fails" wording in any live document (the old, incomplete condition).
+- The rule "the unqualified 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 is unpassed" appears in Brain §5, the prd release row, the prd usable test, architecture §17 and D-36.
+- The prd and architecture preview rows name the blocker set (AC-38, AC-39 or AC-49), require AC-22 and AC-46 to have passed, and require owner approval; architecture §17 carries five numbered preview conditions; Brain, prd FR-019, D-36 and Q-24 agree with them, including that nothing ships if AC-22 or AC-46 is unpassed.
+- AC-44, FR-019, GR-29, the §7.9 mode row, the release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated in a preview, and AC-44 forbids implying that worker denial has been tested or that worker-originated WebSockets are controlled.
+- No line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets; no preview line mentions workers without a limiting qualifier; every line naming the 0.1-preview carries a conditioning qualifier.
+- **No acceptance criterion is weakened:** AC-22, AC-39, AC-46 and AC-49 are byte-identical to their revision 5 text; AC-38 differs only by the added clause "(like AC-39 and AC-49)"; AC-44 only gained requirements.
 
-**Mutation test of the new checks.** Six planted regressions: author/co-author distinction dropped; "one commit" wording restored; "Worker denial is tested" added; "AC-46 passed" added; an independent-review claim added to §1; the §1 label reverted to "rev. 3". The first pass missed two of them because of the test harness and one scope gap: the harness copies the folder without `.git`, which skipped the whole git block (including its text-only checks), and the one-commit check did not scan the checklist header. The text-only checks were moved out of the git block and the scope widened; every planted regression is then caught. No check was weakened.
+**Revision 6, first run: 144 checks, 2 failed.** Both hits were one real imprecision in `architecture.md` §17: the sentence "The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result" read like a free choice, and the requirement list used present-tense "passes". It now says a preview is **not** an alternative route to the five criteria, that it is permitted only under the conditions below, and that the decision is taken from recorded acceptance results. No criterion changed.
 
-**Final run: 130 checks, 0 failed.**
+**Mutation test.** Nine planted regressions were each caught: the old "only if L2 fails AC-39" preview row restored; AC-46 dropped from the preview row; the "nothing ships" rule dropped from Brain; a line saying the preview confirms worker denial is tested; AC-49 dropped from the architecture preview blocker; the blocked-if-any rule dropped from the prd 0.1 row; the worker non-implication dropped from AC-44; AC-46 weakened; a line saying the preview gives full containment.
+
+**Final run: 144 checks, 0 failed.**
 
 ```
 INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
 INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
 INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
 PASS  no stale term: target_attested
@@ -306,6 +313,7 @@ PASS  no stale term: `tombstone?`
 PASS  no stale term: Release 0.1 ships with L1
 PASS  no stale term: revision 3, pending approval
 PASS  no stale term: revision 4, pending approval
+PASS  no stale term: revision 5, pending approval
 PASS  no stale term: revision 2
 PASS  no stale term: Non-interactive and CI use is unresolved
 PASS  no stale term: status (completed | partial | aborted)
@@ -363,7 +371,7 @@ PASS  evidence rows immutable, events append-only, no mutable tombstone field
 PASS  AC-42 present in prd, design_system, arch register
 PASS  no stale phase refs (checklist may quote them only in history)
 PASS  release names present in prd and arch
-PASS  all seven docs say revision 5 in their status line
+PASS  all seven docs say revision 6 in their status line
 PASS  architecture Run model lists the five statuses and terminalReason
 PASS  all nine terminalReason values defined in architecture §4
 PASS  every `ends the run X` names one of the four terminal statuses
@@ -419,18 +427,31 @@ PASS  revision 5 summary exists, is documentation-only, and keeps the blockers u
 PASS  no document claims worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed
 PASS  no document marks AC-22, AC-46, AC-38, AC-39 or AC-49 as passed
 PASS  the five blockers are still described as unpassed in prd and architecture
-PASS  actual git history matches the documented two commits, parent link, author=committer=user, Claude only as Co-Authored-By trailer, HEAD on `changes`
+PASS  no remaining 'preview only if L2 fails' wording (the old, incomplete condition)
+PASS  unqualified 0.1 is blocked if any of the five is unpassed: Brain §5, prd release row, prd usable test, architecture §17, D-36
+PASS  prd and architecture preview rows: blocker is AC-38/39/49, AC-22 and AC-46 required, owner approval
+PASS  architecture §17 defines five numbered preview conditions covering blocker, L1 criteria, owner, l1_only and wording
+PASS  preview conditions agree across Brain, prd FR-019, checklist D-36/Q-24 (blocker set, L1 criteria, owner, nothing ships when AC-22/AC-46 unpassed)
+PASS  AC-44 shows AC-38, AC-39 and AC-49 as not evaluated and forbids implying worker denial was tested or worker WebSockets are controlled
+PASS  FR-019, GR-29, §7.9 mode row, release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated
+PASS  no preview line mentions workers without a limiting qualifier
+PASS  no line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets
+PASS  every line naming the 0.1-preview carries a conditioning qualifier
+PASS  Q-24 and D-36 are marked revised and keep the Phase 2 owner decision
+PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
+PASS  AC-44 only gained requirements (every revision 5 clause still present)
+PASS  actual git history matches the documented three commits, parent links, author=committer=user, Claude only as Co-Authored-By trailer, all branches at 7863d3a, HEAD on `main`
 PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
 PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
-PASS  README and the checklist header, Q-01 and §11 agree on both commit ids
+PASS  checklist header, Q-01 and §11 agree on all three commit ids
 PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
 PASS  config/targets, tests, reports are still empty
 PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
 
-TOTAL: 130 checks, 0 failed
+TOTAL: 144 checks, 0 failed
 ```
 
-**Semantic review (manual re-read).** §1, §2, the header, Q-01 and §11 now describe the same git history: `main` at `ddbb7c6`, `changes` at `4aa540c` with parent `ddbb7c6`, both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as a `Co-Authored-By` trailer; revision 5 uncommitted. The deliverables table says "cross-checked by script", marks nothing approved and attributes independent review only to your report about `4aa540c`. The architecture row lists §7.10 and the other revision 4 additions. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
+**Semantic review (manual re-read).** The release rule now reads identically in Brain §5, prd (F3, FR-019, release table, usable test, AC-38, AC-44), architecture (§7.7, §7.9, §17, GR-29), design_system and the checklist (D-15, D-36, Q-24): all five criteria are required; any unpassed one blocks the unqualified 0.1; a preview needs an L2/DNS blocker, passed L1 criteria including AC-46, owner approval, `l1_only` mode and bounded wording. One consequence is stated, not hidden: if AC-22 or AC-46 is unpassed, nothing ships at all, because the preview rests on L1. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
 
 **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
 
@@ -483,7 +504,7 @@ Two modes exist. The mode is recorded on every run (`guardMode`) and printed in 
 | Mode | Layers | Used for | Containment claim |
 |------|--------|----------|-------------------|
 | **`full`** (default) | L1 + L2 (+ L3 optional) | Release 0.1 and later | Allowed per traffic class **only** where the Guarantee Register shows that class Tested |
-| **`l1_only`** (explicit `--guard l1-only`) | L1 only | A clearly labelled **0.1-preview** if L2 fails AC-39; local experimentation | **None.** Reports state "L1-only preview: guard coverage incomplete; containment is not equivalent to full mode", and AC-38 is shown as *not evaluated* |
+| **`l1_only`** (explicit `--guard l1-only`) | L1 only | A clearly labelled **0.1-preview** only under the §17 conditions; local experimentation | **None.** Reports state "L1-only preview: guard coverage incomplete; containment is not equivalent to full mode", and AC-38, AC-39 and AC-49 are shown as *not evaluated* |
 
 Traffic-class coverage by mode. Every entry is **Designed** today; "Required test" is what must pass before the claim may be made.
 
@@ -571,17 +592,17 @@ Exact-value secret-removal claims and acceptance criteria (AC-19, AC-32, GR-16) 
 
 - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
 - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
-- **Verified (this folder, revision 5):** Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. On both commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 5 edits are uncommitted working-tree changes on `changes`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+- **Verified (this folder, revision 6):** Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. On all three commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 6 edits are uncommitted working-tree changes on `main`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
 - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
 
 ---
 
 ## 10. Complete documents (verbatim copies)
 
-<!-- BEGIN FILE: Brain.md sha256=76843cec2337c9eac677659462f7d096304b4abd449974dca0dfa64fcd7f90bf -->
+<!-- BEGIN FILE: Brain.md sha256=4cda2bc74aedf8d64f3eddd52e09526158d54e023130b32c9ff8fe7c640a5202 -->
 # QA Sentinel — Brain
 
-> Status: Phase 0 draft, revision 5, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+> Status: Phase 0 draft, revision 6, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
 
 ## 1. Vision
 
@@ -647,7 +668,7 @@ Proposed phases and releases (to be approved; Phase 0 approval does not approve 
 
 Authorization is deliberately last: the riskiest capability ships when the guard, evidence and verification layers already exist and have been tested. Before 1.0 there is no code path that allows a non-safe request other than profile-approved, parsed read-only entries. Details: `architecture.md` §17.
 
-Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. If the egress layer fails, only a clearly labelled **0.1-preview** with incomplete guard coverage may exist; it must not claim equivalent containment (`architecture.md` §7.9, §17).
+Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. **Release 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 remains unpassed.** A clearly labelled **0.1-preview** (L1 only, incomplete guard coverage, no containment claim) is permitted only when the blocker is the egress or DNS layer (AC-38, AC-39 or AC-49) **and** AC-22, AC-46 and every other preview criterion have passed **and** the owner approves; if AC-22 or AC-46 is unpassed, neither a 0.1 nor a preview ships (`architecture.md` §7.9, §17).
 
 Later horizons, not committed: additional runners (API contract, accessibility, visual regression), other AI-tool adapters, CI gating, comparison across builds, team sharing of reports.
 
@@ -680,10 +701,10 @@ A developer using any AI tool points QA Sentinel at an app they own, gets a repo
 Authoritative definitions of data shapes live in `architecture.md`.
 <!-- END FILE: Brain.md -->
 
-<!-- BEGIN FILE: prd.md sha256=a855bbacb0ea557a6d5f49433effa97c36053635c9ae42717c4d88800a0806c6 -->
+<!-- BEGIN FILE: prd.md sha256=925d3ad2245d55b0197753d07778fa2e19e13982ce430bfc5488edb62314a57a -->
 # QA Sentinel — Product Requirements
 
-> Status: Phase 0 draft, revision 5, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
+> Status: Phase 0 draft, revision 6, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
 >
 > **Assurance language.** Requirements describe what the product must do. A protection is only called a *guarantee* once the related acceptance criteria pass (**Tested**) and, for security claims, an independent review exists (**Independently verified**). Until then it is **Designed**. See `architecture.md` §0.
 
@@ -722,7 +743,7 @@ Software built with AI assistants is often judged by the same assistant that bui
 |----|---------|----------|---------|
 | F1 | Target profiles (multi-project, stack-neutral) with policy lock | Must | 0.1 |
 | F2 | Audit engine (discovery, planning, execution) on Playwright | Must | 0.1 |
-| F3 | Default-deny network isolation (L1 guard, L2 egress proxy); L2 must pass its tests for the unqualified Release 0.1, otherwise only a labelled L1-only preview | Must | 0.1 |
+| F3 | Default-deny network isolation (L1 guard, L2 egress proxy); the unqualified Release 0.1 requires AC-22, AC-38, AC-39, AC-46 and AC-49 to pass; a labelled L1-only preview is permitted only under the conditions in `architecture.md` §17 | Must | 0.1 |
 | F4 | Evidence capture and privacy-first lifecycle | Must | 0.1 |
 | F5 | Finding model with check-specific confirmation policies | Must | 0.1 |
 | F6 | Reproducible run history and comparison | Must | 0.1 |
@@ -759,7 +780,7 @@ Software built with AI assistants is often judged by the same assistant that bui
 - FR-016. At the start of each run the guard performs a self-check. In `full` mode a failed layer or probe ends the run `errored` (FR-025), with no silent downgrade to `l1_only`. In any mode, traffic classes that are unavailable or untested are recorded in `guardCoverage` and the report states "guard coverage incomplete".
 - FR-017. A budget (pages, requests, duration) is enforced per run; exceeding it ends the run `partial`.
 - FR-018. A user can abort a running audit; the run is left consistent and marked `aborted`.
-- FR-019. `l1_only` mode exists only through the explicit option `--guard l1-only`. Runs in this mode are labelled in the manifest, CLI, JSON and reports as a preview with incomplete guard coverage, make no containment or outbound-traffic claim, and show AC-38 as not evaluated. If L2 fails its acceptance tests, only a labelled 0.1-preview in this mode may be released; it is never described as equivalent to `full` mode.
+- FR-019. `l1_only` mode exists only through the explicit option `--guard l1-only`. Runs in this mode are labelled in the manifest, CLI, JSON and reports as a preview with incomplete guard coverage, make no containment or outbound-traffic claim, and show AC-38, AC-39 and AC-49 as not evaluated. A 0.1-preview in this mode may be released only under the conditions in `architecture.md` §17 (the unqualified 0.1 is blocked because AC-38, AC-39 or AC-49 cannot be passed, while AC-22, AC-46 and every other preview criterion pass, with owner approval); it is never described as equivalent to `full` mode.
 
 **Execution and honesty**
 - FR-020. Each spec attempt yields an `ExecutionRecord` with outcome `passed | failed | errored | skipped | not_run`.
@@ -852,14 +873,14 @@ Releases deliver value early; each lists the acceptance criteria that must pass 
 
 | Release | Phases | Contents (see `architecture.md` §17) | Acceptance criteria |
 |---------|--------|---------------------------------------|---------------------|
-| **0.1 Audit CLI** (first usable; requires AC-22, AC-38, AC-39, AC-46 and AC-49, each currently unpassed) | 1–3 | F1–F12 | AC-01–09, 14, 15, 18–29, 31–35, 38–49 |
-| 0.1-preview (only if L2 fails AC-39) | 1–3 | F1–F12 in `l1_only` mode, labelled "guard coverage incomplete" | The 0.1 criteria **except AC-38, AC-39 and AC-49**, which cannot pass in this mode; AC-46 still applies; no containment claim |
+| **0.1 Audit CLI** (first usable; requires AC-22, AC-38, AC-39, AC-46 and AC-49 to pass, each currently unpassed; **blocked if any remains unpassed**) | 1–3 | F1–F12 | AC-01–09, 14, 15, 18–29, 31–35, 38–49 |
+| 0.1-preview (permitted only if AC-38, AC-39 or AC-49 cannot be passed **and** AC-22, AC-46 and all other preview criteria have passed, with owner approval; conditions in `architecture.md` §17) | 1–3 | F1–F12 in `l1_only` mode, labelled "guard coverage incomplete" | The 0.1 criteria **except AC-38, AC-39 and AC-49**, which cannot pass in this mode and are shown as not evaluated; **AC-22 and AC-46 still apply and must have passed**; no containment claim, and no wording implying worker denial or worker-WebSocket control beyond the recorded AC-22/AC-46 results |
 | 0.2 Fix verification | 4 | F13 | AC-12, 13, 30 |
 | 0.3 Dashboard | 5 | F14 | AC-17, 36 |
 | 0.4 Integrations | 6 | F15 | AC-16 |
 | **1.0 Authorization** (MVP complete) | 7 | F16 | AC-10, 11, 37 |
 
-**Release 0.1 "usable" test:** a new user can register a fixture target, approve its policy, run an audit from the terminal and from the Claude Code command kit, read an accessible HTML report in which every finding links to evidence (or a tombstone), and see which checks did not run, the guard mode and coverage, and the audit-only limitation — with no dashboard, MCP server, verification or grant code present. An unqualified 0.1 additionally requires L2 to pass AC-39 and AC-38; otherwise only the labelled 0.1-preview exists.
+**Release 0.1 "usable" test:** a new user can register a fixture target, approve its policy, run an audit from the terminal and from the Claude Code command kit, read an accessible HTML report in which every finding links to evidence (or a tombstone), and see which checks did not run, the guard mode and coverage, and the audit-only limitation — with no dashboard, MCP server, verification or grant code present. An unqualified 0.1 additionally requires AC-22, AC-38, AC-39, AC-46 and AC-49 to pass and is blocked if any remains unpassed; a labelled 0.1-preview exists only under the conditions in `architecture.md` §17.
 
 ### Acceptance criteria
 
@@ -900,13 +921,13 @@ Releases deliver value early; each lists the acceptance criteria that must pass 
 - AC-35. Reports exclude restricted evidence by default; `--include-restricted` needs a TTY confirmation and appends an `exported` evidence event; HTML reports make no external requests.
 - AC-36. The API accepts connections only on loopback, requires the token, validates `Host`/`Origin`, and rejects writes without a CSRF token.
 - AC-37. Grants enforce expiry, use limits and `policyHash` binding; revocation applies before the next request; `GrantEvent`s form an unbroken chain.
-- AC-38. In `full` mode with `dnsMode: pinned` (or a loopback-only target), while the fixture exercises every traffic class adversarially (page requests, service workers, WebSockets, WebRTC, QUIC, redirects, reserved-TLD canary hostnames in links, fetches and `dns-prefetch` hints, a canary server outside scope; worker traffic only when `workers: allow`), independent system-wide observation at the operating-system level (packet capture or an isolated namespace covering TCP, UDP, QUIC and DNS, for every process the run starts and for resolver processes acting on their behalf, not the guard's own logs) shows connections only to the in-scope target and loopback and **no DNS query for any canary or other name leaving the machine**. A run with `dnsMode: system` cannot pass this criterion and is reported "DNS via system resolver: not covered". **If no independent observation exists, AC-38 is not passed and the unqualified Release 0.1 is blocked.** In `l1_only` mode AC-38 is reported as *not evaluated* and can never pass.
+- AC-38. In `full` mode with `dnsMode: pinned` (or a loopback-only target), while the fixture exercises every traffic class adversarially (page requests, service workers, WebSockets, WebRTC, QUIC, redirects, reserved-TLD canary hostnames in links, fetches and `dns-prefetch` hints, a canary server outside scope; worker traffic only when `workers: allow`), independent system-wide observation at the operating-system level (packet capture or an isolated namespace covering TCP, UDP, QUIC and DNS, for every process the run starts and for resolver processes acting on their behalf, not the guard's own logs) shows connections only to the in-scope target and loopback and **no DNS query for any canary or other name leaving the machine**. A run with `dnsMode: system` cannot pass this criterion and is reported "DNS via system resolver: not covered". **If no independent observation exists, AC-38 is not passed and the unqualified Release 0.1 is blocked.** In `l1_only` mode AC-38 (like AC-39 and AC-49) is reported as *not evaluated* and can never pass.
 - AC-39. In `full` mode the browser can reach only `allowedOrigins` host:port through the egress proxy: direct IPs, other ports and non-allowlisted hosts are refused for HTTP and for HTTPS (CONNECT); loopback targets work with the bypass override; QUIC/HTTP3 is disabled; a canary server outside the scope never receives a connection.
 - AC-40. `--trace` on a target with an auth profile is refused (exit 2) and no trace artifact exists after an authenticated run; an opt-in trace from an unauthenticated run is labelled `not_redacted`, is `restricted` and encrypted, is absent from reports, and the report states that trace contents are not redacted.
 - AC-41. Every report, CLI summary and JSON result contains the audit-only statement, the read-only POST rules and the denied path patterns in force. A fixture with a state-changing `GET` endpoint shows that such an endpoint, when requested, does change fixture state; the report does not claim otherwise, and listing the path in `deniedPathPatterns` prevents the request.
 - AC-42. The self-contained HTML report passes an automated axe run with zero serious or critical violations on pages generated from the clean fixture and from a fixture with findings; is fully keyboard-operable (including any expandable sections); conveys no information by color alone (shapes and labels per `design_system.md` §8); meets the contrast values in `design_system.md` §2; stays readable at 200% zoom and 320px width; and prints legibly. A manual keyboard and screen-reader pass is recorded.
 - AC-43. Tombstoning never updates or deletes an evidence row or an earlier evidence event; the evidence-event hash chain verifies after tombstones, and `doctor` detects a removed or altered tombstone.
-- AC-44. In `l1_only` mode the report header, CLI summary and JSON carry `guardMode: l1_only` and the statement "guard coverage incomplete; not equivalent to full mode"; no output in this mode claims containment, isolation or restricted outbound traffic; AC-38 is shown as not evaluated; and running without `--guard l1-only` while L2 is unavailable ends the run `errored` instead of downgrading.
+- AC-44. In `l1_only` mode the report header, CLI summary and JSON carry `guardMode: l1_only` and the statement "guard coverage incomplete; not equivalent to full mode"; no output in this mode claims containment, isolation or restricted outbound traffic; AC-38, AC-39 and AC-49 are shown as not evaluated; no output implies that worker denial has been tested or that worker-originated WebSockets are controlled beyond the recorded AC-22 and AC-46 results; and running without `--guard l1-only` while L2 is unavailable ends the run `errored` instead of downgrading.
 - AC-45. In a fresh workspace without a matching human `ProfileApproval`, `audit` (including in CI mode) exits 3 with an explanatory message; no flag, environment variable or repository file bypasses this in Release 0.1.
 - AC-46. With the default `workers: deny`, adversarial fixture pages try `new Worker(url)`, module workers, `SharedWorker`, `blob:` and `data:` workers, workers created from same-origin iframes, `about:blank` and `srcdoc` frames, nested workers and `importScripts`, and, from any worker that starts, a WebSocket to an allowed origin. **Pass:** no worker executes and the fixture server's own log shows no WebSocket upgrade from any of them (independent of the guard); every denial is recorded. If any worker starts, AC-46 fails. With `workers: allow` the test instead asserts the run is labelled `workers-allowed`, worker traffic is reported uncontrolled and no worker-WebSocket claim appears. **Until this is executed against a recorded commit it is unpassed, the unqualified Release 0.1 is blocked, and no release material may state or imply that worker-originated WebSockets are controlled.**
 - AC-47. Every run ends in exactly one terminal status. Induced faults: a failed guard layer or probe in `full` mode gives `errored`, budget exhaustion `partial`, a user abort `aborted`, and a process killed mid-run is marked `aborted` (`crash_detected`) by the next start, never `completed`. In every case unexecuted specs are `not_run`, no confirmation rerun follows a guard failure, and the CLI, JSON and report show the status and `terminalReason`. An attempt to update a terminal run's `status` or `terminalReason` is rejected by the store. Exit codes match (`4` for `partial`, `aborted`, `errored`). A policy refusal before start creates no run row.
@@ -924,10 +945,10 @@ AI-assisted planning/triage (F17), non-web target kinds and plugin interface (F1
 False-confirmed rate (target: zero known), seeded and held-out defect detection rate, median time to a trustworthy report, share of fix claims verified independently, re-run reproducibility rate, share of runs with complete guard coverage.
 <!-- END FILE: prd.md -->
 
-<!-- BEGIN FILE: design_system.md sha256=438aa012ea9cb7f15f1540dea5882637dcdfd0ee720229f871cb4def1752b361 -->
+<!-- BEGIN FILE: design_system.md sha256=fc8d843fc4ce6a619bf64798bc400468c671acd885aeff92e3f3eddbd0fe39e2 -->
 # QA Sentinel — Design System
 
-> Status: Phase 0 draft, revision 5, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
+> Status: Phase 0 draft, revision 6, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
 
 ## 1. Identity
 
@@ -1030,7 +1051,7 @@ Each component lists the information it must expose; styling follows the tokens.
 - **EvidenceCard / EvidenceViewer** — thumbnail, kind, hash, redaction status badge (traces always "Not redacted"), download, trace viewer link for opt-in traces.
 - **VerificationPanel** — claim (actor, build, commit), result, the **identity basis and confidence** (`target_reported` moderate — reported by the target, not proof · `operator_asserted` low — a statement · `surfaceFingerprint` low — fallback only; `independently_attested` reserved), always shown with the result and never as a bare "verified"; the gating checks (`freshContext`, `buildChanged` on the same basis) each with pass/fail/unknown and a short explanation of limits, plus the informational `sameActorAsClaim`.
 - **AssuranceBadge** — Designed / Implemented / Tested / Independently verified, with text and a distinct shape per level; links to the Guarantee Register entry and the commit for Tested and above. Never colored as "success" below Tested.
-- **GuardCoveragePanel** — the guard mode (`full` / `l1_only`), then per traffic class (WebSocket, worker creation and worker WebSocket, WebRTC, service workers, downloads, proxy, schemes, DNS mode) `active`, `unavailable`, `untested` or `uncontrolled` (`workers: allow`, `dnsMode: system`), with the run's `websocket-restricted` and "guard coverage incomplete" notices; in `l1_only` it shows "not equivalent to full mode" and AC-38 as not evaluated.
+- **GuardCoveragePanel** — the guard mode (`full` / `l1_only`), then per traffic class (WebSocket, worker creation and worker WebSocket, WebRTC, service workers, downloads, proxy, schemes, DNS mode) `active`, `unavailable`, `untested` or `uncontrolled` (`workers: allow`, `dnsMode: system`), with the run's `websocket-restricted` and "guard coverage incomplete" notices; in `l1_only` it shows "not equivalent to full mode" and AC-38, AC-39 and AC-49 as not evaluated.
 - **EvidenceClassBadge / RedactionBadge / RevealGate** — `public` vs `restricted`; a separate redaction badge (`redacted`, `partially redacted`, **`NOT REDACTED`** for traces and downloads; screenshots always read `partially redacted` with a visible "masks configured elements only; may still contain secrets" note and never "secret-free" or "sanitized") and a separate encryption lock; restricted items show retention expiry and a "Reveal" action that confirms and appends an access event.
 - **TombstoneCard** — expired evidence: hash, kind, deletion time and reason, so a finding still shows that evidence existed.
 - **PolicyApprovalDialog** — policy diff since the last approval, the approval's assurance level (L1 shown as "confirmation, not identity verification"), typed confirmation.
@@ -1107,10 +1128,10 @@ Shipped in Release 0.1, before any dashboard. Self-contained single file (inline
 Logo and wordmark; icon set selection (a single open-license set); whether to ship a high-contrast theme in Phase 5; final empty-state illustrations (none planned).
 <!-- END FILE: design_system.md -->
 
-<!-- BEGIN FILE: architecture.md sha256=9cef2d9ad3e769e20d8f219f901c55175351027cef9e4d64739d64caef8d85e9 -->
+<!-- BEGIN FILE: architecture.md sha256=8b9ce2f5b2391cf4405a2e2b45d2dbae761b52457408a7df757ae9b0c09d28a0 -->
 # QA Sentinel — Architecture
 
-> Status: Phase 0 draft, revision 5, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+> Status: Phase 0 draft, revision 6, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
 
 ## 0. How to read this document (assurance language)
 
@@ -1368,7 +1389,7 @@ A black-box tool cannot isolate server state. The design is explicit about it:
 ### 7.2 Layers
 
 1. **L1 — in-browser guard.** A context-level request interceptor (`context.route`) installed before any page loads checks origin, scheme, method, path and body policy for every request, aborts violations, and records them. WebSocket routing, service-worker blocking, download denial and permission denial are configured on the same context.
-2. **L2 — egress proxy.** The browser is launched with all traffic routed to a QA Sentinel loopback proxy (Node standard library) that refuses any destination not in `allowedOrigins` (host and port), including direct IPs and other ports. For HTTPS it sees only the destination (CONNECT), not the method, so **method enforcement stays in L1**; L2 provides a browser-wide default-deny on destinations that does not depend on Playwright routing, which covers service workers, worker-originated requests and anything routing misses at the TCP level. Chromium bypasses proxies for loopback by default, so loopback targets need the bypass override. Name resolution is defined in §7.10: in `dnsMode: pinned` the proxy never calls a resolver. These details are to be confirmed in the Phase 2 spike. Chromium may also use QUIC/HTTP3 over UDP, which a TCP proxy does not see; QUIC is disabled at launch (to be verified by AC-39 and AC-38). **Acceptance gate:** L2 counts toward Release 0.1's containment claim only if it passes AC-39 and AC-38. If it does not, there is no unqualified Release 0.1: only a clearly labelled **0.1-preview** in L1-only mode may be released, with incomplete guard coverage reported and no equivalent-containment claim (§7.9).
+2. **L2 — egress proxy.** The browser is launched with all traffic routed to a QA Sentinel loopback proxy (Node standard library) that refuses any destination not in `allowedOrigins` (host and port), including direct IPs and other ports. For HTTPS it sees only the destination (CONNECT), not the method, so **method enforcement stays in L1**; L2 provides a browser-wide default-deny on destinations that does not depend on Playwright routing, which covers service workers, worker-originated requests and anything routing misses at the TCP level. Chromium bypasses proxies for loopback by default, so loopback targets need the bypass override. Name resolution is defined in §7.10: in `dnsMode: pinned` the proxy never calls a resolver. These details are to be confirmed in the Phase 2 spike. Chromium may also use QUIC/HTTP3 over UDP, which a TCP proxy does not see; QUIC is disabled at launch (to be verified by AC-39 and AC-38). **Acceptance gate:** L2 counts toward Release 0.1's containment claim only if AC-39, AC-38 and AC-49 pass. If it does not, there is no unqualified Release 0.1: a clearly labelled **0.1-preview** in L1-only mode may be released only under the conditions in §17, with incomplete guard coverage reported and no equivalent-containment claim (§7.9).
 3. **L3 — OS isolation (optional, post-MVP).** Run the browser in a container or network namespace or as a dedicated OS user with an egress firewall allowlist. Recommended for authorized (A2/A3) runs against non-local targets and for high-assurance use.
 
 Each layer is independent: a gap in one is meant to be caught by another, and the run report lists which layers were active.
@@ -1412,7 +1433,7 @@ An agent that can edit files could widen a profile (`allowedOrigins`, `network`,
 
 ### 7.7 Fail closed
 
-In the default `full` guard mode every required layer (L1 and L2) must install and pass the start-of-run self-check (a probe request to an out-of-scope origin, a probe non-safe request, a probe WebSocket, a probe worker creation that must be denied, a probe to a non-proxied destination). If any fails, the run ends `errored` with `terminalReason: guard_unavailable` or `guard_probe_failed` (§4); **it never silently downgrades**. `l1_only` is selected only by the explicit option `--guard l1-only`, is recorded in the manifest, and is used for the labelled preview (§7.9). In either mode, a traffic class that is unavailable or untested is recorded in `guardCoverage` and the report prints "guard coverage incomplete". A run is never described as contained unless its mode is `full` **and** the Guarantee Register shows the relevant entries Tested; reports print the register's assurance levels.
+In the default `full` guard mode every required layer (L1 and L2) must install and pass the start-of-run self-check (a probe request to an out-of-scope origin, a probe non-safe request, a probe WebSocket, a probe worker creation that must be denied, a probe to a non-proxied destination). If any fails, the run ends `errored` with `terminalReason: guard_unavailable` or `guard_probe_failed` (§4); **it never silently downgrades**. `l1_only` is selected only by the explicit option `--guard l1-only`, is recorded in the manifest, and is used only for a labelled preview that meets the §17 conditions, or for local experimentation (§7.9). In either mode, a traffic class that is unavailable or untested is recorded in `guardCoverage` and the report prints "guard coverage incomplete". A run is never described as contained unless its mode is `full` **and** the Guarantee Register shows the relevant entries Tested; reports print the register's assurance levels.
 
 ### 7.8 Known limits
 
@@ -1429,7 +1450,7 @@ Two modes exist. The mode is recorded on every run (`guardMode`) and printed in 
 | Mode | Layers | Used for | Containment claim |
 |------|--------|----------|-------------------|
 | **`full`** (default) | L1 + L2 (+ L3 optional) | Release 0.1 and later | Allowed per traffic class **only** where the Guarantee Register shows that class Tested |
-| **`l1_only`** (explicit `--guard l1-only`) | L1 only | A clearly labelled **0.1-preview** if L2 fails AC-39; local experimentation | **None.** Reports state "L1-only preview: guard coverage incomplete; containment is not equivalent to full mode", and AC-38 is shown as *not evaluated* |
+| **`l1_only`** (explicit `--guard l1-only`) | L1 only | A clearly labelled **0.1-preview** only under the §17 conditions; local experimentation | **None.** Reports state "L1-only preview: guard coverage incomplete; containment is not equivalent to full mode", and AC-38, AC-39 and AC-49 are shown as *not evaluated* |
 
 Traffic-class coverage by mode. Every entry is **Designed** today; "Required test" is what must pass before the claim may be made.
 
@@ -1692,18 +1713,24 @@ Deterministic checks (ceilings in §6.1): reachability and 4xx/5xx; uncaught exc
 | Release | Phases | Contents | Not included |
 |---------|--------|----------|--------------|
 | **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 required to pass (each currently unpassed); check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
-| 0.1-preview (**only if L2 fails AC-39**) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38 shown as *not evaluated* |
+| 0.1-preview (**only under the §17 conditions**: AC-38, AC-39 or AC-49 cannot be passed, AC-22 and AC-46 have passed, owner approves) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38, AC-39 and AC-49 shown as *not evaluated* |
 | **0.2 Fix verification** | 4 | `claim-fix`, `verify`, identity bases with confidence | Dashboard, MCP, grants |
 | **0.3 Dashboard** | 5 | Local dashboard and API | MCP, grants |
 | **0.4 Integrations** | 6 | MCP adapter, other-tool adapters, CI polish | Grants |
 | **1.0 Authorization** | 7 | Grants, A2/A3 under human approval; the engine stays AI-free | — |
 | Post-1.0 | 8 | More target kinds, plugin interface, L2 approvals, L3 isolation guidance, optional `ai-assist`, possible authenticated-trace strategy | — |
 
-**What an unqualified Release 0.1 requires.** L2 passes AC-39; AC-38 is passed with independent observation covering DNS (§7.9, §7.10); worker denial passes AC-46; DNS behavior passes AC-49; each containment claim is limited to traffic classes whose register entries are Tested; every other 0.1 acceptance criterion in `prd.md` §8 passes with a recorded run. The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result and recorded as a decision.
+**What an unqualified Release 0.1 requires.** **All five** of AC-22, AC-38, AC-39, AC-46 and AC-49 must pass, and it is blocked if any one remains unpassed. In detail: L2 must pass AC-39; AC-38 must be passed with independent observation covering DNS (§7.9, §7.10); worker denial must pass AC-46; DNS behavior must pass AC-49; each containment claim is limited to traffic classes whose register entries are Tested; every other 0.1 acceptance criterion in `prd.md` §8 passes with a recorded run. A preview is **not** an alternative route to these five; it is permitted only under the conditions below. Which release is possible is decided at the end of Phase 2 from the recorded acceptance results (not from an impression of the spike) and recorded as a decision.
 
 **Blocking items for the unqualified Release 0.1.** AC-22 (page, frame and service-worker coverage), AC-46 (worker denial and worker-originated WebSockets), AC-38 (independent observation including DNS), AC-39 (egress proxy) and AC-49 (DNS pinned behavior) are each currently **unpassed**. If any of them cannot be passed, the unqualified Release 0.1 does not ship and no release material may imply the corresponding capability. A worker-WebSocket or DNS capability that cannot be made reliable is documented as unavailable rather than described as partly working.
 
-**If L2 fails.** There is no unqualified Release 0.1. A **0.1-preview** may ship in `l1_only` mode only if every report, CLI summary and JSON result says so (AC-44), claims no containment or outbound restriction, and shows AC-38 as not evaluated. It may not be described as equivalent to full mode. Nothing here weakens the 0.1 criteria to make them easier to pass.
+**0.1-preview conditions.** An unqualified Release 0.1 does not exist while any of AC-22, AC-38, AC-39, AC-46 or AC-49 is unpassed. A **0.1-preview** may be released only if **all** of the following hold, and the decision is recorded:
+1. **The blocker is the egress or DNS layer.** The unqualified 0.1 is blocked because one or more of **AC-38, AC-39 or AC-49** cannot be passed (the egress proxy fails, independent observation including DNS is impractical or unavailable, or the DNS design fails).
+2. **The L1 criteria have passed.** AC-22 and AC-46, and every other 0.1 criterion except AC-38, AC-39 and AC-49, have passed against a recorded commit. **If AC-22 or AC-46 is unpassed, neither a 0.1 nor a preview ships**, because the preview rests on L1 alone and AC-46 is the only mechanism for worker-originated WebSockets (L2 cannot block them, §7.3).
+3. **The owner approves** a preview (Q-24) and records the decision.
+4. **It runs only in `l1_only`**, selected explicitly. L2 and DNS pinning are not part of any preview claim.
+5. **Wording limits (AC-44).** Every report, CLI summary and JSON result states "guard coverage incomplete; not equivalent to full mode"; claims no containment, outbound restriction, DNS control or equivalent guard coverage; shows AC-38, AC-39 and AC-49 as not evaluated; and says nothing about worker denial or worker-originated WebSockets beyond the recorded AC-22 and AC-46 results (no L2 backstop is implied, and nothing is claimed for runs with `workers: allow`).
+The preview is not available merely because a criterion is hard: no acceptance criterion is weakened to make a release achievable.
 
 **0.1 is usable on its own.** A developer registers a target, approves its policy, runs an audit from a terminal or from Claude Code commands, and gets a report whose every claim links to (possibly tombstoned) evidence and which states the audit-only limitation, guard mode and coverage. Because grants ship only in 1.0, Releases 0.1–0.4 contain no code path that allows a non-safe request other than profile-approved read-only entries.
 
@@ -1741,7 +1768,7 @@ Assurance as of this revision. "Needed for Tested" lists the acceptance criteria
 | GR-26 | Authenticated traces are not captured in Release 0.1; unauthenticated opt-in traces are labelled `not_redacted` | Designed | AC-40 |
 | GR-27 | Reports state the audit-only limitation and never imply state immutability | Designed | AC-41 |
 | GR-28 | Identity basis and confidence are reported accurately; `target_reported` is never described as attested | Designed | AC-30 |
-| GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38 as not evaluated | Designed | AC-44 |
+| GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38, AC-39 and AC-49 as not evaluated | Designed | AC-44 |
 | GR-30 | The self-contained HTML report meets the accessibility criteria | Designed | AC-42 |
 | GR-31 | Worker-originated WebSockets cannot be opened because dedicated and shared workers are denied by two independent in-browser measures. **No L2 backstop exists** (L2 cannot block a WebSocket to an allowed origin in a TLS tunnel). Not claimable with `workers: allow` | Designed | AC-46 |
 | GR-32 | A run ends in exactly one of `completed`, `partial`, `aborted`, `errored`; terminal statuses are immutable; a crashed or guard-failed run is never `completed` | Designed | AC-47 |
@@ -1765,10 +1792,10 @@ New runner → implement `Runner`. New target kind (API contract, mobile, CLI) �
 - **Revision 4 open items:** (1) no mechanism exists to remove secrets from screenshot pixels beyond selector masking, and none is claimed (Q-28); (2) worker-originated WebSockets have no L2 backstop and depend entirely on AC-46 passing (Q-29); (3) the DNS design (`pinned` versus `system`, browser-side resolution suppression, system-wide DNS observation per OS) is unproven and AC-38 and AC-49 are unpassed (Q-25, Q-30); (4) crash-recovery transition of `running` runs to `aborted` and immutability of terminal statuses are untested (AC-47).
 <!-- END FILE: architecture.md -->
 
-<!-- BEGIN FILE: AGENT_ROLES.md sha256=cefff1d0c1e4329d88416914983c55b4313907c8c1669335383edc86a79e472e -->
+<!-- BEGIN FILE: AGENT_ROLES.md sha256=aa7df09d09f79c162023e42a12aca85091796f372f1ae0e532139218dbeae7a9 -->
 # QA Sentinel — Agent Roles
 
-> Status: Phase 0 draft, revision 5, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
+> Status: Phase 0 draft, revision 6, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
 >
 > Assurance: everything below is **Designed**, none **Implemented**, **Tested** or **Independently verified**. See `architecture.md` §0 and the Guarantee Register (§18). Module boundaries and data shapes are in `architecture.md`; principles in `Brain.md`.
 
@@ -1918,32 +1945,44 @@ W = sole writer · R = may read · — = no access
 The execution engine (`core`, `policy`, `evidence`, `runner-*`, `store`) has no AI dependency, verified by a dependency check. AI reasoning may help a human or a future `ai-assist` package *suggest* checks or summaries, but it can never directly determine whether a test ran, passed, failed or was confirmed. See `architecture.md` §4.2.
 <!-- END FILE: AGENT_ROLES.md -->
 
-<!-- BEGIN FILE: PHASE_0_CHECKLIST.md sha256=1a500ec94d1ed32301faab829a5acb5f495f6f6fa016b076c36e28971d978424 -->
+<!-- BEGIN FILE: PHASE_0_CHECKLIST.md sha256=0238a79de9bbb784e63176c857bf18d0eba8d7af1a583aee70818831482bcf95 -->
 # QA Sentinel — Phase 0 Checklist
 
 > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
-> **Phase 0 status: revision 5 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. (details in §11).**
-> Last updated: 2026-11-16 (revision 5, after the independent review of revision 4 on branch `changes`, commit `4aa540c`).
+> **Phase 0 status: revision 6 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. (details in §11).**
+> Last updated: 2026-11-16 (revision 6, after the independent review of revision 5, commit `7863d3a`).
 
 **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
 **Assurance vocabulary:** Designed (documented only) · Implemented (code exists) · Tested (passing automated tests against a recorded commit) · Independently verified (independent review against a pinned commit). See `architecture.md` §0. **Nothing is above Designed.**
 
 ## 1. Deliverables
 
-| # | File | Written (latest revision) | Cross-checked by script (rev. 5) | Approved |
+| # | File | Written (latest revision) | Cross-checked by script (rev. 6) | Approved |
 |---|------|---------------------------|----------------------------------|----------|
 | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 | 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
 | 3 | `design_system.md` | ✅ (edited; rev. 4: RunStatusBadge, Errored state, screenshot masking note, `uncontrolled` coverage state) | ✅ | ⛔ awaiting you |
 | 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
 | 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
-| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 5: §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
+| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 6: §1, §2, §5, §6, §11, D-15, D-36, Q-01, Q-24 updated) | ✅ | ⛔ awaiting you |
 | — | `README.md` | ✅ (status line) | ✅ | — |
-| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 5 bundle; not a deliverable) | ✅ | — | — |
+| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 6 bundle; not a deliverable) | ✅ | — | — |
 
-"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the review of revision 4 on branch `changes` (commit `4aa540c`) found the four technical findings substantially addressed and the documentation inconsistencies fixed in revision 5. No per-document independent sign-off is recorded, and no document is approved.
+"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`) and revision 5 (commit `7863d3a`) found the four technical findings substantially addressed; the revision 5 review found the one release-condition inconsistency fixed in revision 6. No per-document independent sign-off is recorded, and no document is approved.
 
-## 2. Revision 5: before/after change summary
+## 2. Revision 6: before/after change summary
+
+Documentation-only. No acceptance criterion, requirement, design or register assurance level was changed or weakened.
+
+| Review finding | Before (revision 5) | After (revision 6) |
+|----------------|---------------------|--------------------|
+| **Release 0.1 preview conditions** | Several places said a 0.1-preview was available "only if L2 fails AC-39"; AC-38 and AC-49 (also mandatory L2/DNS criteria) and the L1 criteria AC-22 and AC-46 were not part of the condition | **One rule, stated identically everywhere (Brain §5, prd F3/FR-019/release table/usable test/AC-38/AC-44, architecture §7.7/§7.9/§17/GR-29, design_system, checklist D-15/D-36/Q-24):** the unqualified 0.1 requires all five of AC-22, AC-38, AC-39, AC-46, AC-49 and is blocked if any is unpassed. A preview is permitted only if (1) the blocker is AC-38, AC-39 or AC-49, (2) AC-22, AC-46 and every other preview criterion have passed, so if AC-22 or AC-46 is unpassed **nothing ships**, (3) the owner approves (Q-24), (4) it runs only in `l1_only`, (5) wording claims no containment, shows AC-38/39/49 as not evaluated and implies nothing about worker denial or worker-WebSocket control beyond recorded AC-22/AC-46 results |
+| **Regression checks** | Five blockers checked in the release row and §17 only | New checks fail on any remaining "only if L2 fails" wording, require the five-criteria rule and the preview conditions in the same terms in every document, require AC-46 in the preview row and AC-44, and forbid preview wording that implies worker denial or WebSocket control |
+| **Git description** | Two-commit state (`4aa540c`) | Three commits; `7863d3a` ("Bump Phase 0 docs to revision 5") is on `main`, `changes` and both `origin` branches; author and committer Gaurav Raj; Claude only as `Co-Authored-By` |
+
+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; every unresolved limitation and open question is preserved; Phase 1 has not started.
+
+### Previous: revision 5 before/after change summary (kept for history)
 
 Documentation-only. No design, requirement, acceptance criterion or register entry was changed.
 
@@ -2001,7 +2040,7 @@ Unchanged and re-verified: all 32 register entries are Designed (31) or not clai
 | D-12 | Confirmation | **Superseded by D-26** | — | — | — | superseded |
 | D-13 | Verification gating | **Superseded by D-27/D-40** | — | — | — | superseded |
 | D-14 | Grants human-only | **Refined by D-25** | — | — | — | refined |
-| D-15 | MVP scope | MVP complete = Release 1.0; Release 0.1 first usable **and requires full guard mode (AC-38, AC-39)** | Audit-only MVP after Phase 3 | Brief requires authorization and verification; early value via D-29 | Long runway; preview only if L2 fails | 🟡 (revised) |
+| D-15 | MVP scope | MVP complete = Release 1.0; Release 0.1 first usable **and requires full guard mode (AC-22, AC-38, AC-39, AC-46, AC-49)** | Audit-only MVP after Phase 3 | Brief requires authorization and verification; early value via D-29 | Long runway; preview only if L2 fails | 🟡 (revised) |
 | D-16 | Roadmap | Phases 0–8 per `Brain.md` §5 | Fewer, larger phases | Distinct approval points | Scope-creep risk R-06 | 🟡 |
 | D-17 | AI in MVP | None; see D-30 | LLM-first | Deterministic | No natural-language specs | 🟡 |
 | D-18 | Data location | `data/` in repo (gitignored, `QA_SENTINEL_HOME`), profiles in `config/targets/` | `~/.qa-sentinel` | Self-contained | Risk of committing evidence | 🟡 |
@@ -2022,7 +2061,7 @@ Unchanged and re-verified: all 32 register entries are Designed (31) or not clai
 | D-33 | CLI binary name | `qa-sentinel` everywhere (including `design_system.md`) | `sentinel`, `qas` | Avoids npm name clash | Longer to type | 🟡 |
 | D-34 | NFR-011 scope | Minimal deps for core/CLI/runner/reporter; dashboard deps isolated | Blanket rule | Honest | Separate supply chain | 🟡 |
 | D-35 | Roles document name | `AGENT_ROLES.md` | Keep `agents.md`; add `CLAUDE.md` | Avoids `AGENTS.md` auto-load | Fresh-session check pending (R-07) | ✅ directive |
-| D-36 | Guard modes and release labelling | `full` (L1+L2, default) vs `l1_only` (explicit `--guard l1-only`); unqualified 0.1 requires `full` with **AC-22, AC-38, AC-39, AC-46 and AC-49 passed**; otherwise a **0.1-preview** that claims no containment; no silent downgrade; traffic-class coverage table in `architecture.md` §7.9 | Ship 0.1 L1-only with a footnote; make L2 optional | Directive from review: no equivalent-containment claim without tests | Possible delay or preview-only release; AC-38 needs independent OS-level observation (Q-25) | 🟡 directive (revised) |
+| D-36 | Guard modes and release labelling | `full` (L1+L2, default) vs `l1_only` (explicit `--guard l1-only`). The unqualified 0.1 requires **AC-22, AC-38, AC-39, AC-46 and AC-49 to pass and is blocked if any remains unpassed**. A **0.1-preview** (l1_only) is permitted only when AC-38, AC-39 or AC-49 cannot be passed **and** AC-22, AC-46 and every other preview criterion have passed **and** the owner approves (Q-24); if AC-22 or AC-46 is unpassed nothing ships. A preview claims no containment, shows AC-38/39/49 as not evaluated, and implies nothing about worker denial or worker-WebSocket control beyond recorded results. No silent downgrade; coverage table in `architecture.md` §7.9; conditions in §17 | Ship 0.1 L1-only with a footnote; make L2 optional; allow a preview whenever L2 fails AC-39 only | Directive from review: no equivalent-containment claim without tests; AC-38 and AC-49 are equally mandatory | Possible delay or no release; AC-38 and AC-49 need independent system-wide observation (Q-25) | 🟡 directive (revised)
 | D-37 | Traces | Off by default for every run; `--trace` opt-in; **authenticated traces refused in Release 0.1**; unauthenticated opt-in traces `restricted`, `not_redacted`, encrypted, 7 days, never exported | Traces on failure; claim redaction of traces | Traces cannot be reliably redacted | Less debugging data on authenticated targets (R-24); tested handling strategy needed before ever enabling (Q-26) | 🟡 directive |
 | D-38 | Redaction vs encryption | Separate `redactionStatus` and `encrypted`; exact-value secret-removal claims (AC-19/32, GR-16) cover **only `redacted` text artifacts**, DB, logs, reports; screenshots are `partially_redacted` with no claim (D-44); AC-33 is storage-only | One combined "protected" notion | Prevent false assurance | More labels to maintain and display | 🟡 directive (revised) |
 | D-39 | Audit-only definition | No intentional, known state-changing actions; **not** state immutability; GET side effects, Set-Cookie sessions, read-only POST side effects, background work stated; every report carries the statement | "No mutations" wording | Accurate; avoids overclaiming | Users must read the limitation; fixture needs a state-changing GET (AC-41) | 🟡 directive |
@@ -2071,7 +2110,12 @@ All resolutions are **Designed**; none is Implemented or Tested.
 | F3-5c CI pre-approved workspace | Resolved as interim (D-42); mechanism **open** (Q-16) |
 | F3-5d Append-only tombstones | Resolved (D-41, AC-43) |
 
-## 5. Work completed (revision 5, then revision 4, then revision 3)
+## 5. Work completed (revision 6, then 5, 4, 3)
+
+**Revision 6**
+
+- ✅ Release 0.1 / 0.1-preview conditions made identical across Brain §5, prd, architecture §7.7/§7.9/§17/GR-29, design_system and the checklist; regression checks added; git description updated to three commits.
+- ✅ Fresh cross-document review (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command by this session.
 
 **Revision 5**
 
@@ -2099,21 +2143,29 @@ All resolutions are **Designed**; none is Implemented or Tested.
 - ✅ Fresh cross-document review (§6).
 - ✅ Constraints respected at the time: Phase 1 not started; nothing installed; no git (the repository appeared later, created by you); no code; no real target; no other project touched.
 
-## 6. Cross-review results (revision 5)
+## 6. Cross-review results (revision 6)
 
-**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with revision 5 checks and re-run across all seven documents and the folder: everything from the revision 4 review (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers and DNS, approval-list coverage, filesystem safety) plus: the documented git history against the actual repository (two commits, parent link, author and committer versus `Co-Authored-By`, checked-out branch); no "one commit" wording in live text; the §1 table labelling and its absence of independent-review claims; the architecture row's §7.10 and revision 4 additions; no document claiming worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed; and AC-22, AC-46, AC-38, AC-39 and AC-49 not marked passed. This is a script check, **not** an independent review.
+**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with release-condition regression checks and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, approval-list coverage, git description against the real repository, filesystem safety). This is a script check, **not** an independent review.
 
-**Revision 4 run (recorded in commit `4aa540c`):** 119 checks, 0 failed.
+**Revision 5 run:** 130 checks, 0 failed (`7863d3a`).
 
-**Revision 5, first run of the extended script: 130 checks, 1 failed.** The failure was a real wording ambiguity, not a script defect: the Release 0.1 row in `architecture.md` §17 read "with AC-22, AC-38, AC-39, AC-46 and AC-49 passed", which could be taken as a present claim. It now reads "required to pass (each currently unpassed)". No requirement or criterion changed.
+**New release-condition regression checks (revision 6):**
+- No remaining "only if L2 fails" / "if the egress layer fails" wording in any live document (the old, incomplete condition).
+- The rule "the unqualified 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 is unpassed" appears in Brain §5, the prd release row, the prd usable test, architecture §17 and D-36.
+- The prd and architecture preview rows name the blocker set (AC-38, AC-39 or AC-49), require AC-22 and AC-46 to have passed, and require owner approval; architecture §17 carries five numbered preview conditions; Brain, prd FR-019, D-36 and Q-24 agree with them, including that nothing ships if AC-22 or AC-46 is unpassed.
+- AC-44, FR-019, GR-29, the §7.9 mode row, the release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated in a preview, and AC-44 forbids implying that worker denial has been tested or that worker-originated WebSockets are controlled.
+- No line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets; no preview line mentions workers without a limiting qualifier; every line naming the 0.1-preview carries a conditioning qualifier.
+- **No acceptance criterion is weakened:** AC-22, AC-39, AC-46 and AC-49 are byte-identical to their revision 5 text; AC-38 differs only by the added clause "(like AC-39 and AC-49)"; AC-44 only gained requirements.
 
-**Mutation test of the new checks.** Six planted regressions: author/co-author distinction dropped; "one commit" wording restored; "Worker denial is tested" added; "AC-46 passed" added; an independent-review claim added to §1; the §1 label reverted to "rev. 3". The first pass missed two of them because of the test harness and one scope gap: the harness copies the folder without `.git`, which skipped the whole git block (including its text-only checks), and the one-commit check did not scan the checklist header. The text-only checks were moved out of the git block and the scope widened; every planted regression is then caught. No check was weakened.
+**Revision 6, first run: 144 checks, 2 failed.** Both hits were one real imprecision in `architecture.md` §17: the sentence "The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result" read like a free choice, and the requirement list used present-tense "passes". It now says a preview is **not** an alternative route to the five criteria, that it is permitted only under the conditions below, and that the decision is taken from recorded acceptance results. No criterion changed.
 
-**Final run: 130 checks, 0 failed.**
+**Mutation test.** Nine planted regressions were each caught: the old "only if L2 fails AC-39" preview row restored; AC-46 dropped from the preview row; the "nothing ships" rule dropped from Brain; a line saying the preview confirms worker denial is tested; AC-49 dropped from the architecture preview blocker; the blocked-if-any rule dropped from the prd 0.1 row; the worker non-implication dropped from AC-44; AC-46 weakened; a line saying the preview gives full containment.
+
+**Final run: 144 checks, 0 failed.**
 
 ```
 INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
 INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
 INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
 PASS  no stale term: target_attested
@@ -2126,6 +2178,7 @@ PASS  no stale term: `tombstone?`
 PASS  no stale term: Release 0.1 ships with L1
 PASS  no stale term: revision 3, pending approval
 PASS  no stale term: revision 4, pending approval
+PASS  no stale term: revision 5, pending approval
 PASS  no stale term: revision 2
 PASS  no stale term: Non-interactive and CI use is unresolved
 PASS  no stale term: status (completed | partial | aborted)
@@ -2183,7 +2236,7 @@ PASS  evidence rows immutable, events append-only, no mutable tombstone field
 PASS  AC-42 present in prd, design_system, arch register
 PASS  no stale phase refs (checklist may quote them only in history)
 PASS  release names present in prd and arch
-PASS  all seven docs say revision 5 in their status line
+PASS  all seven docs say revision 6 in their status line
 PASS  architecture Run model lists the five statuses and terminalReason
 PASS  all nine terminalReason values defined in architecture §4
 PASS  every `ends the run X` names one of the four terminal statuses
@@ -2239,18 +2292,31 @@ PASS  revision 5 summary exists, is documentation-only, and keeps the blockers u
 PASS  no document claims worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed
 PASS  no document marks AC-22, AC-46, AC-38, AC-39 or AC-49 as passed
 PASS  the five blockers are still described as unpassed in prd and architecture
-PASS  actual git history matches the documented two commits, parent link, author=committer=user, Claude only as Co-Authored-By trailer, HEAD on `changes`
+PASS  no remaining 'preview only if L2 fails' wording (the old, incomplete condition)
+PASS  unqualified 0.1 is blocked if any of the five is unpassed: Brain §5, prd release row, prd usable test, architecture §17, D-36
+PASS  prd and architecture preview rows: blocker is AC-38/39/49, AC-22 and AC-46 required, owner approval
+PASS  architecture §17 defines five numbered preview conditions covering blocker, L1 criteria, owner, l1_only and wording
+PASS  preview conditions agree across Brain, prd FR-019, checklist D-36/Q-24 (blocker set, L1 criteria, owner, nothing ships when AC-22/AC-46 unpassed)
+PASS  AC-44 shows AC-38, AC-39 and AC-49 as not evaluated and forbids implying worker denial was tested or worker WebSockets are controlled
+PASS  FR-019, GR-29, §7.9 mode row, release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated
+PASS  no preview line mentions workers without a limiting qualifier
+PASS  no line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets
+PASS  every line naming the 0.1-preview carries a conditioning qualifier
+PASS  Q-24 and D-36 are marked revised and keep the Phase 2 owner decision
+PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
+PASS  AC-44 only gained requirements (every revision 5 clause still present)
+PASS  actual git history matches the documented three commits, parent links, author=committer=user, Claude only as Co-Authored-By trailer, all branches at 7863d3a, HEAD on `main`
 PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
 PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
-PASS  README and the checklist header, Q-01 and §11 agree on both commit ids
+PASS  checklist header, Q-01 and §11 agree on all three commit ids
 PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
 PASS  config/targets, tests, reports are still empty
 PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
 
-TOTAL: 130 checks, 0 failed
+TOTAL: 144 checks, 0 failed
 ```
 
-**Semantic review (manual re-read).** §1, §2, the header, Q-01 and §11 now describe the same git history: `main` at `ddbb7c6`, `changes` at `4aa540c` with parent `ddbb7c6`, both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as a `Co-Authored-By` trailer; revision 5 uncommitted. The deliverables table says "cross-checked by script", marks nothing approved and attributes independent review only to your report about `4aa540c`. The architecture row lists §7.10 and the other revision 4 additions. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
+**Semantic review (manual re-read).** The release rule now reads identically in Brain §5, prd (F3, FR-019, release table, usable test, AC-38, AC-44), architecture (§7.7, §7.9, §17, GR-29), design_system and the checklist (D-15, D-36, Q-24): all five criteria are required; any unpassed one blocks the unqualified 0.1; a preview needs an L2/DNS blocker, passed L1 criteria including AC-46, owner approval, `l1_only` mode and bounded wording. One consequence is stated, not hidden: if AC-22 or AC-46 is unpassed, nothing ships at all, because the preview rests on L1. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
 
 **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
 
@@ -2272,7 +2338,7 @@ No security guarantee is implemented or tested. Anything in the documents that r
 
 | ID | Question | Default if unanswered | Needed by | Status |
 |----|----------|-----------------------|-----------|--------|
-| Q-01 | Git already exists (created outside this session): `main` at `ddbb7c6`, `changes` at `4aa540c` (revision 4), both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 5 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a`; `main`, `changes` and both `origin` branches at `7863d3a`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 6 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
 | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
 | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
 | Q-04 | Allow a login `POST` in audit mode? | No; pre-provisioned session | Phase 2 | ❓ |
@@ -2295,7 +2361,7 @@ No security guarantee is implemented or tested. Anything in the documents that r
 | Q-21 | Who may attest read-only POST rules; is `custom-allowlist` needed in 0.1? | Profile owner; GraphQL only in 0.1 | Phase 3 | ❓ |
 | Q-22 | Confirm the reordered release train (authorization last, Release 1.0) | As written | Phase 0 approval | ❓ |
 | Q-23 | Is L2 mandatory for Release 0.1? | **Resolved by D-36**: mandatory for the unqualified 0.1; an L1-only run is only a labelled preview | — | ✅ (confirm via D-36) |
-| Q-24 | If L2 fails AC-39 at the end of Phase 2, should a labelled 0.1-preview be released at all, or should 0.1 be held? | Owner decides at that point; no preview without approval | Phase 2 | ❓ **new** |
+| Q-24 | If the unqualified 0.1 is blocked at the end of Phase 2 because AC-38, AC-39 or AC-49 cannot be passed (and AC-22, AC-46 and the other preview criteria have passed), should a labelled 0.1-preview in `l1_only` mode be released at all, or should 0.1 be held? (If AC-22 or AC-46 is unpassed nothing ships.) | Owner decides at that point; no preview without approval | Phase 2 | ❓ revised |
 | Q-25 | How is AC-38's independent, system-wide outbound observation (packet capture or an isolated namespace, covering TCP, UDP, QUIC **and DNS**, for all run processes and resolver processes acting for them) done on each OS? Is it practical without privileged tools? Per-process socket listing is not sufficient for DNS (§7.10) | Decide in the Phase 2 spike; if impractical, AC-38 and AC-49 stay unpassed and 0.1 is not unqualified | Phase 2 | ❓ **revised** |
 | Q-26 | Is there any acceptable tested strategy for authenticated traces (strip payloads, screenshots-only), or should they never exist? | None; authenticated traces stay unavailable | post-1.0 | ❓ **new** |
 | Q-27 | Should an `independently_attested` mechanism (verifiable signed build attestation) ever be designed? | No; the basis name is reserved only | post-1.0 | ❓ **new** |
@@ -2357,16 +2423,16 @@ After approval, **Phase 1 still requires its own plan and approval** before any 
 
 - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
 - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
-- **Verified (this folder, revision 5):** Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. On both commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 5 edits are uncommitted working-tree changes on `changes`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+- **Verified (this folder, revision 6):** Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. On all three commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 6 edits are uncommitted working-tree changes on `main`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
 - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
 <!-- END FILE: PHASE_0_CHECKLIST.md -->
 
-<!-- BEGIN FILE: README.md sha256=b87bb0aa8902a08b08eff64669330a2decb7b12aafffee4745b732d074f3e910 -->
+<!-- BEGIN FILE: README.md sha256=48edd7415c1b0eeba7bdfc8d804c6b8ea153170535b0ca58a885e4b1895a63de -->
 # qa-sentinel
 
 Independent, evidence-first QA auditor for any application. Standalone product; not connected to any existing project.
 
-**Status: Phase 0 (foundation documents), revision 5, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
+**Status: Phase 0 (foundation documents), revision 6, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
 
 ## Foundation documents
 
@@ -2390,231 +2456,356 @@ Further folders (`packages/`, `fixtures/`, `specs/`, `data/`) are defined in `ar
 
 ---
 
-## 11. Unified diff, revision 4 to revision 5 (documents only)
+## 11. Unified diff, revision 5 to revision 6 (documents only)
 
-Context of two lines per hunk. `a/` is the revision 4 snapshot (identical to commit `4aa540c`), `b/` is the current file.
+Context of two lines per hunk. `a/` is the revision 5 snapshot (identical to commit `7863d3a`), `b/` is the current file.
 
 ~~~~diff
---- a/Brain.md (revision 4)
-+++ b/Brain.md (revision 5)
+--- a/Brain.md (revision 5)
++++ b/Brain.md (revision 6)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Brain
  
--> Status: Phase 0 draft, revision 4, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
-+> Status: Phase 0 draft, revision 5, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+-> Status: Phase 0 draft, revision 5, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
++> Status: Phase 0 draft, revision 6, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
  
  ## 1. Vision
---- a/prd.md (revision 4)
-+++ b/prd.md (revision 5)
+@@ -67,5 +67,5 @@
+ Authorization is deliberately last: the riskiest capability ships when the guard, evidence and verification layers already exist and have been tested. Before 1.0 there is no code path that allows a non-safe request other than profile-approved, parsed read-only entries. Details: `architecture.md` §17.
+ 
+-Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. If the egress layer fails, only a clearly labelled **0.1-preview** with incomplete guard coverage may exist; it must not claim equivalent containment (`architecture.md` §7.9, §17).
++Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. **Release 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 remains unpassed.** A clearly labelled **0.1-preview** (L1 only, incomplete guard coverage, no containment claim) is permitted only when the blocker is the egress or DNS layer (AC-38, AC-39 or AC-49) **and** AC-22, AC-46 and every other preview criterion have passed **and** the owner approves; if AC-22 or AC-46 is unpassed, neither a 0.1 nor a preview ships (`architecture.md` §7.9, §17).
+ 
+ Later horizons, not committed: additional runners (API contract, accessibility, visual regression), other AI-tool adapters, CI gating, comparison across builds, team sharing of reports.
+--- a/prd.md (revision 5)
++++ b/prd.md (revision 6)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Product Requirements
  
--> Status: Phase 0 draft, revision 4, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
-+> Status: Phase 0 draft, revision 5, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
+-> Status: Phase 0 draft, revision 5, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
++> Status: Phase 0 draft, revision 6, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
  >
  > **Assurance language.** Requirements describe what the product must do. A protection is only called a *guarantee* once the related acceptance criteria pass (**Tested**) and, for security claims, an independent review exists (**Independently verified**). Until then it is **Designed**. See `architecture.md` §0.
---- a/design_system.md (revision 4)
-+++ b/design_system.md (revision 5)
+@@ -40,5 +40,5 @@
+ | F1 | Target profiles (multi-project, stack-neutral) with policy lock | Must | 0.1 |
+ | F2 | Audit engine (discovery, planning, execution) on Playwright | Must | 0.1 |
+-| F3 | Default-deny network isolation (L1 guard, L2 egress proxy); L2 must pass its tests for the unqualified Release 0.1, otherwise only a labelled L1-only preview | Must | 0.1 |
++| F3 | Default-deny network isolation (L1 guard, L2 egress proxy); the unqualified Release 0.1 requires AC-22, AC-38, AC-39, AC-46 and AC-49 to pass; a labelled L1-only preview is permitted only under the conditions in `architecture.md` §17 | Must | 0.1 |
+ | F4 | Evidence capture and privacy-first lifecycle | Must | 0.1 |
+ | F5 | Finding model with check-specific confirmation policies | Must | 0.1 |
+@@ -77,5 +77,5 @@
+ - FR-017. A budget (pages, requests, duration) is enforced per run; exceeding it ends the run `partial`.
+ - FR-018. A user can abort a running audit; the run is left consistent and marked `aborted`.
+-- FR-019. `l1_only` mode exists only through the explicit option `--guard l1-only`. Runs in this mode are labelled in the manifest, CLI, JSON and reports as a preview with incomplete guard coverage, make no containment or outbound-traffic claim, and show AC-38 as not evaluated. If L2 fails its acceptance tests, only a labelled 0.1-preview in this mode may be released; it is never described as equivalent to `full` mode.
++- FR-019. `l1_only` mode exists only through the explicit option `--guard l1-only`. Runs in this mode are labelled in the manifest, CLI, JSON and reports as a preview with incomplete guard coverage, make no containment or outbound-traffic claim, and show AC-38, AC-39 and AC-49 as not evaluated. A 0.1-preview in this mode may be released only under the conditions in `architecture.md` §17 (the unqualified 0.1 is blocked because AC-38, AC-39 or AC-49 cannot be passed, while AC-22, AC-46 and every other preview criterion pass, with owner approval); it is never described as equivalent to `full` mode.
+ 
+ **Execution and honesty**
+@@ -170,6 +170,6 @@
+ | Release | Phases | Contents (see `architecture.md` §17) | Acceptance criteria |
+ |---------|--------|---------------------------------------|---------------------|
+-| **0.1 Audit CLI** (first usable; requires AC-22, AC-38, AC-39, AC-46 and AC-49, each currently unpassed) | 1–3 | F1–F12 | AC-01–09, 14, 15, 18–29, 31–35, 38–49 |
+-| 0.1-preview (only if L2 fails AC-39) | 1–3 | F1–F12 in `l1_only` mode, labelled "guard coverage incomplete" | The 0.1 criteria **except AC-38, AC-39 and AC-49**, which cannot pass in this mode; AC-46 still applies; no containment claim |
++| **0.1 Audit CLI** (first usable; requires AC-22, AC-38, AC-39, AC-46 and AC-49 to pass, each currently unpassed; **blocked if any remains unpassed**) | 1–3 | F1–F12 | AC-01–09, 14, 15, 18–29, 31–35, 38–49 |
++| 0.1-preview (permitted only if AC-38, AC-39 or AC-49 cannot be passed **and** AC-22, AC-46 and all other preview criteria have passed, with owner approval; conditions in `architecture.md` §17) | 1–3 | F1–F12 in `l1_only` mode, labelled "guard coverage incomplete" | The 0.1 criteria **except AC-38, AC-39 and AC-49**, which cannot pass in this mode and are shown as not evaluated; **AC-22 and AC-46 still apply and must have passed**; no containment claim, and no wording implying worker denial or worker-WebSocket control beyond the recorded AC-22/AC-46 results |
+ | 0.2 Fix verification | 4 | F13 | AC-12, 13, 30 |
+ | 0.3 Dashboard | 5 | F14 | AC-17, 36 |
+@@ -177,5 +177,5 @@
+ | **1.0 Authorization** (MVP complete) | 7 | F16 | AC-10, 11, 37 |
+ 
+-**Release 0.1 "usable" test:** a new user can register a fixture target, approve its policy, run an audit from the terminal and from the Claude Code command kit, read an accessible HTML report in which every finding links to evidence (or a tombstone), and see which checks did not run, the guard mode and coverage, and the audit-only limitation — with no dashboard, MCP server, verification or grant code present. An unqualified 0.1 additionally requires L2 to pass AC-39 and AC-38; otherwise only the labelled 0.1-preview exists.
++**Release 0.1 "usable" test:** a new user can register a fixture target, approve its policy, run an audit from the terminal and from the Claude Code command kit, read an accessible HTML report in which every finding links to evidence (or a tombstone), and see which checks did not run, the guard mode and coverage, and the audit-only limitation — with no dashboard, MCP server, verification or grant code present. An unqualified 0.1 additionally requires AC-22, AC-38, AC-39, AC-46 and AC-49 to pass and is blocked if any remains unpassed; a labelled 0.1-preview exists only under the conditions in `architecture.md` §17.
+ 
+ ### Acceptance criteria
+@@ -218,5 +218,5 @@
+ - AC-36. The API accepts connections only on loopback, requires the token, validates `Host`/`Origin`, and rejects writes without a CSRF token.
+ - AC-37. Grants enforce expiry, use limits and `policyHash` binding; revocation applies before the next request; `GrantEvent`s form an unbroken chain.
+-- AC-38. In `full` mode with `dnsMode: pinned` (or a loopback-only target), while the fixture exercises every traffic class adversarially (page requests, service workers, WebSockets, WebRTC, QUIC, redirects, reserved-TLD canary hostnames in links, fetches and `dns-prefetch` hints, a canary server outside scope; worker traffic only when `workers: allow`), independent system-wide observation at the operating-system level (packet capture or an isolated namespace covering TCP, UDP, QUIC and DNS, for every process the run starts and for resolver processes acting on their behalf, not the guard's own logs) shows connections only to the in-scope target and loopback and **no DNS query for any canary or other name leaving the machine**. A run with `dnsMode: system` cannot pass this criterion and is reported "DNS via system resolver: not covered". **If no independent observation exists, AC-38 is not passed and the unqualified Release 0.1 is blocked.** In `l1_only` mode AC-38 is reported as *not evaluated* and can never pass.
++- AC-38. In `full` mode with `dnsMode: pinned` (or a loopback-only target), while the fixture exercises every traffic class adversarially (page requests, service workers, WebSockets, WebRTC, QUIC, redirects, reserved-TLD canary hostnames in links, fetches and `dns-prefetch` hints, a canary server outside scope; worker traffic only when `workers: allow`), independent system-wide observation at the operating-system level (packet capture or an isolated namespace covering TCP, UDP, QUIC and DNS, for every process the run starts and for resolver processes acting on their behalf, not the guard's own logs) shows connections only to the in-scope target and loopback and **no DNS query for any canary or other name leaving the machine**. A run with `dnsMode: system` cannot pass this criterion and is reported "DNS via system resolver: not covered". **If no independent observation exists, AC-38 is not passed and the unqualified Release 0.1 is blocked.** In `l1_only` mode AC-38 (like AC-39 and AC-49) is reported as *not evaluated* and can never pass.
+ - AC-39. In `full` mode the browser can reach only `allowedOrigins` host:port through the egress proxy: direct IPs, other ports and non-allowlisted hosts are refused for HTTP and for HTTPS (CONNECT); loopback targets work with the bypass override; QUIC/HTTP3 is disabled; a canary server outside the scope never receives a connection.
+ - AC-40. `--trace` on a target with an auth profile is refused (exit 2) and no trace artifact exists after an authenticated run; an opt-in trace from an unauthenticated run is labelled `not_redacted`, is `restricted` and encrypted, is absent from reports, and the report states that trace contents are not redacted.
+@@ -224,5 +224,5 @@
+ - AC-42. The self-contained HTML report passes an automated axe run with zero serious or critical violations on pages generated from the clean fixture and from a fixture with findings; is fully keyboard-operable (including any expandable sections); conveys no information by color alone (shapes and labels per `design_system.md` §8); meets the contrast values in `design_system.md` §2; stays readable at 200% zoom and 320px width; and prints legibly. A manual keyboard and screen-reader pass is recorded.
+ - AC-43. Tombstoning never updates or deletes an evidence row or an earlier evidence event; the evidence-event hash chain verifies after tombstones, and `doctor` detects a removed or altered tombstone.
+-- AC-44. In `l1_only` mode the report header, CLI summary and JSON carry `guardMode: l1_only` and the statement "guard coverage incomplete; not equivalent to full mode"; no output in this mode claims containment, isolation or restricted outbound traffic; AC-38 is shown as not evaluated; and running without `--guard l1-only` while L2 is unavailable ends the run `errored` instead of downgrading.
++- AC-44. In `l1_only` mode the report header, CLI summary and JSON carry `guardMode: l1_only` and the statement "guard coverage incomplete; not equivalent to full mode"; no output in this mode claims containment, isolation or restricted outbound traffic; AC-38, AC-39 and AC-49 are shown as not evaluated; no output implies that worker denial has been tested or that worker-originated WebSockets are controlled beyond the recorded AC-22 and AC-46 results; and running without `--guard l1-only` while L2 is unavailable ends the run `errored` instead of downgrading.
+ - AC-45. In a fresh workspace without a matching human `ProfileApproval`, `audit` (including in CI mode) exits 3 with an explanatory message; no flag, environment variable or repository file bypasses this in Release 0.1.
+ - AC-46. With the default `workers: deny`, adversarial fixture pages try `new Worker(url)`, module workers, `SharedWorker`, `blob:` and `data:` workers, workers created from same-origin iframes, `about:blank` and `srcdoc` frames, nested workers and `importScripts`, and, from any worker that starts, a WebSocket to an allowed origin. **Pass:** no worker executes and the fixture server's own log shows no WebSocket upgrade from any of them (independent of the guard); every denial is recorded. If any worker starts, AC-46 fails. With `workers: allow` the test instead asserts the run is labelled `workers-allowed`, worker traffic is reported uncontrolled and no worker-WebSocket claim appears. **Until this is executed against a recorded commit it is unpassed, the unqualified Release 0.1 is blocked, and no release material may state or imply that worker-originated WebSockets are controlled.**
+--- a/design_system.md (revision 5)
++++ b/design_system.md (revision 6)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Design System
  
--> Status: Phase 0 draft, revision 4, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
-+> Status: Phase 0 draft, revision 5, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
+-> Status: Phase 0 draft, revision 5, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
++> Status: Phase 0 draft, revision 6, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
  
  ## 1. Identity
---- a/architecture.md (revision 4)
-+++ b/architecture.md (revision 5)
+@@ -104,5 +104,5 @@
+ - **VerificationPanel** — claim (actor, build, commit), result, the **identity basis and confidence** (`target_reported` moderate — reported by the target, not proof · `operator_asserted` low — a statement · `surfaceFingerprint` low — fallback only; `independently_attested` reserved), always shown with the result and never as a bare "verified"; the gating checks (`freshContext`, `buildChanged` on the same basis) each with pass/fail/unknown and a short explanation of limits, plus the informational `sameActorAsClaim`.
+ - **AssuranceBadge** — Designed / Implemented / Tested / Independently verified, with text and a distinct shape per level; links to the Guarantee Register entry and the commit for Tested and above. Never colored as "success" below Tested.
+-- **GuardCoveragePanel** — the guard mode (`full` / `l1_only`), then per traffic class (WebSocket, worker creation and worker WebSocket, WebRTC, service workers, downloads, proxy, schemes, DNS mode) `active`, `unavailable`, `untested` or `uncontrolled` (`workers: allow`, `dnsMode: system`), with the run's `websocket-restricted` and "guard coverage incomplete" notices; in `l1_only` it shows "not equivalent to full mode" and AC-38 as not evaluated.
++- **GuardCoveragePanel** — the guard mode (`full` / `l1_only`), then per traffic class (WebSocket, worker creation and worker WebSocket, WebRTC, service workers, downloads, proxy, schemes, DNS mode) `active`, `unavailable`, `untested` or `uncontrolled` (`workers: allow`, `dnsMode: system`), with the run's `websocket-restricted` and "guard coverage incomplete" notices; in `l1_only` it shows "not equivalent to full mode" and AC-38, AC-39 and AC-49 as not evaluated.
+ - **EvidenceClassBadge / RedactionBadge / RevealGate** — `public` vs `restricted`; a separate redaction badge (`redacted`, `partially redacted`, **`NOT REDACTED`** for traces and downloads; screenshots always read `partially redacted` with a visible "masks configured elements only; may still contain secrets" note and never "secret-free" or "sanitized") and a separate encryption lock; restricted items show retention expiry and a "Reveal" action that confirms and appends an access event.
+ - **TombstoneCard** — expired evidence: hash, kind, deletion time and reason, so a finding still shows that evidence existed.
+--- a/architecture.md (revision 5)
++++ b/architecture.md (revision 6)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Architecture
  
--> Status: Phase 0 draft, revision 4, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
-+> Status: Phase 0 draft, revision 5, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+-> Status: Phase 0 draft, revision 5, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
++> Status: Phase 0 draft, revision 6, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
  
  ## 0. How to read this document (assurance language)
-@@ -582,5 +582,5 @@
- | Release | Phases | Contents | Not included |
+@@ -259,5 +259,5 @@
+ 
+ 1. **L1 — in-browser guard.** A context-level request interceptor (`context.route`) installed before any page loads checks origin, scheme, method, path and body policy for every request, aborts violations, and records them. WebSocket routing, service-worker blocking, download denial and permission denial are configured on the same context.
+-2. **L2 — egress proxy.** The browser is launched with all traffic routed to a QA Sentinel loopback proxy (Node standard library) that refuses any destination not in `allowedOrigins` (host and port), including direct IPs and other ports. For HTTPS it sees only the destination (CONNECT), not the method, so **method enforcement stays in L1**; L2 provides a browser-wide default-deny on destinations that does not depend on Playwright routing, which covers service workers, worker-originated requests and anything routing misses at the TCP level. Chromium bypasses proxies for loopback by default, so loopback targets need the bypass override. Name resolution is defined in §7.10: in `dnsMode: pinned` the proxy never calls a resolver. These details are to be confirmed in the Phase 2 spike. Chromium may also use QUIC/HTTP3 over UDP, which a TCP proxy does not see; QUIC is disabled at launch (to be verified by AC-39 and AC-38). **Acceptance gate:** L2 counts toward Release 0.1's containment claim only if it passes AC-39 and AC-38. If it does not, there is no unqualified Release 0.1: only a clearly labelled **0.1-preview** in L1-only mode may be released, with incomplete guard coverage reported and no equivalent-containment claim (§7.9).
++2. **L2 — egress proxy.** The browser is launched with all traffic routed to a QA Sentinel loopback proxy (Node standard library) that refuses any destination not in `allowedOrigins` (host and port), including direct IPs and other ports. For HTTPS it sees only the destination (CONNECT), not the method, so **method enforcement stays in L1**; L2 provides a browser-wide default-deny on destinations that does not depend on Playwright routing, which covers service workers, worker-originated requests and anything routing misses at the TCP level. Chromium bypasses proxies for loopback by default, so loopback targets need the bypass override. Name resolution is defined in §7.10: in `dnsMode: pinned` the proxy never calls a resolver. These details are to be confirmed in the Phase 2 spike. Chromium may also use QUIC/HTTP3 over UDP, which a TCP proxy does not see; QUIC is disabled at launch (to be verified by AC-39 and AC-38). **Acceptance gate:** L2 counts toward Release 0.1's containment claim only if AC-39, AC-38 and AC-49 pass. If it does not, there is no unqualified Release 0.1: a clearly labelled **0.1-preview** in L1-only mode may be released only under the conditions in §17, with incomplete guard coverage reported and no equivalent-containment claim (§7.9).
+ 3. **L3 — OS isolation (optional, post-MVP).** Run the browser in a container or network namespace or as a dedicated OS user with an egress firewall allowlist. Recommended for authorized (A2/A3) runs against non-local targets and for high-assurance use.
+ 
+@@ -303,5 +303,5 @@
+ ### 7.7 Fail closed
+ 
+-In the default `full` guard mode every required layer (L1 and L2) must install and pass the start-of-run self-check (a probe request to an out-of-scope origin, a probe non-safe request, a probe WebSocket, a probe worker creation that must be denied, a probe to a non-proxied destination). If any fails, the run ends `errored` with `terminalReason: guard_unavailable` or `guard_probe_failed` (§4); **it never silently downgrades**. `l1_only` is selected only by the explicit option `--guard l1-only`, is recorded in the manifest, and is used for the labelled preview (§7.9). In either mode, a traffic class that is unavailable or untested is recorded in `guardCoverage` and the report prints "guard coverage incomplete". A run is never described as contained unless its mode is `full` **and** the Guarantee Register shows the relevant entries Tested; reports print the register's assurance levels.
++In the default `full` guard mode every required layer (L1 and L2) must install and pass the start-of-run self-check (a probe request to an out-of-scope origin, a probe non-safe request, a probe WebSocket, a probe worker creation that must be denied, a probe to a non-proxied destination). If any fails, the run ends `errored` with `terminalReason: guard_unavailable` or `guard_probe_failed` (§4); **it never silently downgrades**. `l1_only` is selected only by the explicit option `--guard l1-only`, is recorded in the manifest, and is used only for a labelled preview that meets the §17 conditions, or for local experimentation (§7.9). In either mode, a traffic class that is unavailable or untested is recorded in `guardCoverage` and the report prints "guard coverage incomplete". A run is never described as contained unless its mode is `full` **and** the Guarantee Register shows the relevant entries Tested; reports print the register's assurance levels.
+ 
+ ### 7.8 Known limits
+@@ -320,5 +320,5 @@
+ |------|--------|----------|-------------------|
+ | **`full`** (default) | L1 + L2 (+ L3 optional) | Release 0.1 and later | Allowed per traffic class **only** where the Guarantee Register shows that class Tested |
+-| **`l1_only`** (explicit `--guard l1-only`) | L1 only | A clearly labelled **0.1-preview** if L2 fails AC-39; local experimentation | **None.** Reports state "L1-only preview: guard coverage incomplete; containment is not equivalent to full mode", and AC-38 is shown as *not evaluated* |
++| **`l1_only`** (explicit `--guard l1-only`) | L1 only | A clearly labelled **0.1-preview** only under the §17 conditions; local experimentation | **None.** Reports state "L1-only preview: guard coverage incomplete; containment is not equivalent to full mode", and AC-38, AC-39 and AC-49 are shown as *not evaluated* |
+ 
+ Traffic-class coverage by mode. Every entry is **Designed** today; "Required test" is what must pass before the claim may be made.
+@@ -583,5 +583,5 @@
  |---------|--------|----------|--------------|
--| **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 passed; check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
-+| **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 required to pass (each currently unpassed); check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
- | 0.1-preview (**only if L2 fails AC-39**) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38 shown as *not evaluated* |
+ | **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 required to pass (each currently unpassed); check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
+-| 0.1-preview (**only if L2 fails AC-39**) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38 shown as *not evaluated* |
++| 0.1-preview (**only under the §17 conditions**: AC-38, AC-39 or AC-49 cannot be passed, AC-22 and AC-46 have passed, owner approves) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38, AC-39 and AC-49 shown as *not evaluated* |
  | **0.2 Fix verification** | 4 | `claim-fix`, `verify`, identity bases with confidence | Dashboard, MCP, grants |
---- a/AGENT_ROLES.md (revision 4)
-+++ b/AGENT_ROLES.md (revision 5)
+ | **0.3 Dashboard** | 5 | Local dashboard and API | MCP, grants |
+@@ -590,9 +590,15 @@
+ | Post-1.0 | 8 | More target kinds, plugin interface, L2 approvals, L3 isolation guidance, optional `ai-assist`, possible authenticated-trace strategy | — |
+ 
+-**What an unqualified Release 0.1 requires.** L2 passes AC-39; AC-38 is passed with independent observation covering DNS (§7.9, §7.10); worker denial passes AC-46; DNS behavior passes AC-49; each containment claim is limited to traffic classes whose register entries are Tested; every other 0.1 acceptance criterion in `prd.md` §8 passes with a recorded run. The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result and recorded as a decision.
++**What an unqualified Release 0.1 requires.** **All five** of AC-22, AC-38, AC-39, AC-46 and AC-49 must pass, and it is blocked if any one remains unpassed. In detail: L2 must pass AC-39; AC-38 must be passed with independent observation covering DNS (§7.9, §7.10); worker denial must pass AC-46; DNS behavior must pass AC-49; each containment claim is limited to traffic classes whose register entries are Tested; every other 0.1 acceptance criterion in `prd.md` §8 passes with a recorded run. A preview is **not** an alternative route to these five; it is permitted only under the conditions below. Which release is possible is decided at the end of Phase 2 from the recorded acceptance results (not from an impression of the spike) and recorded as a decision.
+ 
+ **Blocking items for the unqualified Release 0.1.** AC-22 (page, frame and service-worker coverage), AC-46 (worker denial and worker-originated WebSockets), AC-38 (independent observation including DNS), AC-39 (egress proxy) and AC-49 (DNS pinned behavior) are each currently **unpassed**. If any of them cannot be passed, the unqualified Release 0.1 does not ship and no release material may imply the corresponding capability. A worker-WebSocket or DNS capability that cannot be made reliable is documented as unavailable rather than described as partly working.
+ 
+-**If L2 fails.** There is no unqualified Release 0.1. A **0.1-preview** may ship in `l1_only` mode only if every report, CLI summary and JSON result says so (AC-44), claims no containment or outbound restriction, and shows AC-38 as not evaluated. It may not be described as equivalent to full mode. Nothing here weakens the 0.1 criteria to make them easier to pass.
++**0.1-preview conditions.** An unqualified Release 0.1 does not exist while any of AC-22, AC-38, AC-39, AC-46 or AC-49 is unpassed. A **0.1-preview** may be released only if **all** of the following hold, and the decision is recorded:
++1. **The blocker is the egress or DNS layer.** The unqualified 0.1 is blocked because one or more of **AC-38, AC-39 or AC-49** cannot be passed (the egress proxy fails, independent observation including DNS is impractical or unavailable, or the DNS design fails).
++2. **The L1 criteria have passed.** AC-22 and AC-46, and every other 0.1 criterion except AC-38, AC-39 and AC-49, have passed against a recorded commit. **If AC-22 or AC-46 is unpassed, neither a 0.1 nor a preview ships**, because the preview rests on L1 alone and AC-46 is the only mechanism for worker-originated WebSockets (L2 cannot block them, §7.3).
++3. **The owner approves** a preview (Q-24) and records the decision.
++4. **It runs only in `l1_only`**, selected explicitly. L2 and DNS pinning are not part of any preview claim.
++5. **Wording limits (AC-44).** Every report, CLI summary and JSON result states "guard coverage incomplete; not equivalent to full mode"; claims no containment, outbound restriction, DNS control or equivalent guard coverage; shows AC-38, AC-39 and AC-49 as not evaluated; and says nothing about worker denial or worker-originated WebSockets beyond the recorded AC-22 and AC-46 results (no L2 backstop is implied, and nothing is claimed for runs with `workers: allow`).
++The preview is not available merely because a criterion is hard: no acceptance criterion is weakened to make a release achievable.
+ 
+ **0.1 is usable on its own.** A developer registers a target, approves its policy, runs an audit from a terminal or from Claude Code commands, and gets a report whose every claim links to (possibly tombstoned) evidence and which states the audit-only limitation, guard mode and coverage. Because grants ship only in 1.0, Releases 0.1–0.4 contain no code path that allows a non-safe request other than profile-approved read-only entries.
+@@ -632,5 +638,5 @@
+ | GR-27 | Reports state the audit-only limitation and never imply state immutability | Designed | AC-41 |
+ | GR-28 | Identity basis and confidence are reported accurately; `target_reported` is never described as attested | Designed | AC-30 |
+-| GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38 as not evaluated | Designed | AC-44 |
++| GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38, AC-39 and AC-49 as not evaluated | Designed | AC-44 |
+ | GR-30 | The self-contained HTML report meets the accessibility criteria | Designed | AC-42 |
+ | GR-31 | Worker-originated WebSockets cannot be opened because dedicated and shared workers are denied by two independent in-browser measures. **No L2 backstop exists** (L2 cannot block a WebSocket to an allowed origin in a TLS tunnel). Not claimable with `workers: allow` | Designed | AC-46 |
+--- a/AGENT_ROLES.md (revision 5)
++++ b/AGENT_ROLES.md (revision 6)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Agent Roles
  
--> Status: Phase 0 draft, revision 4, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
-+> Status: Phase 0 draft, revision 5, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
+-> Status: Phase 0 draft, revision 5, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
++> Status: Phase 0 draft, revision 6, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
  >
  > Assurance: everything below is **Designed**, none **Implemented**, **Tested** or **Independently verified**. See `architecture.md` §0 and the Guarantee Register (§18). Module boundaries and data shapes are in `architecture.md`; principles in `Brain.md`.
---- a/PHASE_0_CHECKLIST.md (revision 4)
-+++ b/PHASE_0_CHECKLIST.md (revision 5)
+--- a/PHASE_0_CHECKLIST.md (revision 5)
++++ b/PHASE_0_CHECKLIST.md (revision 6)
 @@ -2,6 +2,6 @@
  
  > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
--> **Phase 0 status: revision 4 written and cross-reviewed. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. A git repository exists that this session did not create (your initial commit `ddbb7c6`, containing revision 3); this session ran only read-only git commands and committed nothing.**
--> Last updated: 2026-11-16 (revision 4, after the third independent review).
-+> **Phase 0 status: revision 5 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. (details in §11).**
-+> Last updated: 2026-11-16 (revision 5, after the independent review of revision 4 on branch `changes`, commit `4aa540c`).
+-> **Phase 0 status: revision 5 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. (details in §11).**
+-> Last updated: 2026-11-16 (revision 5, after the independent review of revision 4 on branch `changes`, commit `4aa540c`).
++> **Phase 0 status: revision 6 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. (details in §11).**
++> Last updated: 2026-11-16 (revision 6, after the independent review of revision 5, commit `7863d3a`).
  
  **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
-@@ -10,16 +10,31 @@
+@@ -10,5 +10,5 @@
  ## 1. Deliverables
  
--| # | File | Written | Cross-reviewed (rev. 3) | Approved |
--|---|------|---------|-------------------------|----------|
--| 1 | `Brain.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
--| 2 | `prd.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
--| 3 | `design_system.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
--| 4 | `architecture.md` | ✅ (edited; new §5.1, §7.9; §10, §11, §17, §18 rewritten) | ✅ | ⛔ awaiting you |
--| 5 | `AGENT_ROLES.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
--| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten) | ✅ | ⛔ awaiting you |
-+| # | File | Written (latest revision) | Cross-checked by script (rev. 5) | Approved |
-+|---|------|---------------------------|----------------------------------|----------|
-+| 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
-+| 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
-+| 3 | `design_system.md` | ✅ (edited; rev. 4: RunStatusBadge, Errored state, screenshot masking note, `uncontrolled` coverage state) | ✅ | ⛔ awaiting you |
-+| 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
-+| 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
-+| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 5: §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
+-| # | File | Written (latest revision) | Cross-checked by script (rev. 5) | Approved |
++| # | File | Written (latest revision) | Cross-checked by script (rev. 6) | Approved |
+ |---|------|---------------------------|----------------------------------|----------|
+ | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
+@@ -17,11 +17,23 @@
+ | 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
+ | 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
+-| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 5: §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
++| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 6: §1, §2, §5, §6, §11, D-15, D-36, Q-01, Q-24 updated) | ✅ | ⛔ awaiting you |
  | — | `README.md` | ✅ (status line) | ✅ | — |
--| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 4 bundle; not a deliverable) | ✅ | — | — |
+-| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 5 bundle; not a deliverable) | ✅ | — | — |
 -
--## 2. Revision 4: before/after change summary
-+| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 5 bundle; not a deliverable) | ✅ | — | — |
+-"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the review of revision 4 on branch `changes` (commit `4aa540c`) found the four technical findings substantially addressed and the documentation inconsistencies fixed in revision 5. No per-document independent sign-off is recorded, and no document is approved.
+-
+-## 2. Revision 5: before/after change summary
++| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 6 bundle; not a deliverable) | ✅ | — | — |
 +
-+"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the review of revision 4 on branch `changes` (commit `4aa540c`) found the four technical findings substantially addressed and the documentation inconsistencies fixed in revision 5. No per-document independent sign-off is recorded, and no document is approved.
++"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`) and revision 5 (commit `7863d3a`) found the four technical findings substantially addressed; the revision 5 review found the one release-condition inconsistency fixed in revision 6. No per-document independent sign-off is recorded, and no document is approved.
 +
-+## 2. Revision 5: before/after change summary
++## 2. Revision 6: before/after change summary
 +
-+Documentation-only. No design, requirement, acceptance criterion or register entry was changed.
++Documentation-only. No acceptance criterion, requirement, design or register assurance level was changed or weakened.
 +
-+| Review finding | Before (revision 4) | After (revision 5) |
++| Review finding | Before (revision 5) | After (revision 6) |
 +|----------------|---------------------|--------------------|
-+| **1. §11 git history** | "A git repository exists with one commit (`ddbb7c6`)" | Two commits: `main` at `ddbb7c6`; `changes` at `4aa540c` (revision 4, parent `ddbb7c6`); both on `origin`. Author and committer Gaurav Raj; Claude Sonnet 5.5 only as a `Co-Authored-By` trailer. Header, Q-01 and §11 agree; revision 5 edits are uncommitted |
-+| **2. §1 cross-review labels** | Column "Cross-reviewed (rev. 3)" | Column "Cross-checked by script (rev. 5)" with a note that this is not independent review; independent review is recorded only as you reported it for `4aa540c`; no approval implied |
-+| **3. §1 architecture description** | Mentioned §5.1 and §7.9 only | Lists §7.10 DNS and name resolution and the revision 4 additions (§4 run status and profile fields, §7.3 worker denial, §7.8, §11 screenshot limits, §17 blocking items, 32-entry register, §20); other documents' rows list their revision 4 additions |
-+| **4. Consistency check** | 119 checks | Re-run with new checks (git description, no independent-review overclaim, five blockers unpassed, no Implemented/Tested wording for worker denial, DNS containment or L2 enforcement); results in §6 |
++| **Release 0.1 preview conditions** | Several places said a 0.1-preview was available "only if L2 fails AC-39"; AC-38 and AC-49 (also mandatory L2/DNS criteria) and the L1 criteria AC-22 and AC-46 were not part of the condition | **One rule, stated identically everywhere (Brain §5, prd F3/FR-019/release table/usable test/AC-38/AC-44, architecture §7.7/§7.9/§17/GR-29, design_system, checklist D-15/D-36/Q-24):** the unqualified 0.1 requires all five of AC-22, AC-38, AC-39, AC-46, AC-49 and is blocked if any is unpassed. A preview is permitted only if (1) the blocker is AC-38, AC-39 or AC-49, (2) AC-22, AC-46 and every other preview criterion have passed, so if AC-22 or AC-46 is unpassed **nothing ships**, (3) the owner approves (Q-24), (4) it runs only in `l1_only`, (5) wording claims no containment, shows AC-38/39/49 as not evaluated and implies nothing about worker denial or worker-WebSocket control beyond recorded AC-22/AC-46 results |
++| **Regression checks** | Five blockers checked in the release row and §17 only | New checks fail on any remaining "only if L2 fails" wording, require the five-criteria rule and the preview conditions in the same terms in every document, require AC-46 in the preview row and AC-44, and forbid preview wording that implies worker denial or WebSocket control |
++| **Git description** | Two-commit state (`4aa540c`) | Three commits; `7863d3a` ("Bump Phase 0 docs to revision 5") is on `main`, `changes` and both `origin` branches; author and committer Gaurav Raj; Claude only as `Co-Authored-By` |
 +
-+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; every unresolved limitation and open question is preserved.
++Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; every unresolved limitation and open question is preserved; Phase 1 has not started.
 +
-+### Previous: revision 4 before/after change summary (kept for history)
++### Previous: revision 5 before/after change summary (kept for history)
  
- | Review finding | Before (revision 3) | After (revision 4) |
-@@ -136,5 +151,11 @@
+ Documentation-only. No design, requirement, acceptance criterion or register entry was changed.
+@@ -81,5 +93,5 @@
+ | D-13 | Verification gating | **Superseded by D-27/D-40** | — | — | — | superseded |
+ | D-14 | Grants human-only | **Refined by D-25** | — | — | — | refined |
+-| D-15 | MVP scope | MVP complete = Release 1.0; Release 0.1 first usable **and requires full guard mode (AC-38, AC-39)** | Audit-only MVP after Phase 3 | Brief requires authorization and verification; early value via D-29 | Long runway; preview only if L2 fails | 🟡 (revised) |
++| D-15 | MVP scope | MVP complete = Release 1.0; Release 0.1 first usable **and requires full guard mode (AC-22, AC-38, AC-39, AC-46, AC-49)** | Audit-only MVP after Phase 3 | Brief requires authorization and verification; early value via D-29 | Long runway; preview only if L2 fails | 🟡 (revised) |
+ | D-16 | Roadmap | Phases 0–8 per `Brain.md` §5 | Fewer, larger phases | Distinct approval points | Scope-creep risk R-06 | 🟡 |
+ | D-17 | AI in MVP | None; see D-30 | LLM-first | Deterministic | No natural-language specs | 🟡 |
+@@ -102,5 +114,5 @@
+ | D-34 | NFR-011 scope | Minimal deps for core/CLI/runner/reporter; dashboard deps isolated | Blanket rule | Honest | Separate supply chain | 🟡 |
+ | D-35 | Roles document name | `AGENT_ROLES.md` | Keep `agents.md`; add `CLAUDE.md` | Avoids `AGENTS.md` auto-load | Fresh-session check pending (R-07) | ✅ directive |
+-| D-36 | Guard modes and release labelling | `full` (L1+L2, default) vs `l1_only` (explicit `--guard l1-only`); unqualified 0.1 requires `full` with **AC-22, AC-38, AC-39, AC-46 and AC-49 passed**; otherwise a **0.1-preview** that claims no containment; no silent downgrade; traffic-class coverage table in `architecture.md` §7.9 | Ship 0.1 L1-only with a footnote; make L2 optional | Directive from review: no equivalent-containment claim without tests | Possible delay or preview-only release; AC-38 needs independent OS-level observation (Q-25) | 🟡 directive (revised) |
++| D-36 | Guard modes and release labelling | `full` (L1+L2, default) vs `l1_only` (explicit `--guard l1-only`). The unqualified 0.1 requires **AC-22, AC-38, AC-39, AC-46 and AC-49 to pass and is blocked if any remains unpassed**. A **0.1-preview** (l1_only) is permitted only when AC-38, AC-39 or AC-49 cannot be passed **and** AC-22, AC-46 and every other preview criterion have passed **and** the owner approves (Q-24); if AC-22 or AC-46 is unpassed nothing ships. A preview claims no containment, shows AC-38/39/49 as not evaluated, and implies nothing about worker denial or worker-WebSocket control beyond recorded results. No silent downgrade; coverage table in `architecture.md` §7.9; conditions in §17 | Ship 0.1 L1-only with a footnote; make L2 optional; allow a preview whenever L2 fails AC-39 only | Directive from review: no equivalent-containment claim without tests; AC-38 and AC-49 are equally mandatory | Possible delay or no release; AC-38 and AC-49 need independent system-wide observation (Q-25) | 🟡 directive (revised)
+ | D-37 | Traces | Off by default for every run; `--trace` opt-in; **authenticated traces refused in Release 0.1**; unauthenticated opt-in traces `restricted`, `not_redacted`, encrypted, 7 days, never exported | Traces on failure; claim redaction of traces | Traces cannot be reliably redacted | Less debugging data on authenticated targets (R-24); tested handling strategy needed before ever enabling (Q-26) | 🟡 directive |
+ | D-38 | Redaction vs encryption | Separate `redactionStatus` and `encrypted`; exact-value secret-removal claims (AC-19/32, GR-16) cover **only `redacted` text artifacts**, DB, logs, reports; screenshots are `partially_redacted` with no claim (D-44); AC-33 is storage-only | One combined "protected" notion | Prevent false assurance | More labels to maintain and display | 🟡 directive (revised) |
+@@ -151,5 +163,10 @@
  | F3-5d Append-only tombstones | Resolved (D-41, AC-43) |
  
--## 5. Work completed (revision 4, then revision 3)
-+## 5. Work completed (revision 5, then revision 4, then revision 3)
+-## 5. Work completed (revision 5, then revision 4, then revision 3)
++## 5. Work completed (revision 6, then 5, 4, 3)
 +
-+**Revision 5**
++**Revision 6**
 +
-+- ✅ §11 git history, header and Q-01 corrected to the two-commit state with author versus co-author kept distinct.
-+- ✅ §1 deliverables table relabelled (script cross-check, no independent-review claim) and architecture/other descriptions extended with the revision 4 additions including §7.10.
-+- ✅ Fresh cross-document review with new guard checks (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command by this session.
++- ✅ Release 0.1 / 0.1-preview conditions made identical across Brain §5, prd, architecture §7.7/§7.9/§17/GR-29, design_system and the checklist; regression checks added; git description updated to three commits.
++- ✅ Fresh cross-document review (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command by this session.
  
- **Revision 4**
-@@ -158,21 +179,19 @@
+ **Revision 5**
+@@ -179,19 +196,27 @@
  - ✅ Constraints respected at the time: Phase 1 not started; nothing installed; no git (the repository appeared later, created by you); no code; no real target; no other project touched.
  
--## 6. Cross-review results (revision 4)
+-## 6. Cross-review results (revision 5)
 -
--**Method.** A script (`xreview.py`, kept in the session scratchpad, not part of the project) ran 119 mechanical checks across all seven documents and the folder: stale terms and old wording, acceptance-criteria and release-table coverage, Guarantee Register counts and statuses, ID and section references, trace/redaction/audit-only/identity wording, the revision 4 chains (run status, screenshots, workers, DNS), the approval-list coverage of every question needed by Phase 0 to 2, and filesystem safety. The revision 3 script no longer existed in the scratchpad, so this script was **rebuilt**; its regular expressions carry self-tests that must fire on bad sentences before the run, and it was **mutation-tested** (below).
+-**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with revision 5 checks and re-run across all seven documents and the folder: everything from the revision 4 review (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers and DNS, approval-list coverage, filesystem safety) plus: the documented git history against the actual repository (two commits, parent link, author and committer versus `Co-Authored-By`, checked-out branch); no "one commit" wording in live text; the §1 table labelling and its absence of independent-review claims; the architecture row's §7.10 and revision 4 additions; no document claiming worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed; and AC-22, AC-46, AC-38, AC-39 and AC-49 not marked passed. This is a script check, **not** an independent review.
 -
--**First complete run: 116 checks, 15 failed.** One was a real finding, three led to document corrections, and eleven were defects in the script itself:
--- *Real finding (not a document defect):* a git repository exists in this folder (`.git`, `.gitignore`). It holds one commit, `ddbb7c6` "Initial commit", 2026-11-16 11:28, by your identity; this session never ran a git write command. The checklist header, §5, Q-01, §10 and §11 previously said no git repository existed; they are corrected, and a check now guards the wording.
--- *Document corrections:* `AGENT_ROLES.md` Reporter now names the run status and terminal reason and forbids calling a screenshot secret-free; the checklist statements about git; Q-01.
--- *Script defects fixed, no check weakened:* the history scope for old wording (the checklist legitimately quotes old terms in its before/after tables, decision alternatives, gap tables and in this pasted output); the approval-list check rejected Q-16 as "extra" (it is Phase 3 but its interim default D-42 is confirmed at Phase 0 approval, so it is kept and reported as an INFO line); two audit-only wording patterns missed "audit-only limitation" and "not guaranteed unchanged"; an identity-basis pattern matched "attested" inside `independently_attested`; a window too short for `minIdentityBasis`; the worker-WebSocket detector matched only one word order (caught by its own self-test); a transcript scan that read an unset field.
--- *Observation, not a failure:* a sibling project (`Git/jeevanpulse`) shows file changes and its own commits by your identity. This session issued no Write or Edit there (verified from the transcript); modification times alone cannot prove authorship.
+-**Revision 4 run (recorded in commit `4aa540c`):** 119 checks, 0 failed.
 -
--**Mutation test.** Six planted regressions were each caught: AC-27 losing `errored`; the old three-status Run model restored; screenshots grouped with `redacted` again; an unqualified "Worker WebSockets are denied" line; Q-04 removed from the approval list; AC-38's DNS requirement removed.
+-**Revision 5, first run of the extended script: 130 checks, 1 failed.** The failure was a real wording ambiguity, not a script defect: the Release 0.1 row in `architecture.md` §17 read "with AC-22, AC-38, AC-39, AC-46 and AC-49 passed", which could be taken as a present claim. It now reads "required to pass (each currently unpassed)". No requirement or criterion changed.
 -
--**Final run: 119 checks, 0 failed.**
-+## 6. Cross-review results (revision 5)
+-**Mutation test of the new checks.** Six planted regressions: author/co-author distinction dropped; "one commit" wording restored; "Worker denial is tested" added; "AC-46 passed" added; an independent-review claim added to §1; the §1 label reverted to "rev. 3". The first pass missed two of them because of the test harness and one scope gap: the harness copies the folder without `.git`, which skipped the whole git block (including its text-only checks), and the one-commit check did not scan the checklist header. The text-only checks were moved out of the git block and the scope widened; every planted regression is then caught. No check was weakened.
+-
+-**Final run: 130 checks, 0 failed.**
++## 6. Cross-review results (revision 6)
 +
-+**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with revision 5 checks and re-run across all seven documents and the folder: everything from the revision 4 review (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers and DNS, approval-list coverage, filesystem safety) plus: the documented git history against the actual repository (two commits, parent link, author and committer versus `Co-Authored-By`, checked-out branch); no "one commit" wording in live text; the §1 table labelling and its absence of independent-review claims; the architecture row's §7.10 and revision 4 additions; no document claiming worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed; and AC-22, AC-46, AC-38, AC-39 and AC-49 not marked passed. This is a script check, **not** an independent review.
++**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with release-condition regression checks and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, approval-list coverage, git description against the real repository, filesystem safety). This is a script check, **not** an independent review.
 +
-+**Revision 4 run (recorded in commit `4aa540c`):** 119 checks, 0 failed.
++**Revision 5 run:** 130 checks, 0 failed (`7863d3a`).
 +
-+**Revision 5, first run of the extended script: 130 checks, 1 failed.** The failure was a real wording ambiguity, not a script defect: the Release 0.1 row in `architecture.md` §17 read "with AC-22, AC-38, AC-39, AC-46 and AC-49 passed", which could be taken as a present claim. It now reads "required to pass (each currently unpassed)". No requirement or criterion changed.
++**New release-condition regression checks (revision 6):**
++- No remaining "only if L2 fails" / "if the egress layer fails" wording in any live document (the old, incomplete condition).
++- The rule "the unqualified 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 is unpassed" appears in Brain §5, the prd release row, the prd usable test, architecture §17 and D-36.
++- The prd and architecture preview rows name the blocker set (AC-38, AC-39 or AC-49), require AC-22 and AC-46 to have passed, and require owner approval; architecture §17 carries five numbered preview conditions; Brain, prd FR-019, D-36 and Q-24 agree with them, including that nothing ships if AC-22 or AC-46 is unpassed.
++- AC-44, FR-019, GR-29, the §7.9 mode row, the release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated in a preview, and AC-44 forbids implying that worker denial has been tested or that worker-originated WebSockets are controlled.
++- No line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets; no preview line mentions workers without a limiting qualifier; every line naming the 0.1-preview carries a conditioning qualifier.
++- **No acceptance criterion is weakened:** AC-22, AC-39, AC-46 and AC-49 are byte-identical to their revision 5 text; AC-38 differs only by the added clause "(like AC-39 and AC-49)"; AC-44 only gained requirements.
 +
-+**Mutation test of the new checks.** Six planted regressions: author/co-author distinction dropped; "one commit" wording restored; "Worker denial is tested" added; "AC-46 passed" added; an independent-review claim added to §1; the §1 label reverted to "rev. 3". The first pass missed two of them because of the test harness and one scope gap: the harness copies the folder without `.git`, which skipped the whole git block (including its text-only checks), and the one-commit check did not scan the checklist header. The text-only checks were moved out of the git block and the scope widened; every planted regression is then caught. No check was weakened.
++**Revision 6, first run: 144 checks, 2 failed.** Both hits were one real imprecision in `architecture.md` §17: the sentence "The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result" read like a free choice, and the requirement list used present-tense "passes". It now says a preview is **not** an alternative route to the five criteria, that it is permitted only under the conditions below, and that the decision is taken from recorded acceptance results. No criterion changed.
 +
-+**Final run: 130 checks, 0 failed.**
++**Mutation test.** Nine planted regressions were each caught: the old "only if L2 fails AC-39" preview row restored; AC-46 dropped from the preview row; the "nothing ships" rule dropped from Brain; a line saying the preview confirms worker denial is tested; AC-49 dropped from the architecture preview blocker; the blocked-if-any rule dropped from the prd 0.1 row; the worker non-implication dropped from AC-44; AC-46 weakened; a line saying the preview gives full containment.
++
++**Final run: 144 checks, 0 failed.**
  
  ```
  INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
--INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
-+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
++INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
  INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
  INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
-@@ -186,4 +205,5 @@
- PASS  no stale term: Release 0.1 ships with L1
+@@ -206,4 +231,5 @@
  PASS  no stale term: revision 3, pending approval
-+PASS  no stale term: revision 4, pending approval
+ PASS  no stale term: revision 4, pending approval
++PASS  no stale term: revision 5, pending approval
  PASS  no stale term: revision 2
  PASS  no stale term: Non-interactive and CI use is unresolved
-@@ -243,5 +263,5 @@
+@@ -263,5 +289,5 @@
  PASS  no stale phase refs (checklist may quote them only in history)
  PASS  release names present in prd and arch
--PASS  all seven docs say revision 4 in their status line
-+PASS  all seven docs say revision 5 in their status line
+-PASS  all seven docs say revision 5 in their status line
++PASS  all seven docs say revision 6 in their status line
  PASS  architecture Run model lists the five statuses and terminalReason
  PASS  all nine terminalReason values defined in architecture §4
-@@ -291,16 +311,26 @@
- PASS  no live checklist text claims 'no git repository' (one exists, created by the user)
- PASS  README and the six documents do not claim the absence of git
--PASS  git history is a single user-authored commit that this session did not create (no commit newer than the revision 3 bundle by a non-user identity)
--PASS  no file matches auto-load names (AGENTS.md, CLAUDE.md, CLAUDE.local.md; case-insensitive)
-+PASS  §1 deliverables table is labelled as script cross-check for revision 5 and keeps no 'rev. 3' label
-+PASS  §1 makes no independent-review claim for any document (each mention is a negation or attributed to the user's report)
-+PASS  §1 architecture row lists §7.10 DNS and name resolution and the revision 4 additions
-+PASS  §1 does not mark any document approved
-+PASS  revision 5 summary exists, is documentation-only, and keeps the blockers unpassed
-+PASS  no document claims worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed
-+PASS  no document marks AC-22, AC-46, AC-38, AC-39 or AC-49 as passed
-+PASS  the five blockers are still described as unpassed in prd and architecture
-+PASS  actual git history matches the documented two commits, parent link, author=committer=user, Claude only as Co-Authored-By trailer, HEAD on `changes`
-+PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
-+PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
-+PASS  README and the checklist header, Q-01 and §11 agree on both commit ids
+@@ -319,16 +345,29 @@
+ PASS  no document marks AC-22, AC-46, AC-38, AC-39 or AC-49 as passed
+ PASS  the five blockers are still described as unpassed in prd and architecture
+-PASS  actual git history matches the documented two commits, parent link, author=committer=user, Claude only as Co-Authored-By trailer, HEAD on `changes`
++PASS  no remaining 'preview only if L2 fails' wording (the old, incomplete condition)
++PASS  unqualified 0.1 is blocked if any of the five is unpassed: Brain §5, prd release row, prd usable test, architecture §17, D-36
++PASS  prd and architecture preview rows: blocker is AC-38/39/49, AC-22 and AC-46 required, owner approval
++PASS  architecture §17 defines five numbered preview conditions covering blocker, L1 criteria, owner, l1_only and wording
++PASS  preview conditions agree across Brain, prd FR-019, checklist D-36/Q-24 (blocker set, L1 criteria, owner, nothing ships when AC-22/AC-46 unpassed)
++PASS  AC-44 shows AC-38, AC-39 and AC-49 as not evaluated and forbids implying worker denial was tested or worker WebSockets are controlled
++PASS  FR-019, GR-29, §7.9 mode row, release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated
++PASS  no preview line mentions workers without a limiting qualifier
++PASS  no line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets
++PASS  every line naming the 0.1-preview carries a conditioning qualifier
++PASS  Q-24 and D-36 are marked revised and keep the Phase 2 owner decision
++PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
++PASS  AC-44 only gained requirements (every revision 5 clause still present)
++PASS  actual git history matches the documented three commits, parent links, author=committer=user, Claude only as Co-Authored-By trailer, all branches at 7863d3a, HEAD on `main`
+ PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
+ PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
+-PASS  README and the checklist header, Q-01 and §11 agree on both commit ids
++PASS  checklist header, Q-01 and §11 agree on all three commit ids
  PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
  PASS  config/targets, tests, reports are still empty
  PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
  
--TOTAL: 119 checks, 0 failed
-+TOTAL: 130 checks, 0 failed
+-TOTAL: 130 checks, 0 failed
++TOTAL: 144 checks, 0 failed
  ```
  
--**Semantic review (manual re-read of the five revision 4 chains).** (1) Screenshots: architecture §11, FR-061, AC-19/32/48, GR-16, Brain principle 9 and the glossary, and design_system RedactionBadge all say that exact-value removal is claimed for text artifacts only and that screenshots are `partially_redacted` with no secret-free claim. (2) Workers: architecture §7.3/§7.8/§7.9, FR-011/012/026, AC-06/22/46, GR-04/31 and §17 agree that L2 cannot block a WebSocket to an allowed origin, that denial of workers is the only mechanism, and that AC-46 is unpassed and blocks the unqualified 0.1. (3) Run status: architecture §4/§7.7/§8/§12, FR-016/017/018/025, NFR-012, AC-27/44/47, GR-10/32, AGENT_ROLES §3.1/§3.5/§3.8/§7 and design_system states use the same five values. (4) DNS: architecture §7.2/§7.9/§7.10/§17, FR-015/027, AC-38/49 and GR-25 agree that only the proxy resolves, that `pinned` makes no DNS query, that `system` cannot pass AC-38, and that missing reliable observation leaves AC-38 and AC-49 unpassed. (5) The approval list contains every unresolved question needed by Phase 0, 1 or 2.
--
--**Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. In particular: every register entry is still Designed; the worker-denial mechanism, the DNS design and its observation method, screenshot masking limits, run-status immutability and crash recovery are all untested; and no document can show that Chromium flags or Playwright behavior match the design until the Phase 2 spike.
-+**Semantic review (manual re-read).** §1, §2, the header, Q-01 and §11 now describe the same git history: `main` at `ddbb7c6`, `changes` at `4aa540c` with parent `ddbb7c6`, both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as a `Co-Authored-By` trailer; revision 5 uncommitted. The deliverables table says "cross-checked by script", marks nothing approved and attributes independent review only to your report about `4aa540c`. The architecture row lists §7.10 and the other revision 4 additions. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
-+
-+**Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
+-**Semantic review (manual re-read).** §1, §2, the header, Q-01 and §11 now describe the same git history: `main` at `ddbb7c6`, `changes` at `4aa540c` with parent `ddbb7c6`, both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as a `Co-Authored-By` trailer; revision 5 uncommitted. The deliverables table says "cross-checked by script", marks nothing approved and attributes independent review only to your report about `4aa540c`. The architecture row lists §7.10 and the other revision 4 additions. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
++**Semantic review (manual re-read).** The release rule now reads identically in Brain §5, prd (F3, FR-019, release table, usable test, AC-38, AC-44), architecture (§7.7, §7.9, §17, GR-29), design_system and the checklist (D-15, D-36, Q-24): all five criteria are required; any unpassed one blocks the unqualified 0.1; a preview needs an L2/DNS blocker, passed L1 criteria including AC-46, owner approval, `l1_only` mode and bounded wording. One consequence is stated, not hidden: if AC-22 or AC-46 is unpassed, nothing ships at all, because the preview rests on L1. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
  
- ## 7. Guarantee status summary
-@@ -322,5 +352,5 @@
+ **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
+@@ -352,5 +391,5 @@
  | ID | Question | Default if unanswered | Needed by | Status |
  |----|----------|-----------------------|-----------|--------|
--| Q-01 | Git was already initialized by you (initial commit `ddbb7c6`, 2026-11-16 11:28, revision 3 content). Keep that repository as the project's history? Confirm license `UNLICENSED` (private) | Keep it; revision 4 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
-+| Q-01 | Git already exists (created outside this session): `main` at `ddbb7c6`, `changes` at `4aa540c` (revision 4), both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 5 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+-| Q-01 | Git already exists (created outside this session): `main` at `ddbb7c6`, `changes` at `4aa540c` (revision 4), both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 5 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
++| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a`; `main`, `changes` and both `origin` branches at `7863d3a`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 6 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
  | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
  | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
-@@ -407,5 +437,5 @@
+@@ -375,5 +414,5 @@
+ | Q-22 | Confirm the reordered release train (authorization last, Release 1.0) | As written | Phase 0 approval | ❓ |
+ | Q-23 | Is L2 mandatory for Release 0.1? | **Resolved by D-36**: mandatory for the unqualified 0.1; an L1-only run is only a labelled preview | — | ✅ (confirm via D-36) |
+-| Q-24 | If L2 fails AC-39 at the end of Phase 2, should a labelled 0.1-preview be released at all, or should 0.1 be held? | Owner decides at that point; no preview without approval | Phase 2 | ❓ **new** |
++| Q-24 | If the unqualified 0.1 is blocked at the end of Phase 2 because AC-38, AC-39 or AC-49 cannot be passed (and AC-22, AC-46 and the other preview criteria have passed), should a labelled 0.1-preview in `l1_only` mode be released at all, or should 0.1 be held? (If AC-22 or AC-46 is unpassed nothing ships.) | Owner decides at that point; no preview without approval | Phase 2 | ❓ revised |
+ | Q-25 | How is AC-38's independent, system-wide outbound observation (packet capture or an isolated namespace, covering TCP, UDP, QUIC **and DNS**, for all run processes and resolver processes acting for them) done on each OS? Is it practical without privileged tools? Per-process socket listing is not sufficient for DNS (§7.10) | Decide in the Phase 2 spike; if impractical, AC-38 and AC-49 stay unpassed and 0.1 is not unqualified | Phase 2 | ❓ **revised** |
+ | Q-26 | Is there any acceptable tested strategy for authenticated traces (strip payloads, screenshots-only), or should they never exist? | None; authenticated traces stay unavailable | post-1.0 | ❓ **new** |
+@@ -437,5 +476,5 @@
  - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
  - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
--- **Verified (this folder, revision 4):** a git repository exists with one commit (`ddbb7c6`, by your identity, 11:28), which this session did not create; this session issued only read-only git commands; no file other than Markdown (plus your `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
-+- **Verified (this folder, revision 5):** Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. On both commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 5 edits are uncommitted working-tree changes on `changes`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+-- **Verified (this folder, revision 5):** Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. On both commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 5 edits are uncommitted working-tree changes on `changes`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
++- **Verified (this folder, revision 6):** Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. On all three commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 6 edits are uncommitted working-tree changes on `main`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
  - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
  
---- a/README.md (revision 4)
-+++ b/README.md (revision 5)
+--- a/README.md (revision 5)
++++ b/README.md (revision 6)
 @@ -3,5 +3,5 @@
  Independent, evidence-first QA auditor for any application. Standalone product; not connected to any existing project.
  
--**Status: Phase 0 (foundation documents), revision 4, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
-+**Status: Phase 0 (foundation documents), revision 5, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
+-**Status: Phase 0 (foundation documents), revision 5, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
++**Status: Phase 0 (foundation documents), revision 6, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
  
  ## Foundation documents
 ~~~~

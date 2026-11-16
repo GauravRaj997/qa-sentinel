@@ -1,6 +1,6 @@
 # QA Sentinel — Brain
 
-> Status: Phase 0 draft, revision 5, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+> Status: Phase 0 draft, revision 6, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
 
 ## 1. Vision
 
@@ -66,7 +66,7 @@ Proposed phases and releases (to be approved; Phase 0 approval does not approve 
 
 Authorization is deliberately last: the riskiest capability ships when the guard, evidence and verification layers already exist and have been tested. Before 1.0 there is no code path that allows a non-safe request other than profile-approved, parsed read-only entries. Details: `architecture.md` §17.
 
-Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. If the egress layer fails, only a clearly labelled **0.1-preview** with incomplete guard coverage may exist; it must not claim equivalent containment (`architecture.md` §7.9, §17).
+Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. **Release 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 remains unpassed.** A clearly labelled **0.1-preview** (L1 only, incomplete guard coverage, no containment claim) is permitted only when the blocker is the egress or DNS layer (AC-38, AC-39 or AC-49) **and** AC-22, AC-46 and every other preview criterion have passed **and** the owner approves; if AC-22 or AC-46 is unpassed, neither a 0.1 nor a preview ships (`architecture.md` §7.9, §17).
 
 Later horizons, not committed: additional runners (API contract, accessibility, visual regression), other AI-tool adapters, CI gating, comparison across builds, team sharing of reports.
 
