@@ -1,6 +1,6 @@
 # QA Sentinel — Design System
 
-> Status: Phase 0 draft, revision 3, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
+> Status: Phase 0 draft, revision 4, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
 
 ## 1. Identity
 
@@ -95,6 +95,7 @@ Each component lists the information it must expose; styling follows the tokens.
 
 - **FindingStatusBadge** — `Confirmed` (solid fill, filled-circle icon), `Suspected` (dashed outline, `?` icon), `Informational` (ghost, `i` icon). Always text + icon + shape.
 - **OutcomeBadge** — `passed`, `failed`, `errored`, `skipped`, `not_run`. `not_run` and `skipped` use neutral hatching, never green.
+- **RunStatusBadge** — run status `running`, `completed`, `partial`, `aborted`, `errored`, always with text. `errored` uses the errored token with ⚠; `partial` and `aborted` use neutral hatching; `completed` never reads as "passed", "healthy" or "safe" and is shown beside the coverage bar.
 - **SeverityPill** — critical / high / medium / low / none, text always present.
 - **CoverageBar** — segmented bar of passed / failed / errored / skipped / not_run with counts; shown on every run card before any "healthy" language.
 - **RunCard / RunTimeline** — build id, mode, manifest hash, duration, summary, step-by-step timeline with blocked-by-policy markers.
@@ -102,8 +103,8 @@ Each component lists the information it must expose; styling follows the tokens.
 - **EvidenceCard / EvidenceViewer** — thumbnail, kind, hash, redaction status badge (traces always "Not redacted"), download, trace viewer link for opt-in traces.
 - **VerificationPanel** — claim (actor, build, commit), result, the **identity basis and confidence** (`target_reported` moderate — reported by the target, not proof · `operator_asserted` low — a statement · `surfaceFingerprint` low — fallback only; `independently_attested` reserved), always shown with the result and never as a bare "verified"; the gating checks (`freshContext`, `buildChanged` on the same basis) each with pass/fail/unknown and a short explanation of limits, plus the informational `sameActorAsClaim`.
 - **AssuranceBadge** — Designed / Implemented / Tested / Independently verified, with text and a distinct shape per level; links to the Guarantee Register entry and the commit for Tested and above. Never colored as "success" below Tested.
-- **GuardCoveragePanel** — the guard mode (`full` / `l1_only`), then per traffic class (WebSocket, WebRTC, service workers, downloads, proxy, schemes) `active`, `unavailable` or `untested`, with the run's `websocket-restricted` and "guard coverage incomplete" notices; in `l1_only` it shows "not equivalent to full mode" and AC-38 as not evaluated.
-- **EvidenceClassBadge / RedactionBadge / RevealGate** — `public` vs `restricted`; a separate redaction badge (`redacted`, `partially redacted`, **`NOT REDACTED`** for traces and downloads) and a separate encryption lock; restricted items show retention expiry and a "Reveal" action that confirms and appends an access event.
+- **GuardCoveragePanel** — the guard mode (`full` / `l1_only`), then per traffic class (WebSocket, worker creation and worker WebSocket, WebRTC, service workers, downloads, proxy, schemes, DNS mode) `active`, `unavailable`, `untested` or `uncontrolled` (`workers: allow`, `dnsMode: system`), with the run's `websocket-restricted` and "guard coverage incomplete" notices; in `l1_only` it shows "not equivalent to full mode" and AC-38 as not evaluated.
+- **EvidenceClassBadge / RedactionBadge / RevealGate** — `public` vs `restricted`; a separate redaction badge (`redacted`, `partially redacted`, **`NOT REDACTED`** for traces and downloads; screenshots always read `partially redacted` with a visible "masks configured elements only; may still contain secrets" note and never "secret-free" or "sanitized") and a separate encryption lock; restricted items show retention expiry and a "Reveal" action that confirms and appends an access event.
 - **TombstoneCard** — expired evidence: hash, kind, deletion time and reason, so a finding still shows that evidence existed.
 - **PolicyApprovalDialog** — policy diff since the last approval, the approval's assurance level (L1 shown as "confirmation, not identity verification"), typed confirmation.
 - **GrantBanner / GrantCard** — scope, classes, countdown, uses left, revoke; A3 uses a stronger visual treatment and typed confirmation.
@@ -122,7 +123,7 @@ Every view defines all of these; none may be blank.
 | Empty | Explains why and offers the next action with its CLI command |
 | Error | Plain-language cause, retry, and the log location |
 | Running | Live progress (executed / total / not_run), `aria-live="polite"`, Abort button |
-| Partial / Aborted | Prominent notice; unexecuted checks listed as `not_run` |
+| Partial / Aborted / Errored | Prominent banner with the run status and terminal reason (`RUN PARTIAL`, `RUN ABORTED`, `RUN ERRORED`); `errored` never uses success styling; unexecuted checks listed as `not_run` |
 | Stale | Timestamp and "data may be outdated" when the API is unreachable |
 | Policy-blocked | Shows the denied action, class, rule and that it was recorded |
 | Policy changed / unapproved | Target shows "Policy changed — approval required"; runs are disabled with the reason and the approval command |

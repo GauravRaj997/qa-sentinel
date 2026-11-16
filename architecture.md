@@ -1,6 +1,6 @@
 # QA Sentinel — Architecture
 
-> Status: Phase 0 draft, revision 3, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+> Status: Phase 0 draft, revision 4, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
 
 ## 0. How to read this document (assurance language)
 
@@ -87,7 +87,7 @@ Rules (checked mechanically in CI once code exists):
 All records carry `id`, `schemaVersion`, `createdAt`. Types are conceptual; the zod schemas in `schema` are authoritative.
 
 **TargetProfile** — one application under test.
-`id, name, kind (web | api), baseUrls[], scope{allowedOrigins[], deniedPathPatterns[]}, network{…}, auth{profiles[{id, type: none|storageState|header|cookie, secretRefs}]}, identity{source: header|endpoint|meta|manual|surfaceFingerprint, key?, fingerprintUrls[], fingerprintIgnore[]}, verification{minIdentityBasis}, stateIsolation (none | declared-reset), evidence{class overrides, retention overrides, sensitiveSelectors[], traces}, limits{maxPages, maxRequests, maxDurationSec}, stackHints?`
+`id, name, kind (web | api), baseUrls[], scope{allowedOrigins[], deniedPathPatterns[]}, network{websocket, workers (deny | allow), downloads, dnsMode (pinned | system), dnsPins{host: [ip]}, …}, auth{profiles[{id, type: none|storageState|header|cookie, secretRefs}]}, identity{source: header|endpoint|meta|manual|surfaceFingerprint, key?, fingerprintUrls[], fingerprintIgnore[]}, verification{minIdentityBasis}, stateIsolation (none | declared-reset), evidence{class overrides, retention overrides, sensitiveSelectors[], traces}, limits{maxPages, maxRequests, maxDurationSec}, stackHints?`
 `network` holds the policy-relevant switches (§7): `websocket (deny*|observe)`, `webrtc (deny*)`, `serviceWorkers (block*)`, `downloads (deny*|quarantine)`, `permissions (deny*)`, `schemes ([http, https]*)`, `readOnlyRequests[]`. (`*` = default.)
 Secrets are **references** (environment variable names), never values. The **policy section** (scope, network, deniedPathPatterns, auth refs, limits, stateIsolation, verification) is hashed into `policyHash`.
 
@@ -99,8 +99,23 @@ Secrets are **references** (environment variable names), never values. The **pol
 `generated` specs (post-MVP, from `ai-assist`) are capped at `suspected` until a human promotes them to `authored`.
 
 **Run** — one execution of a plan.
-`id, targetId, identity{basis, buildId?, commit?, surfaceFingerprint}, policyHash, profileApprovalId, mode (audit | authorized), guardMode (full | l1_only), grantId?, guardCoverage{websocket, webrtc, serviceWorkers, downloads, proxy, …}, status (completed | partial | aborted), startedAt, endedAt, manifest`
+`id, targetId, identity{basis, buildId?, commit?, surfaceFingerprint}, policyHash, profileApprovalId, mode (audit | authorized), guardMode (full | l1_only), grantId?, guardCoverage{websocket, webrtc, serviceWorkers, downloads, proxy, …}, status (running | completed | partial | aborted | errored), terminalReason?, startedAt, endedAt, manifest`
 `manifest = {qaSentinelVersion, nodeVersion, playwrightVersion, browserName, browserVersion, os, profileHash, policyHash, specHashes[], seed, flags}`; `manifestHash` is stored. `guardMode` is `full` (L1+L2) or `l1_only` (explicit, labelled preview, §7.9). `guardCoverage` records, per traffic class, whether the guard was active and verified at run start (`active | unavailable | untested`); the report shows it.
+
+**Run status.** `status` is exactly one of five values. `running` is the only non-terminal value; the other four are terminal.
+
+| Status | Meaning | `terminalReason` values | Unexecuted specs | Exit code |
+|--------|---------|-------------------------|------------------|-----------|
+| `running` | In progress | — | — | — |
+| `completed` | Every planned spec reached a recorded outcome inside the budget, with the guard coverage recorded at start. **Not** "no defects" and not "contained" | `completed` | none | `0` or `1` (by `--fail-on`) |
+| `partial` | Stopped by the per-run budget (FR-017) | `budget_exhausted` | `not_run` | `4` |
+| `aborted` | Stopped by the user, or found by a later start to have died without closing (crash recovery) | `user_abort`, `crash_detected` | `not_run` | `4` |
+| `errored` | The run could not proceed or complete **safely**: a required guard layer failed to install or failed its start-of-run probe in `full` mode, or the browser, the store or QA Sentinel itself failed | `guard_unavailable`, `guard_probe_failed`, `browser_failure`, `store_failure`, `internal_error` | `not_run` | `4` |
+
+- **Terminal statuses are immutable.** A run moves `running` → one terminal status exactly once. A database trigger rejects any later change to `status` or `terminalReason`, in the same way it rejects history updates (AC-31, AC-47). Crash recovery is that single transition, performed by the next start of QA Sentinel.
+- **`errored` keeps what happened.** Specs that executed keep their recorded outcomes; the rest are `not_run`; confirmation reruns are **not** started after a guard failure; the report, CLI summary and JSON print `RUN ERRORED` with the `terminalReason`. An `errored` run is never described as clean, contained or compared as a baseline.
+- **Run-level versus spec-level.** Run `status: errored` (the run could not safely continue) is a different thing from an `ExecutionRecord` `outcome: errored` (one check could not complete). A run can be `completed` with some specs `errored`; a spec-level `errored` never changes the run status by itself.
+- **Policy refusal before start creates no `Run`.** A missing or stale `ProfileApproval`, a refused flag or an invalid profile exits `2` or `3` before any run row exists (§7.6). A run row exists only once the guard self-check starts, so a guard failure is a recorded `errored` run, not a silent refusal.
 
 **ExecutionRecord** — what actually happened for one spec attempt.
 `id, runId, specHash, attempt, outcome (passed | failed | errored | skipped | not_run), failureSignature?, steps[{n, action, actionClass, result, blockedByPolicy?, durationMs}], evidenceIds[], error?`
@@ -233,6 +248,8 @@ A black-box tool cannot isolate server state. The design is explicit about it:
 | WebSockets | **Denied** | `websocket: observe` (§7.3) |
 | WebRTC | **Denied** | — |
 | Service workers | **Blocked** | — |
+| Dedicated and shared workers | **Denied** (`network.workers: deny`, §7.3) | `workers: allow` is an approved profile choice; worker traffic is then **uncontrolled** and labelled |
+| DNS resolution | **Not performed by QA Sentinel** in `dnsMode: pinned`; the proxy connects to pinned IPs (§7.10) | `dnsMode: system` (approved profile choice); DNS then leaves the machine and is **not covered** by any containment claim |
 | Downloads | **Denied** | `downloads: quarantine` (§7.4) |
 | Browser permissions (camera, mic, geolocation, notifications, clipboard) | **Denied** | — |
 | Popups / new windows | Allowed only to in-scope origins; context-level rules apply | — |
@@ -241,7 +258,7 @@ A black-box tool cannot isolate server state. The design is explicit about it:
 ### 7.2 Layers
 
 1. **L1 — in-browser guard.** A context-level request interceptor (`context.route`) installed before any page loads checks origin, scheme, method, path and body policy for every request, aborts violations, and records them. WebSocket routing, service-worker blocking, download denial and permission denial are configured on the same context.
-2. **L2 — egress proxy.** The browser is launched with all traffic routed to a QA Sentinel loopback proxy (Node standard library) that refuses any destination not in `allowedOrigins` (host and port), including direct IPs and other ports. For HTTPS it sees only the destination (CONNECT), not the method, so **method enforcement stays in L1**; L2 provides a browser-wide default-deny on destinations that does not depend on Playwright routing, which covers service workers, worker-originated requests and anything routing misses at the TCP level. Chromium bypasses proxies for loopback by default, so loopback targets need the bypass override. These details are to be confirmed in the Phase 2 spike. Chromium may also use QUIC/HTTP3 over UDP, which a TCP proxy does not see; QUIC is disabled at launch (to be verified by AC-39 and AC-38). **Acceptance gate:** L2 counts toward Release 0.1's containment claim only if it passes AC-39 and AC-38. If it does not, there is no unqualified Release 0.1: only a clearly labelled **0.1-preview** in L1-only mode may be released, with incomplete guard coverage reported and no equivalent-containment claim (§7.9).
+2. **L2 — egress proxy.** The browser is launched with all traffic routed to a QA Sentinel loopback proxy (Node standard library) that refuses any destination not in `allowedOrigins` (host and port), including direct IPs and other ports. For HTTPS it sees only the destination (CONNECT), not the method, so **method enforcement stays in L1**; L2 provides a browser-wide default-deny on destinations that does not depend on Playwright routing, which covers service workers, worker-originated requests and anything routing misses at the TCP level. Chromium bypasses proxies for loopback by default, so loopback targets need the bypass override. Name resolution is defined in §7.10: in `dnsMode: pinned` the proxy never calls a resolver. These details are to be confirmed in the Phase 2 spike. Chromium may also use QUIC/HTTP3 over UDP, which a TCP proxy does not see; QUIC is disabled at launch (to be verified by AC-39 and AC-38). **Acceptance gate:** L2 counts toward Release 0.1's containment claim only if it passes AC-39 and AC-38. If it does not, there is no unqualified Release 0.1: only a clearly labelled **0.1-preview** in L1-only mode may be released, with incomplete guard coverage reported and no equivalent-containment claim (§7.9).
 3. **L3 — OS isolation (optional, post-MVP).** Run the browser in a container or network namespace or as a dedicated OS user with an egress firewall allowlist. Recommended for authorized (A2/A3) runs against non-local targets and for high-assurance use.
 
 Each layer is independent: a gap in one is meant to be caught by another, and the run report lists which layers were active.
@@ -251,8 +268,15 @@ Each layer is independent: a gap in one is meant to be caught by another, and th
 - **WebSockets: denied by default.** The L1 WebSocket route closes any connection immediately (policy-violation close code) without contacting the server, and records it. Playwright's docs confirm a handler can close a socket without connecting.
 - Client-to-server WebSocket frames cannot be classified as read-only from outside, so audit mode never forwards them. The alternative `websocket: observe` connects to an in-scope origin, forwards **server→page** frames, **drops and records every page→server frame**, and marks the run `websocket-restricted`. Apps whose rendering depends on sending frames will be partly untestable in audit mode; that limitation is reported, not hidden.
 - **WebRTC: denied.** Defense in depth: constructors for peer connections and data channels are removed by an init script in every frame; the browser is launched with its WebRTC IP-handling policy set to disable non-proxied UDP. Playwright has no routing for WebRTC, so this protection rests on those two measures and on L2/L3; its effectiveness is **unproven** until tested (AC-23).
-- Worker-originated WebSockets are not documented as covered by Playwright routing. Until tested, the run's `guardCoverage.websocket` reads `untested` for workers, and the report says so.
-- A candidate additional measure evaluated in the spike: injecting a restrictive `Content-Security-Policy` (`connect-src`, `worker-src`) into in-scope responses. It would alter target behavior, so it is opt-in per profile if used at all.
+- **Worker-originated WebSockets: enforcement mechanism (Designed; unproven until AC-46 runs).** Playwright routing is not documented to cover sockets opened from workers, and **L2 cannot block a WebSocket to an allowed origin**: after `CONNECT` the proxy sees only an opaque TLS tunnel, so a `wss://` connection to an in-scope host is indistinguishable from other HTTPS traffic to it. L2 is therefore **not** an enforcement layer for this class and nothing in this design pretends it is. The mechanism is to **prevent workers from existing** rather than to filter their sockets:
+  1. **Default `network.workers: deny`**, enforced by two independent in-browser measures. (a) An init script, installed with the context before any page script and running in every frame, removes the `Worker` and `SharedWorker` constructors and `navigator.serviceWorker`. (b) L1 adds a second `Content-Security-Policy` header with `worker-src 'none'` to every in-scope document response (an additional CSP header can only tighten the effective policy). Measure (b) also blocks `blob:` and `data:` workers that never touch the network. Service workers stay blocked by the context option (§7.4).
+  2. **CSP `connect-src` is not used to filter WebSockets.** It matches by scheme and host and is not expected to distinguish a WebSocket from an HTTP request to the same in-scope host; that behavior is unverified, so no claim rests on it. CSP is used here only for `worker-src`.
+  3. **Page-originated WebSockets** remain handled by the L1 close-without-connect route (AC-22).
+  4. **`workers: allow`** is a profile option inside `policyHash` (human re-approval required). When set, worker-originated HTTP traffic is limited only by L2 destination refusal, **worker-originated WebSockets are uncontrolled**, the run is labelled `workers-allowed`, `guardCoverage.workerWebSocket` reads `uncontrolled`, `websocket: observe` is not supported for worker sockets, and no worker-WebSocket claim (GR-31) may be made for that run.
+  5. **Adversarial test (AC-46).** The fixture tries `new Worker(url)`, module workers, `SharedWorker`, `blob:` and `data:` workers, workers created inside same-origin iframes, `about:blank` and `srcdoc` frames, nested workers and `importScripts`, and from any worker that starts, a WebSocket to an allowed origin. The pass condition is that no worker executes and the fixture server's own log shows no WebSocket upgrade from any of them (observation independent of the guard).
+  6. **If AC-46 fails or has not been executed**, AC-46, AC-22's worker coverage and GR-31 stay **unpassed**, the unqualified Release 0.1 is blocked, and no report, README, release note or CLI text may state or imply that worker-originated WebSocket traffic is controlled. No reliable L2 backstop exists; the only stronger option is OS-level isolation (L3), which is post-MVP.
+  7. **Cost of the mechanism.** Targets that need workers will render or behave differently under `deny`; that is reported per run and never hidden. Injecting `worker-src 'none'` changes response headers, which is the only target-visible modification QA Sentinel makes and is listed in the run manifest.
+- Whether `addInitScript` reaches every frame type (`about:blank`, `srcdoc`, sandboxed iframes) before page scripts, and the side effects of the injected `worker-src` header, are measured in the Phase 2 spike; they are unproven (§20).
 
 ### 7.4 Service workers and downloads
 
@@ -278,12 +302,15 @@ An agent that can edit files could widen a profile (`allowedOrigins`, `network`,
 
 ### 7.7 Fail closed
 
-In the default `full` guard mode every required layer (L1 and L2) must install and pass the start-of-run self-check (a probe request to an out-of-scope origin, a probe non-safe request, a probe WebSocket, a probe to a non-proxied destination). If any fails, the run ends `errored`; **it never silently downgrades**. `l1_only` is selected only by the explicit option `--guard l1-only`, is recorded in the manifest, and is used for the labelled preview (§7.9). In either mode, a traffic class that is unavailable or untested is recorded in `guardCoverage` and the report prints "guard coverage incomplete". A run is never described as contained unless its mode is `full` **and** the Guarantee Register shows the relevant entries Tested; reports print the register's assurance levels.
+In the default `full` guard mode every required layer (L1 and L2) must install and pass the start-of-run self-check (a probe request to an out-of-scope origin, a probe non-safe request, a probe WebSocket, a probe worker creation that must be denied, a probe to a non-proxied destination). If any fails, the run ends `errored` with `terminalReason: guard_unavailable` or `guard_probe_failed` (§4); **it never silently downgrades**. `l1_only` is selected only by the explicit option `--guard l1-only`, is recorded in the manifest, and is used for the labelled preview (§7.9). In either mode, a traffic class that is unavailable or untested is recorded in `guardCoverage` and the report prints "guard coverage incomplete". A run is never described as contained unless its mode is `full` **and** the Guarantee Register shows the relevant entries Tested; reports print the register's assurance levels.
 
 ### 7.8 Known limits
 
 - Audit-only is not a state-immutability guarantee (§5.1): `GET` side effects, `Set-Cookie` sessions, approved read-only POST rules and server background work can change server state. `deniedPathPatterns` reduce but cannot remove the risk, and every report states the limitation.
 - Blocking `POST` means login forms cannot be used in audit mode; authentication uses a pre-provisioned session (Q-04).
+- **Worker-originated WebSockets** are prevented only by denying workers (§7.3). With `workers: allow` they are uncontrolled, and L2 cannot block a WebSocket to an allowed origin.
+- **DNS** is not performed by QA Sentinel in `dnsMode: pinned`; in `dnsMode: system` the OS resolver may query a resolver outside the machine, which no containment claim covers (§7.10).
+- **Screenshots** mask only configured selectors and may still contain secrets (§11).
 
 ### 7.9 Guard modes and traffic-class coverage
 
@@ -301,31 +328,42 @@ Traffic-class coverage by mode. Every entry is **Designed** today; "Required tes
 | Page HTTP(S) requests (navigation, fetch, XHR, subresources): origin, scheme, method, path | L1 request interception | L2 destination refusal | AC-05, AC-06, AC-21, AC-39 |
 | Redirects out of scope | L1 | L2 | AC-06 |
 | Service-worker registration and requests | L1 context option (block) | L2 destination refusal | AC-22 |
-| Dedicated/shared worker HTTP requests | L1 coverage **unverified** | L2 destination refusal (host and port only) | AC-06, AC-22, AC-39 |
+| Dedicated/shared worker **creation** | L1 init-script constructor removal plus injected `worker-src 'none'` (two independent in-browser measures, **unverified**) | L2 destination refusal for anything that slips through | AC-46 |
+| Dedicated/shared worker HTTP requests (only with `workers: allow`) | L1 coverage **unverified** | L2 destination refusal (host and port only) | AC-06, AC-39 |
 | WebSocket opened from a page | L1 close-without-connect | same (L2 cannot see frames or TLS upgrades) | AC-22 |
-| WebSocket opened from a worker | L1 coverage **unverified** | L2 destination refusal only | AC-22 |
+| WebSocket opened from a worker | Prevented **only** by worker denial; no direct control | **None**: L2 cannot block a WebSocket to an allowed origin inside a TLS tunnel | AC-46 |
 | WebRTC, UDP, QUIC | L1 init script (page frames only) plus browser WebRTC policy | L2 does not carry UDP; QUIC disabled at launch | AC-23, AC-38, AC-39 |
 | Downloads | L1 option | — | AC-24 |
 | Browser permissions and non-HTTP(S) schemes | L1 | — | AC-21 |
-| DNS and any other non-proxied outbound connection | **not controlled** | L2 forces proxying; verified by independent observation | AC-38 |
+| DNS and any other non-proxied outbound connection | **not controlled** | L2 forces proxying; `dnsMode: pinned` means no resolver is called (§7.10); `dnsMode: system` is **not covered**; verified by independent observation | AC-38, AC-49 |
 | Method enforcement over HTTPS | L1 only (L2 sees the destination, not the method) | same | AC-05 |
 
 In `l1_only` mode the following are **not claimable at all**: that outbound traffic is restricted (AC-38), that workers, DNS or non-proxied traffic are controlled, and equivalence with `full` mode. In `full` mode a class is claimable only after its test is Tested; classes with unverified coverage stay `untested` in `guardCoverage`.
 
-**AC-38 evidence rule.** Outbound traffic must be observed at a layer **independent of the guard** (OS-level socket or packet observation covering TCP, UDP, QUIC and DNS, for every process the run starts) while the fixture exercises each class adversarially. Guard logs alone are not evidence. If no such observation exists, AC-38 is not passed.
+**AC-38 evidence rule.** Outbound traffic must be observed at a layer **independent of the guard**, system-wide, covering TCP, UDP, QUIC and DNS, for every process the run starts and for resolver processes acting on their behalf, while the fixture exercises each class adversarially. Guard logs alone are not evidence. AC-38 can be passed only in `full` mode with `dnsMode: pinned` (or loopback-only targets); a `dnsMode: system` run cannot pass it. If no reliable independent observation exists on a supported OS, AC-38 is **not passed** and the unqualified Release 0.1 is blocked. The criterion is not narrowed to make this easier.
+
+### 7.10 DNS and name resolution
+
+This section resolves the apparent contradiction between "only the in-scope target and loopback" and an external DNS resolver: **in the claimed configuration no DNS query is made at all.**
+
+- **Who resolves.** Only the QA Sentinel egress proxy process may resolve names, and in `pinned` mode it does not. The browser sends hostnames to the proxy and must not resolve destinations itself; browser-side resolution paths (DNS prefetch, built-in secure DNS, a local resolver for proxy-bypass hosts) are disabled at launch. Which flags achieve that is **unverified** and decided in the Phase 2 spike. No other QA Sentinel process resolves names for the target.
+- **`dnsMode: pinned` (proposed default, Q-30).** The profile carries `dnsPins: {host: [ip, …]}` inside `policyHash`, so adding or changing a pin needs human approval. For each allowed `host:port` the proxy connects to a **pinned IP literal** and never calls `dns.lookup`, `dns.resolve` or any resolver. `localhost` and loopback literals map to `127.0.0.1`/`::1` without any lookup. An allowed host with no pin is refused and recorded. TLS still uses the hostname for SNI and certificate checks. The operator owns pin accuracy.
+- **`dnsMode: system`.** The proxy process calls the OS resolver (`getaddrinfo`; on macOS this goes through the system resolver daemon, and it may use encrypted DNS). That can send queries to a resolver outside the machine, which is a connection to a third party, so a `system` run **cannot pass AC-38 and cannot claim GR-25**. Its reports say "DNS via system resolver: not covered" and make no outbound-restriction claim.
+- **Independent DNS observation.** Per-process socket listing is not sufficient, because a lookup made through the system resolver daemon is sent by that daemon, not by a QA Sentinel process. Observation therefore uses packet capture on the machine's interfaces (UDP and TCP 53, TCP 853, UDP/TCP 5353, UDP 443 for QUIC, plus any non-loopback connection by a run process), or an isolated network namespace or firewall that denies everything except loopback and logs attempts (L3). The fixture uses unique reserved-TLD canary names (`*.test`, `*.invalid`) in links, redirects, fetches and `dns-prefetch` hints; AC-38 requires zero queries or connections for them. Encrypted DNS appears as a non-loopback connection and is caught that way, not by content. Packet capture normally needs elevated privileges; whether this is practical on each OS is Q-25.
+- **If no reliable design can be established**, AC-38 and AC-49 stay unpassed and the unqualified Release 0.1 is blocked (§17). Nothing in this section is Implemented or Tested.
 
 ## 8. Data flows
 
 **Audit**
 1. `qa-sentinel audit <target>` → Orchestrator loads the profile and checks the `ProfileApproval` against `policyHash`.
-2. Start-of-run guard self-check (§7.7); `guardCoverage` is recorded.
+2. Start-of-run guard self-check (§7.7); `guardCoverage` is recorded. In `full` mode a failed layer or probe ends the Run `errored` here: no spec executes, all are `not_run`, no confirmation rerun starts (§4).
 3. Profiler performs a bounded, scope-limited discovery.
 4. Planner selects check packs and authored specs → TestSpecs.
 5. Guardian pre-checks the plan (classes vs mode, budgets). Over-class specs are rejected with a recorded reason, not downgraded silently.
 6. Executor runs each spec under L1/L2 → ExecutionRecords + Evidence (redacted before hashing, §11).
 7. Analyst derives candidate findings, deduplicates by fingerprint, runs confirmation per the check's policy (§6).
 8. Reporter renders reports (JSON canonical, Markdown, self-contained HTML) into `reports/<runId>/`.
-9. Orchestrator closes the Run with a summary including `not_run`, guard coverage and identity basis.
+9. Orchestrator closes the Run with exactly one terminal status (`completed`, `partial`, `aborted` or `errored`, §4), the `terminalReason`, a summary including `not_run`, guard coverage and identity basis. The status is immutable afterwards.
 
 **Fix claim and verification** (Phase 4)
 1. An external actor calls `qa-sentinel finding claim-fix <id> --actor <label> --build <build-id> [--commit <sha>]`; the finding becomes `fix_claimed` (not fixed).
@@ -390,11 +428,13 @@ Stages: **capture → classify → redact (where reliable) → label → hash �
 
 | Value | Meaning | Examples |
 |-------|---------|----------|
-| `redacted` | All configured redaction rules were applied. This is **not** proof that nothing sensitive remains | Captured request/response data, console logs, reports |
-| `partially_redacted` | Only masking or value-dropping was applied; other content is unmodified | Screenshots (masked selectors only), DOM captures (input values dropped) |
+| `redacted` | All configured redaction rules were applied, including **exact-value scrubbing of text**. This is **not** proof that nothing sensitive remains | **Text artifacts only**: captured request/response data, console logs, DOM text captures, reports |
+| `partially_redacted` | Only masking was applied; other content, including **pixels**, is unmodified and may contain secrets | **Screenshots** (configured selectors masked only) |
 | `not_redacted` | No reliable redaction exists | **Traces**, quarantined downloads, any raw capture |
 
-Secret-removal claims and acceptance criteria (AC-19, AC-32) apply only to the database, logs, reports and artifacts labelled `redacted` or `partially_redacted`, and only within the documented rules. They make **no claim** about `not_redacted` artifacts, and no report may state or imply that such artifacts are free of secrets.
+Exact-value secret-removal claims and acceptance criteria (AC-19, AC-32, GR-16) apply **only** to the database, logs, reports and artifacts labelled `redacted`, that is, text artifacts where exact-value scrubbing is reliable, and only within the documented rules and encodings. They make **no claim** about `partially_redacted` artifacts (screenshots) or `not_redacted` artifacts (traces, downloads), and no report may state or imply that such artifacts are free of secrets. **No document may claim that screenshot contents are secret-free** unless a mechanism for it has been implemented and tested against a recorded commit.
+
+**Screenshot masking limits.** Screenshots use Playwright's `mask` option on the profile's `sensitiveSelectors`. That obscures those elements only. It does **not** guarantee that a resolved secret is absent from the image: a secret rendered outside a masked element (a toast, an error banner, a URL or text shown elsewhere, a canvas, an image, a cross-origin iframe, a shadow-DOM or dynamically inserted node that no selector matches, a secret split across elements) stays in the pixels, and no OCR or pixel analysis is performed. Consequences: screenshots are always `partially_redacted`; screenshots from authenticated runs are `restricted` and encrypted at rest (storage protection, not redaction); retention follows FR-065; viewing and export are gated and logged (§11 events); reports and the UI show the masking limit next to every screenshot and never use "secret-free" or "sanitized" wording for them. An optional mitigation (a DOM pre-scan that masks any node whose visible text contains a resolved secret before capture) is **not designed**; if ever adopted it needs its own requirement, an adversarial planted-secret test, a new register entry and a recorded decision (Q-28) before any pixel-level claim is made. AC-48 tests that the limit is documented and labelled, not that screenshots are clean.
 
 **Capture minimization.** Store only what supports a finding or the run record: response bodies only for failing assertions (size-capped), DOM snapshots only for failing checks, screenshots only on failure or at declared checkpoints. **Traces are off by default for every run.**
 
@@ -404,8 +444,8 @@ Secret-removal claims and acceptance criteria (AC-19, AC-32) apply only to the d
 1. Headers: store values only for an allowlist; all others keep the name with the value removed. Cookies and `Set-Cookie` values are always removed.
 2. URL query values are removed by default for names matching secret-like patterns and any names the profile lists.
 3. JSON/form body fields are removed by configured paths.
-4. **Exact-value scrubbing:** every resolved secret value (from the profile's environment references), and its URL-encoded and base64 forms, is removed from every `redacted` or `partially_redacted` artifact, log and report.
-5. Screenshots mask `sensitiveSelectors`; DOM captures drop input values.
+4. **Exact-value scrubbing (text only):** every resolved secret value (from the profile's environment references), and its URL-encoded and base64 forms, is removed from every text artifact (captured request/response data, console logs, DOM text captures), the database, logs and reports. This does **not** reach pixels, and other encodings (for example HTML entities, hex or custom encodings) are outside the guarantee.
+5. Screenshots mask `sensitiveSelectors` (selector masking only; see the limits above); DOM captures drop input values.
 6. A high-entropy-token heuristic **flags** possible leftovers for review; it is not a guarantee.
 7. `redactions[]` lists what was applied. Playwright's HAR recording has no redaction option (per its docs), so raw HAR is **never** written to the artifact store; HAR-like data is built from captured events or sanitized before hashing.
 
@@ -464,7 +504,7 @@ qa-sentinel abort <run>
 ```
 - Human-only commands require an interactive TTY and typed confirmation; non-interactive invocations are refused with exit code `3`. This blocks non-interactive agents; it does not prove human identity (§9).
 - Every command supports `--json` (stable, versioned, no ANSI) and respects `NO_COLOR`.
-- Exit codes: `0` ok / nothing at or above `--fail-on`; `1` findings at or above `--fail-on`; `2` usage or configuration error; `3` denied by policy; `4` runtime error or partial run.
+- Exit codes: `0` ok / nothing at or above `--fail-on`; `1` findings at or above `--fail-on`; `2` usage or configuration error; `3` denied by policy; `4` runtime error, or a run that ended `partial`, `aborted` or `errored` (§4).
 - The `--json` output is the **integration contract**, versioned by `schemaVersion`.
 - `--trace` is off by default and is refused for targets with an auth profile in Release 0.1 (§11). `--guard l1-only` is the only way to run without L2; it produces a labelled preview (§7.9) and is never selected automatically.
 
@@ -541,7 +581,7 @@ Deterministic checks (ceilings in §6.1): reachability and 4xx/5xx; uncaught exc
 
 | Release | Phases | Contents | Not included |
 |---------|--------|----------|--------------|
-| **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-38 and AC-39 passed; check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
+| **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 passed; check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
 | 0.1-preview (**only if L2 fails AC-39**) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38 shown as *not evaluated* |
 | **0.2 Fix verification** | 4 | `claim-fix`, `verify`, identity bases with confidence | Dashboard, MCP, grants |
 | **0.3 Dashboard** | 5 | Local dashboard and API | MCP, grants |
@@ -549,7 +589,9 @@ Deterministic checks (ceilings in §6.1): reachability and 4xx/5xx; uncaught exc
 | **1.0 Authorization** | 7 | Grants, A2/A3 under human approval; the engine stays AI-free | — |
 | Post-1.0 | 8 | More target kinds, plugin interface, L2 approvals, L3 isolation guidance, optional `ai-assist`, possible authenticated-trace strategy | — |
 
-**What an unqualified Release 0.1 requires.** L2 passes AC-39; AC-38 is passed with independent observation (§7.9); each containment claim is limited to traffic classes whose register entries are Tested; every other 0.1 acceptance criterion in `prd.md` §8 passes with a recorded run. The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result and recorded as a decision.
+**What an unqualified Release 0.1 requires.** L2 passes AC-39; AC-38 is passed with independent observation covering DNS (§7.9, §7.10); worker denial passes AC-46; DNS behavior passes AC-49; each containment claim is limited to traffic classes whose register entries are Tested; every other 0.1 acceptance criterion in `prd.md` §8 passes with a recorded run. The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result and recorded as a decision.
+
+**Blocking items for the unqualified Release 0.1.** AC-22 (page, frame and service-worker coverage), AC-46 (worker denial and worker-originated WebSockets), AC-38 (independent observation including DNS), AC-39 (egress proxy) and AC-49 (DNS pinned behavior) are each currently **unpassed**. If any of them cannot be passed, the unqualified Release 0.1 does not ship and no release material may imply the corresponding capability. A worker-WebSocket or DNS capability that cannot be made reliable is documented as unavailable rather than described as partly working.
 
 **If L2 fails.** There is no unqualified Release 0.1. A **0.1-preview** may ship in `l1_only` mode only if every report, CLI summary and JSON result says so (AC-44), claims no containment or outbound restriction, and shows AC-38 as not evaluated. It may not be described as equivalent to full mode. Nothing here weakens the 0.1 criteria to make them easier to pass.
 
@@ -564,19 +606,19 @@ Assurance as of this revision. "Needed for Tested" lists the acceptance criteria
 | GR-01 | Audit mode blocks non-safe HTTP methods for browser requests the guard sees | Designed | AC-05 |
 | GR-02 | Requests outside `allowedOrigins`, including redirects, are blocked (`full` mode) | Designed | AC-06, AC-39 |
 | GR-03 | Non-HTTP(S) schemes are blocked and browser permissions are denied | Designed | AC-21 |
-| GR-04 | WebSockets are denied by default (page and worker origin) | Designed | AC-22 |
+| GR-04 | WebSockets opened from a **page or frame** are denied by default (L1 close-without-connect). Worker-originated WebSockets are **not** covered by this entry (see GR-31) | Designed | AC-22 |
 | GR-05 | Service workers cannot bypass routing | Designed | AC-22 |
 | GR-06 | WebRTC, UDP and QUIC cannot reach the network (`full` mode) | Designed | AC-23, AC-38, AC-39 |
 | GR-07 | Downloads are denied or quarantined, never executed | Designed | AC-24 |
 | GR-08 | Only parsed read-only POST requests matching an approved rule pass | Designed | AC-25 |
 | GR-09 | A run cannot start on a changed policy without human approval; a fresh CI workspace is refused | Designed | AC-26, AC-45 |
-| GR-10 | Guard failure fails closed in `full` mode with no silent downgrade; untested coverage is reported | Designed | AC-27 |
+| GR-10 | Guard failure fails closed in `full` mode: the run ends `errored`, never silently downgrades; untested coverage is reported | Designed | AC-27, AC-47 |
 | GR-11 | `passed` exists only for executed checks | Designed | AC-04 |
 | GR-12 | AI cannot influence outcomes or run in the engine | Designed | AC-15, AC-28 |
 | GR-13 | `confirmed` follows the check's confirmation policy and ceiling | Designed | AC-07, AC-08, AC-29 |
 | GR-14 | `verified_fixed` requires a same-basis identity change and a passing frozen repro, and is reported with its basis and confidence | Designed | AC-12, AC-13, AC-30 |
 | GR-15 | History tables resist update/delete; chains are tamper-evident; tombstones are append-only | Designed | AC-31, AC-43 |
-| GR-16 | Secrets and redaction-configured fields are absent from the database, logs, reports and artifacts labelled `redacted` or `partially_redacted` (within documented limits). **Excludes `not_redacted` artifacts such as traces and downloads, about which no secret-removal claim is made** | Designed | AC-19, AC-32 |
+| GR-16 | Resolved secret values (within the listed encodings) are absent from the database, logs, reports and artifacts labelled `redacted` (text artifacts). **Excludes `partially_redacted` artifacts (screenshots: masking covers configured selectors only and pixels may contain secrets) and `not_redacted` artifacts (traces, downloads); no secret-free claim is made about any of them** | Designed | AC-19, AC-32, AC-48 |
 | GR-17 | `restricted` evidence is encrypted at rest. This is a storage claim and **not** a redaction claim | Designed | AC-33 |
 | GR-18 | Retention, purge and tombstones behave as specified | Designed | AC-34, AC-43 |
 | GR-19 | Restricted evidence is not exported without human confirmation | Designed | AC-35 |
@@ -585,12 +627,14 @@ Assurance as of this revision. "Needed for Tested" lists the acceptance criteria
 | GR-22 | Agents cannot approve grants or profile policy through adapters | Designed | AC-10, AC-16, AC-26 |
 | GR-23 | A same-user process cannot forge approvals | **Not claimed** (L1 does not resist this) | — (needs L2) |
 | GR-24 | Runs are reproducible from the manifest | Designed | AC-09 |
-| GR-25 | No QA Sentinel process contacts anything except the in-scope target and loopback during an audit, observed independently of the guard (`full` mode only; **not claimable in `l1_only`**) | Designed | AC-38 |
+| GR-25 | No QA Sentinel process contacts anything except the in-scope target and loopback during an audit, and no DNS query leaves the machine, observed independently of the guard (`full` mode with `dnsMode: pinned` only; **not claimable in `l1_only` or with `dnsMode: system`**) | Designed | AC-38, AC-49 |
 | GR-26 | Authenticated traces are not captured in Release 0.1; unauthenticated opt-in traces are labelled `not_redacted` | Designed | AC-40 |
 | GR-27 | Reports state the audit-only limitation and never imply state immutability | Designed | AC-41 |
 | GR-28 | Identity basis and confidence are reported accurately; `target_reported` is never described as attested | Designed | AC-30 |
 | GR-29 | `l1_only` runs are labelled preview, make no containment claim, and show AC-38 as not evaluated | Designed | AC-44 |
 | GR-30 | The self-contained HTML report meets the accessibility criteria | Designed | AC-42 |
+| GR-31 | Worker-originated WebSockets cannot be opened because dedicated and shared workers are denied by two independent in-browser measures. **No L2 backstop exists** (L2 cannot block a WebSocket to an allowed origin in a TLS tunnel). Not claimable with `workers: allow` | Designed | AC-46 |
+| GR-32 | A run ends in exactly one of `completed`, `partial`, `aborted`, `errored`; terminal statuses are immutable; a crashed or guard-failed run is never `completed` | Designed | AC-47 |
 
 No entry is Implemented, Tested or Independently verified. Nothing in this register may be raised without recorded execution evidence.
 
@@ -601,10 +645,11 @@ New runner → implement `Runner`. New target kind (API contract, mobile, CLI) �
 ## 20. Feasibility notes and unproven items
 
 - Playwright request interception, tracing, per-context isolation, screenshot masking, service-worker blocking and WebSocket close-without-connect are documented features. Their behavior against our guarantees is untested.
-- **Unproven:** worker-originated WebSockets and requests; `sendBeacon` routing; WebRTC suppression; Chromium proxy flags (loopback bypass, WebRTC policy); the L2 proxy against HTTPS targets; CSP injection side effects; redaction completeness; confirmation behavior on flaky targets; fingerprint stability.
+- **Unproven:** worker denial (constructor removal and CSP `worker-src`, including `blob:`/`data:`/nested/iframe workers) and therefore worker-originated WebSocket prevention; worker-originated requests when `workers: allow`; `sendBeacon` routing; WebRTC suppression; Chromium proxy flags (loopback bypass, WebRTC policy); the L2 proxy against HTTPS targets; CSP injection side effects; redaction completeness; confirmation behavior on flaky targets; fingerprint stability.
 - `node:sqlite` loads on this machine's Node v24.21.0; its stability for our use is unassessed (Phase 1 spike). Registry versions seen on 2026-11-16: playwright 1.65.1, @axe-core/playwright 4.14.0, better-sqlite3 13.2.0, zod 4.6.7, hono 4.13.18, vitest 5.1.0; pinned in Phase 1, nothing installed now.
 - Fresh browser contexts isolate client state only; server state is shared (§6.3).
 - Audit-only authentication needs a pre-provisioned session; scale is single-machine, one run at a time.
 - **Unproven or open from reviews 2 and 3:** keychain access through `security`/`secret-tool` subprocesses (availability on headless Linux/CI); the L2 proxy on HTTPS targets, loopback bypass and QUIC suppression (AC-39); how to observe all outbound traffic independently of the guard for AC-38 (tooling per OS is undecided, Q-25); whether encryption at rest (AC-33) is achievable without a native dependency; CI approval of profile policy (Q-16); any tested strategy for authenticated traces (Q-26).
 - **Identity limits:** `target_reported` is not cryptographic proof, `operator_asserted` is a statement, and `surfaceFingerprint` cannot see backend-only changes; no independent attestation mechanism exists (`independently_attested` is reserved, Q-27).
 - **Audit-only limits:** `GET` side effects, `Set-Cookie` sessions and approved read-only POST rules can change server state (§5.1); this is a known, reported limitation, not an open defect.
+- **Revision 4 open items:** (1) no mechanism exists to remove secrets from screenshot pixels beyond selector masking, and none is claimed (Q-28); (2) worker-originated WebSockets have no L2 backstop and depend entirely on AC-46 passing (Q-29); (3) the DNS design (`pinned` versus `system`, browser-side resolution suppression, system-wide DNS observation per OS) is unproven and AC-38 and AC-49 are unpassed (Q-25, Q-30); (4) crash-recovery transition of `running` runs to `aborted` and immutability of terminal statuses are untested (AC-47).

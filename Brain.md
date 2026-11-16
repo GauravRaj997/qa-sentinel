@@ -1,6 +1,6 @@
 # QA Sentinel — Brain
 
-> Status: Phase 0 draft, revision 3, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+> Status: Phase 0 draft, revision 4, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
 
 ## 1. Vision
 
@@ -18,7 +18,7 @@ It exists because the people and tools that build software are poorly placed to 
 6. **Reproducibility.** Each run records enough (tool version, target profile and policy, test specs, browser version, seeds, environment) to be re-run and compared. History is append-only.
 7. **Independent fix verification.** A claimed fix is verified by a separate run against the original frozen reproduction, on a target identity that changed, with the basis of that identity (target-reported, operator-asserted or fallback fingerprint, each with its confidence) stated and weak bases never presented as strong — never by the actor who made the fix, and never by assumption.
 8. **Technology neutrality.** Targets are described by profiles, not hard-coded. Black-box testing through browsers and HTTP is the common denominator; stack-specific knowledge is an optional plugin.
-9. **Privacy first.** Data stays on the user's machine by default. Evidence is minimized, classified, redacted where redaction is reliable (and labelled where it is not), encrypted at rest when sensitive, retained for a bounded time and not exported by default. Redaction and encryption are different protections and are never conflated; traces are off by default and never described as redacted. QA Sentinel never writes into a target's repository.
+9. **Privacy first.** Data stays on the user's machine by default. Evidence is minimized, classified, redacted where redaction is reliable (and labelled where it is not), encrypted at rest when sensitive, retained for a bounded time and not exported by default. Redaction and encryption are different protections and are never conflated; traces are off by default and never described as redacted; screenshots only have configured elements masked and are never claimed secret-free. QA Sentinel never writes into a target's repository.
 10. **AI never determines status.** Execution, policy and status assignment are deterministic code with no AI dependency. AI, if ever added, may only propose; it can never set a test outcome, a confirmation, a policy decision, a grant or an approval.
 11. **Boring and inspectable.** Prefer plain files, SQLite, JSON schemas and a CLI that a human can read and a script can drive.
 12. **Assurance honesty.** Every protective claim carries an assurance level: **Designed** (documented only), **Implemented** (code exists), **Tested** (automated tests, including adversarial fixtures, pass against a recorded commit), **Independently verified** (reviewed or attacked by an independent party against a pinned commit). QA Sentinel says "guarantee" only at Tested or above, and says plainly what a mechanism does *not* resist.
@@ -66,7 +66,7 @@ Proposed phases and releases (to be approved; Phase 0 approval does not approve 
 
 Authorization is deliberately last: the riskiest capability ships when the guard, evidence and verification layers already exist and have been tested. Before 1.0 there is no code path that allows a non-safe request other than profile-approved, parsed read-only entries. Details: `architecture.md` §17.
 
-Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests. If the egress layer fails, only a clearly labelled **0.1-preview** with incomplete guard coverage may exist; it must not claim equivalent containment (`architecture.md` §7.9, §17).
+Release 0.1 needs the **full guard mode** (in-browser guard plus egress proxy) to pass its acceptance tests, including worker denial (AC-46) and DNS-free egress observed independently (AC-38, AC-49); each is currently unpassed. If the egress layer fails, only a clearly labelled **0.1-preview** with incomplete guard coverage may exist; it must not claim equivalent containment (`architecture.md` §7.9, §17).
 
 Later horizons, not committed: additional runners (API contract, accessibility, visual regression), other AI-tool adapters, CI gating, comparison across builds, team sharing of reports.
 
@@ -84,10 +84,13 @@ A developer using any AI tool points QA Sentinel at an app they own, gets a repo
 - **Finding** — a claim about the target with a status (`confirmed`, `suspected`, `informational`) and evidence.
 - **Confirmation policy** — per-check rules (ceiling, k, failure-signature matching, isolation) deciding how far a finding may be promoted.
 - **Evidence** — hash-addressed artifacts (screenshot, trace, HAR-like data, console log, response body) tied to an execution record, classified `public` or `restricted`, and labelled with a `redactionStatus`.
-- **Redaction status** — `redacted`, `partially_redacted` or `not_redacted`; independent of encryption. Traces are `not_redacted`.
+- **Redaction status** — `redacted`, `partially_redacted` or `not_redacted`; independent of encryption. Text artifacts are `redacted`; screenshots are `partially_redacted` (selector masking only, no secret-free claim); traces and downloads are `not_redacted`.
 - **Audit-only** — no intentional, known state-changing actions; not a guarantee that server state is unchanged.
 - **Guard mode** — `full` (in-browser guard plus egress proxy) or `l1_only` (labelled preview, incomplete coverage).
 - **Guard coverage** — which traffic classes (WebSocket, WebRTC, service workers, downloads, proxy) were actively guarded and verified in a run.
+- **Run status** — `running`, then exactly one terminal status: `completed`, `partial` (budget), `aborted` (user abort or crash found later) or `errored` (could not proceed or complete safely); terminal statuses are immutable.
+- **Worker denial** — dedicated and shared workers are denied by default so worker-originated WebSockets cannot exist; the egress proxy cannot block a WebSocket to an allowed origin.
+- **DNS mode** — `pinned` (the proxy connects to pinned IPs and resolves nothing) or `system` (the OS resolver is used; DNS may leave the machine and is not covered by any containment claim).
 - **Grant** — explicit, scoped, expiring, use-limited human authorization above audit level (Release 1.0).
 - **Identity basis** — how a target's build identity was established, with a stated confidence: `target_reported` (reported by the target; not cryptographic proof), `operator_asserted` (a statement), or `surfaceFingerprint` (fallback only); `independently_attested` is reserved for a future verifiable mechanism.
 - **Verification record** — outcome of an independent re-run of a finding's frozen reproduction.

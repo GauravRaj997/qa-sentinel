@@ -1,6 +1,6 @@
 # QA Sentinel — Agent Roles
 
-> Status: Phase 0 draft, revision 3, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
+> Status: Phase 0 draft, revision 4, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
 >
 > Assurance: everything below is **Designed**, none **Implemented**, **Tested** or **Independently verified**. See `architecture.md` §0 and the Guarantee Register (§18). Module boundaries and data shapes are in `architecture.md`; principles in `Brain.md`.
 
@@ -29,7 +29,7 @@ Two separate groups:
 - **Responsibility:** drive a run end to end, enforce budgets, check the profile approval, record the manifest and summary, handle abort.
 - **Permissions:** read profiles, approvals, specs, grants; write `Run`; invoke other roles. No browser or network access.
 - **Workflow:** load profile → verify `ProfileApproval` matches `policyHash` → guard self-check → Profiler → Planner → Guardian → Executor → Analyst → Reporter → close run (with `not_run` counts, guard coverage and identity basis).
-- **Boundaries:** cannot raise an action class, create approvals or grants, or mark outcomes. On budget exhaustion it stops and records `partial`.
+- **Boundaries:** cannot raise an action class, create approvals or grants, or mark outcomes. Sole setter of a run's terminal status: `partial` on budget exhaustion, `aborted` on user abort (or crash recovery at the next start), `errored` when the run cannot proceed or complete safely (guard failure in `full` mode, browser, store or internal failure), otherwise `completed`. A terminal status is immutable, executed specs keep their outcomes and the rest are `not_run`, and no confirmation rerun starts after a guard failure.
 
 ### 3.2 Profiler
 - **Responsibility:** bounded, scope-limited discovery (pages, links, forms, observed endpoints) and target identity capture (build id, commit, surface fingerprint).
@@ -50,7 +50,7 @@ Two separate groups:
 ### 3.5 Executor
 - **Responsibility:** run specs through the Runner under L1/L2 guards and capture evidence through the `evidence` module (classification, redaction where reliable, and `redactionStatus` labelling before hashing).
 - **Permissions:** drive the browser within Guardian-supplied rules; write `ExecutionRecord` and `Evidence`. **Sole producer of `outcome`.**
-- **Boundaries:** blocked requests are aborted and recorded (`blockedByPolicy`), never retried differently. Marks a spec `not_run` if it did not execute and `errored` if infrastructure failed — never `passed`. If a required guard layer cannot be installed or fails its self-check, a `full`-mode run ends `errored` (it never silently downgrades to `l1_only`).
+- **Boundaries:** blocked requests are aborted and recorded (`blockedByPolicy`), never retried differently. Marks a spec `not_run` if it did not execute and `errored` if infrastructure failed — never `passed`. If a required guard layer cannot be installed or fails its self-check, the Executor reports it and the Orchestrator ends the run `errored` (it never silently downgrades to `l1_only`). Worker creation is denied by default; the Executor never enables workers unless the approved profile sets `workers: allow`, and then labels the run `workers-allowed`. Screenshots are captured with selector masking only and are labelled `partially_redacted`.
 
 ### 3.6 Analyst
 - **Responsibility:** derive candidate findings from executions, deduplicate by fingerprint, run confirmation per the check's confirmation policy, assign status (within the policy's ceiling) and a default severity.
@@ -67,7 +67,7 @@ Two separate groups:
 ### 3.8 Reporter
 - **Responsibility:** render runs, findings and verifications into JSON (canonical), Markdown and self-contained HTML.
 - **Permissions:** read-only on records; write report artifacts and `exported` evidence events.
-- **Boundaries:** displays the status vocabulary exactly, executed vs `not_run` counts, the checks that ran, guard mode and coverage, the audit-only limitation statement, each result's identity basis and confidence, each artifact's redaction status (never calling a trace redacted) and the assurance caveat; embeds only `public` evidence; never states a pass for a check without an execution record. Exporting `restricted` evidence needs a human-confirmed flag.
+- **Boundaries:** displays the status vocabulary exactly, executed vs `not_run` counts, the checks that ran, guard mode and coverage, the audit-only limitation statement, each result's identity basis and confidence, the run status and terminal reason (`completed`, `partial`, `aborted` or `errored`, never softened), each artifact's redaction status (never calling a trace redacted or a screenshot secret-free; screenshots carry the masking limit) and the assurance caveat; embeds only `public` evidence; never states a pass for a check without an execution record. Exporting `restricted` evidence needs a human-confirmed flag.
 
 ## 4. Permission matrix
 
@@ -131,7 +131,7 @@ W = sole writer · R = may read · — = no access
 - No role may widen scope, extend a grant, change policy or lower a confirmation threshold.
 - Abort (`qa-sentinel abort <run>`) takes effect before the next request and leaves a consistent `aborted` run.
 - Budgets are mandatory; profiles that omit them get conservative defaults.
-- Any anomaly in policy enforcement aborts the run with `errored`; it never proceeds unguarded, and untested coverage is reported as such.
+- Any anomaly in policy enforcement ends the run `errored` (a distinct status from a user `aborted`); it never proceeds unguarded, and untested coverage is reported as such.
 
 ## 8. Phase mapping
 
