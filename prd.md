@@ -1,6 +1,6 @@
 # QA Sentinel — Product Requirements
 
-> Status: Phase 0 draft, revision 7, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
+> Status: Phase 0 draft, revision 8, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
 >
 > **Assurance language.** Requirements describe what the product must do. A protection is only called a *guarantee* once the related acceptance criteria pass (**Tested**) and, for security claims, an independent review exists (**Independently verified**). Until then it is **Designed**. See `architecture.md` §0.
 
