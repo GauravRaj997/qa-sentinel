@@ -1,6 +1,6 @@
 # QA Sentinel — Architecture
 
-> Status: Phase 0 draft, revision 6, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+> Status: Phase 0 draft, revision 7, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
 
 ## 0. How to read this document (assurance language)
 

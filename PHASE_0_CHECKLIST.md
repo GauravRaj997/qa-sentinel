@@ -1,28 +1,39 @@
 # QA Sentinel — Phase 0 Checklist
 
 > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
-> **Phase 0 status: revision 6 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. (details in §11).**
-> Last updated: 2026-11-16 (revision 6, after the independent review of revision 5, commit `7863d3a`).
+> **Phase 0 status: revision 7 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732`; revision 6 is committed and pushed as `7ae6732` on branch `changes` (the checked-out branch, equal to `origin/changes`); `main` and `origin/main` remain at `7863d3a` (revision 5); the revision 7 edits are uncommitted (details in §11).**
+> Last updated: 2026-11-16 (revision 7, after the independent review of revision 6, commit `7ae6732` on `changes`).
 
 **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
 **Assurance vocabulary:** Designed (documented only) · Implemented (code exists) · Tested (passing automated tests against a recorded commit) · Independently verified (independent review against a pinned commit). See `architecture.md` §0. **Nothing is above Designed.**
 
 ## 1. Deliverables
 
-| # | File | Written (latest revision) | Cross-checked by script (rev. 6) | Approved |
+| # | File | Written (latest revision) | Cross-checked by script (rev. 7) | Approved |
 |---|------|---------------------------|----------------------------------|----------|
 | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 | 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
 | 3 | `design_system.md` | ✅ (edited; rev. 4: RunStatusBadge, Errored state, screenshot masking note, `uncontrolled` coverage state) | ✅ | ⛔ awaiting you |
 | 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
 | 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
-| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 6: §1, §2, §5, §6, §11, D-15, D-36, Q-01, Q-24 updated) | ✅ | ⛔ awaiting you |
+| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 7: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
 | — | `README.md` | ✅ (status line) | ✅ | — |
-| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 6 bundle; not a deliverable) | ✅ | — | — |
+| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 7 bundle; not a deliverable) | ✅ | — | — |
 
-"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`) and revision 5 (commit `7863d3a`) found the four technical findings substantially addressed; the revision 5 review found the one release-condition inconsistency fixed in revision 6. No per-document independent sign-off is recorded, and no document is approved.
+"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency fixed in revision 7. No per-document independent sign-off is recorded, and no document is approved.
 
-## 2. Revision 6: before/after change summary
+## 2. Revision 7: before/after change summary
+
+Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition or register assurance level was changed.
+
+| Review finding | Before (revision 6, as committed in `7ae6732`) | After (revision 7) |
+|----------------|-----------------------------------------------|--------------------|
+| **Git audit trail** | Said `main`, `changes` and both `origin` branches all point at `7863d3a`, that `main` is the checked-out branch, and that revision 6 edits are uncommitted | Observed facts only: four commits; **revision 6 is committed and pushed as `7ae6732` on `changes`** (checked out; equals `origin/changes`); `main` and `origin/main` (and the remote default `HEAD`) are at `7863d3a` = revision 5, so `main` does **not** contain revision 6; working tree was clean at the start of revision 7; the revision 7 edits are uncommitted and not pushed, awaiting your decision. History was not rewritten and nothing was committed, pushed, branched or merged by this session |
+| **Regression checks** | Documented git state compared with the repository by commit chain only | The documented branch pointers, checked-out branch, containing commit for each revision, and clean-tree/uncommitted statements are checked against the repository; wording from revision 6 (\"all branches at 7863d3a\", \"checked-out branch is `main`\", \"revision 6 edits are uncommitted\") fails the check |
+
+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; the Release 0.1 and 0.1-preview conditions of revision 6 are untouched and the five acceptance criteria are byte-identical to revision 6; every limitation and open question is preserved; Phase 1 has not started.
+
+### Previous: revision 6 before/after change summary (kept for history)
 
 Documentation-only. No acceptance criterion, requirement, design or register assurance level was changed or weakened.
 
@@ -162,7 +173,11 @@ All resolutions are **Designed**; none is Implemented or Tested.
 | F3-5c CI pre-approved workspace | Resolved as interim (D-42); mechanism **open** (Q-16) |
 | F3-5d Append-only tombstones | Resolved (D-41, AC-43) |
 
-## 5. Work completed (revision 6, then 5, 4, 3)
+## 5. Work completed (revision 7, then 6, 5, 4, 3)
+
+**Revision 7**
+
+- ✅ Git audit trail corrected in the header, Q-01 and §11 from observed facts (revision 6 is on `changes` at `7ae6732`; `main` is at `7863d3a`); regression checks added; fresh cross-document review (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command, history rewrite or push by this session.
 
 **Revision 6**
 
@@ -195,29 +210,31 @@ All resolutions are **Designed**; none is Implemented or Tested.
 - ✅ Fresh cross-document review (§6).
 - ✅ Constraints respected at the time: Phase 1 not started; nothing installed; no git (the repository appeared later, created by you); no code; no real target; no other project touched.
 
-## 6. Cross-review results (revision 6)
+## 6. Cross-review results (revision 7)
 
-**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with release-condition regression checks and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, approval-list coverage, git description against the real repository, filesystem safety). This is a script check, **not** an independent review.
+**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with repository audit-trail checks and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, the revision 6 release and preview conditions, filesystem safety). This is a script check, **not** an independent review.
 
-**Revision 5 run:** 130 checks, 0 failed (`7863d3a`).
+**Revision 6 run:** 144 checks, 0 failed (the documents committed as `7ae6732`).
 
-**New release-condition regression checks (revision 6):**
-- No remaining "only if L2 fails" / "if the egress layer fails" wording in any live document (the old, incomplete condition).
-- The rule "the unqualified 0.1 is blocked if any of AC-22, AC-38, AC-39, AC-46 or AC-49 is unpassed" appears in Brain §5, the prd release row, the prd usable test, architecture §17 and D-36.
-- The prd and architecture preview rows name the blocker set (AC-38, AC-39 or AC-49), require AC-22 and AC-46 to have passed, and require owner approval; architecture §17 carries five numbered preview conditions; Brain, prd FR-019, D-36 and Q-24 agree with them, including that nothing ships if AC-22 or AC-46 is unpassed.
-- AC-44, FR-019, GR-29, the §7.9 mode row, the release rows and design_system list AC-38, AC-39 and AC-49 as not evaluated in a preview, and AC-44 forbids implying that worker denial has been tested or that worker-originated WebSockets are controlled.
-- No line says a preview gives full containment, equivalent guard coverage, tested worker denial or controlled worker WebSockets; no preview line mentions workers without a limiting qualifier; every line naming the 0.1-preview carries a conditioning qualifier.
-- **No acceptance criterion is weakened:** AC-22, AC-39, AC-46 and AC-49 are byte-identical to their revision 5 text; AC-38 differs only by the added clause "(like AC-39 and AC-49)"; AC-44 only gained requirements.
+**New checks (revision 7), run against the live repository with read-only git commands:**
+- The four commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `changes`; `changes` = `origin/changes` = `7ae6732`; `main` = `origin/main` = `7863d3a`; `git ls-remote origin` agrees (`refs/heads/changes` = `7ae6732`, `refs/heads/main` = `7863d3a`, remote `HEAD` = `7863d3a`).
+- Repository evidence that revision 6 content is in `7ae6732` and not in `7863d3a`, so `main` lacks it.
+- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 7 edits are uncommitted) and nothing is staged.
+- The header, Q-01 and §11 name all four commit ids; the §11 bullet carries every required fact (checked-out branch, both remote branches, `main` does not contain revision 6, author versus co-author, read-only git use, uncommitted and not pushed).
+- No live document carries the revision 6 claims (all branches at `7863d3a`, `main` checked out, revision 6 uncommitted) or claims this session committed, pushed or merged anything.
+- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 6); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 6.
 
-**Revision 6, first run: 144 checks, 2 failed.** Both hits were one real imprecision in `architecture.md` §17: the sentence "The decision between 0.1 and 0.1-preview is made at the end of Phase 2 from the spike result" read like a free choice, and the requirement list used present-tense "passes". It now says a preview is **not** an alternative route to the five criteria, that it is permitted only under the conditions below, and that the decision is taken from recorded acceptance results. No criterion changed.
+**Revision 7, first run: 154 checks, 1 failed.** The checklist header named only two of the four commit ids while the check required the whole chain. The header now carries the chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732`. No check was weakened.
 
-**Mutation test.** Nine planted regressions were each caught: the old "only if L2 fails AC-39" preview row restored; AC-46 dropped from the preview row; the "nothing ships" rule dropped from Brain; a line saying the preview confirms worker denial is tested; AC-49 dropped from the architecture preview blocker; the blocked-if-any rule dropped from the prd 0.1 row; the worker non-implication dropped from AC-44; AC-46 weakened; a line saying the preview gives full containment.
+**Mutation test.** Ten planted regressions were each caught: the revision 6 \"uncommitted\" claim restored; \"`main` does not contain revision 6\" reversed; the header claiming `main` is checked out; \"not committed or pushed\" dropped; the \"all branches at `7863d3a`\" claim restored; the newest commit id removed from Q-01 (the first attempt left the id elsewhere in the row and so did not remove the fact; the second removed every occurrence); a Guarantee Register row weakened; AC-46 changed; the preview conditions altered.
 
-**Final run: 144 checks, 0 failed.**
+**Limit of this check.** The documentation describes the repository at one moment. If you commit or push revision 7, the working-tree and \"uncommitted\" checks will fail until the documents are updated, which is the intended behavior. A document also cannot name the SHA of the commit that will contain it.
+
+**Final run: 154 checks, 0 failed.**
 
 ```
 INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
 INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
 INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
 PASS  no stale term: target_attested
@@ -231,6 +248,7 @@ PASS  no stale term: Release 0.1 ships with L1
 PASS  no stale term: revision 3, pending approval
 PASS  no stale term: revision 4, pending approval
 PASS  no stale term: revision 5, pending approval
+PASS  no stale term: revision 6, pending approval
 PASS  no stale term: revision 2
 PASS  no stale term: Non-interactive and CI use is unresolved
 PASS  no stale term: status (completed | partial | aborted)
@@ -288,7 +306,7 @@ PASS  evidence rows immutable, events append-only, no mutable tombstone field
 PASS  AC-42 present in prd, design_system, arch register
 PASS  no stale phase refs (checklist may quote them only in history)
 PASS  release names present in prd and arch
-PASS  all seven docs say revision 6 in their status line
+PASS  all seven docs say revision 7 in their status line
 PASS  architecture Run model lists the five statuses and terminalReason
 PASS  all nine terminalReason values defined in architecture §4
 PASS  every `ends the run X` names one of the four terminal statuses
@@ -357,18 +375,27 @@ PASS  every line naming the 0.1-preview carries a conditioning qualifier
 PASS  Q-24 and D-36 are marked revised and keep the Phase 2 owner decision
 PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
 PASS  AC-44 only gained requirements (every revision 5 clause still present)
-PASS  actual git history matches the documented three commits, parent links, author=committer=user, Claude only as Co-Authored-By trailer, all branches at 7863d3a, HEAD on `main`
+PASS  no live document carries the revision 6 git claims (all branches at 7863d3a, main checked out, revision 6 uncommitted)
+PASS  documents state that `main` does not contain revision 6 and that revision 6 is committed and pushed on `changes`
+PASS  no document claims that this session committed, pushed, branched or merged anything
+PASS  revision 7 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 6
+PASS  revision 7 left the 0.1-preview conditions (architecture §17) byte-identical to revision 6
+PASS  revision 7 left every Guarantee Register row byte-identical to revision 6
+PASS  actual git state matches the documentation: four commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `changes`, changes=origin/changes=7ae6732, main=origin/main=7863d3a
+PASS  repository evidence: revision 6 content is in 7ae6732 and not in 7863d3a (so `main` at 7863d3a lacks it)
+PASS  documented 'uncommitted' status matches the working tree (dirty tree iff documents say the revision 7 edits are uncommitted), and nothing is staged
+PASS  git ls-remote origin agrees: refs/heads/changes=7ae6732, refs/heads/main=7863d3a, remote HEAD=7863d3a
 PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
 PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
-PASS  checklist header, Q-01 and §11 agree on all three commit ids
+PASS  checklist header, Q-01 and §11 agree on the four commit ids
 PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
 PASS  config/targets, tests, reports are still empty
 PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
 
-TOTAL: 144 checks, 0 failed
+TOTAL: 154 checks, 0 failed
 ```
 
-**Semantic review (manual re-read).** The release rule now reads identically in Brain §5, prd (F3, FR-019, release table, usable test, AC-38, AC-44), architecture (§7.7, §7.9, §17, GR-29), design_system and the checklist (D-15, D-36, Q-24): all five criteria are required; any unpassed one blocks the unqualified 0.1; a preview needs an L2/DNS blocker, passed L1 criteria including AC-46, owner approval, `l1_only` mode and bounded wording. One consequence is stated, not hidden: if AC-22 or AC-46 is unpassed, nothing ships at all, because the preview rests on L1. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
+**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 6 is committed and pushed as `7ae6732` on `changes` (checked out, equal to `origin/changes`); `main` and `origin/main` stay at `7863d3a` (revision 5); the revision 7 edits are uncommitted and unpushed; this session wrote nothing to git. Whether to bring `main` forward, and whether to commit or push revision 7, are your decisions and are asked (Q-01), not assumed. No technical content changed.
 
 **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
 
@@ -390,7 +417,7 @@ No security guarantee is implemented or tested. Anything in the documents that r
 
 | ID | Question | Default if unanswered | Needed by | Status |
 |----|----------|-----------------------|-----------|--------|
-| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a`; `main`, `changes` and both `origin` branches at `7863d3a`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 6 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732`. `changes` (checked out) = `origin/changes` = `7ae6732`, which holds revision 6; `main` = `origin/main` = `7863d3a` (revision 5). Keep this history and branch layout, and should `main` be brought forward to revision 6 (your decision; this session will not merge or push)? Confirm license `UNLICENSED` (private) | Keep it; revision 7 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
 | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
 | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
 | Q-04 | Allow a login `POST` in audit mode? | No; pre-provisioned session | Phase 2 | ❓ |
@@ -475,5 +502,5 @@ After approval, **Phase 1 still requires its own plan and approval** before any 
 
 - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
 - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
-- **Verified (this folder, revision 6):** Git history: three commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4 content, parent `ddbb7c6`) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5 content, parent `4aa540c`). `main`, `changes` and both `origin/main` and `origin/changes` all point at `7863d3a`; the checked-out branch is `main`. On all three commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 6 edits are uncommitted working-tree changes on `main`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+- **Verified (this folder, revision 7):** Git history, observed read-only with `git status`, `git branch -vv`, `git log`, `git rev-parse` and `git ls-remote origin` at the start of revision 7: four commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5) → **`7ae6732` ("Bump Phase 0 docs to revision 6", 13:36, parent `7863d3a`, revision 6 content)**. Branch `changes` is **checked out** and, together with `origin/changes`, points at `7ae6732`; **revision 6 is committed and pushed on `changes`** (verified: the status line of each document says revision 6 in `7ae6732` and revision 5 in `7863d3a`). Branch `main` and `origin/main` are at `7863d3a` (revision 5), and the remote's default `HEAD` also resolves to `7863d3a`, so **`main` does not contain revision 6**. The working tree was clean at the start of revision 7. On all four commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`) and has staged, committed, pushed, branched and merged nothing. **The revision 7 edits (this audit-trail correction) are uncommitted working-tree changes on `changes`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
 - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
