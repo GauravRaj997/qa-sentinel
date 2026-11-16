@@ -1,6 +1,6 @@
 # QA Sentinel — Architecture
 
-> Status: Phase 0 draft, revision 4, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+> Status: Phase 0 draft, revision 5, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
 
 ## 0. How to read this document (assurance language)
 
@@ -581,7 +581,7 @@ Deterministic checks (ceilings in §6.1): reachability and 4xx/5xx; uncaught exc
 
 | Release | Phases | Contents | Not included |
 |---------|--------|----------|--------------|
-| **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 passed; check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
+| **0.1 Audit CLI** | 1–3 | Profiles + policy lock; audit mode in **`full` guard mode (L1+L2)** with AC-22, AC-38, AC-39, AC-46 and AC-49 required to pass (each currently unpassed); check packs; findings with confirmation policies; evidence lifecycle; JSON/Markdown/accessible HTML reports; run history and compare; `--json` contract and CI exit codes (CI needs a pre-approved workspace); Claude Code command kit; fixtures that validate it | Dashboard, MCP, verification, grants, any modifying action, authenticated traces |
 | 0.1-preview (**only if L2 fails AC-39**) | 1–3 | The same functionality in `l1_only` mode, labelled "preview: guard coverage incomplete" | Everything excluded from 0.1, **plus any containment or outbound-traffic claim**; AC-38 shown as *not evaluated* |
 | **0.2 Fix verification** | 4 | `claim-fix`, `verify`, identity bases with confidence | Dashboard, MCP, grants |
 | **0.3 Dashboard** | 5 | Local dashboard and API | MCP, grants |

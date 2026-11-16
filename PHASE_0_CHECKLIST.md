@@ -1,26 +1,41 @@
 # QA Sentinel — Phase 0 Checklist
 
 > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
-> **Phase 0 status: revision 4 written and cross-reviewed. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. A git repository exists that this session did not create (your initial commit `ddbb7c6`, containing revision 3); this session ran only read-only git commands and committed nothing.**
-> Last updated: 2026-11-16 (revision 4, after the third independent review).
+> **Phase 0 status: revision 5 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. (details in §11).**
+> Last updated: 2026-11-16 (revision 5, after the independent review of revision 4 on branch `changes`, commit `4aa540c`).
 
 **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
 **Assurance vocabulary:** Designed (documented only) · Implemented (code exists) · Tested (passing automated tests against a recorded commit) · Independently verified (independent review against a pinned commit). See `architecture.md` §0. **Nothing is above Designed.**
 
 ## 1. Deliverables
 
-| # | File | Written | Cross-reviewed (rev. 3) | Approved |
-|---|------|---------|-------------------------|----------|
-| 1 | `Brain.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
-| 2 | `prd.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
-| 3 | `design_system.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
-| 4 | `architecture.md` | ✅ (edited; new §5.1, §7.9; §10, §11, §17, §18 rewritten) | ✅ | ⛔ awaiting you |
-| 5 | `AGENT_ROLES.md` | ✅ (edited) | ✅ | ⛔ awaiting you |
-| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten) | ✅ | ⛔ awaiting you |
+| # | File | Written (latest revision) | Cross-checked by script (rev. 5) | Approved |
+|---|------|---------------------------|----------------------------------|----------|
+| 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
+| 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
+| 3 | `design_system.md` | ✅ (edited; rev. 4: RunStatusBadge, Errored state, screenshot masking note, `uncontrolled` coverage state) | ✅ | ⛔ awaiting you |
+| 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
+| 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
+| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 5: §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
 | — | `README.md` | ✅ (status line) | ✅ | — |
-| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 4 bundle; not a deliverable) | ✅ | — | — |
+| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 5 bundle; not a deliverable) | ✅ | — | — |
 
-## 2. Revision 4: before/after change summary
+"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the review of revision 4 on branch `changes` (commit `4aa540c`) found the four technical findings substantially addressed and the documentation inconsistencies fixed in revision 5. No per-document independent sign-off is recorded, and no document is approved.
+
+## 2. Revision 5: before/after change summary
+
+Documentation-only. No design, requirement, acceptance criterion or register entry was changed.
+
+| Review finding | Before (revision 4) | After (revision 5) |
+|----------------|---------------------|--------------------|
+| **1. §11 git history** | "A git repository exists with one commit (`ddbb7c6`)" | Two commits: `main` at `ddbb7c6`; `changes` at `4aa540c` (revision 4, parent `ddbb7c6`); both on `origin`. Author and committer Gaurav Raj; Claude Sonnet 5.5 only as a `Co-Authored-By` trailer. Header, Q-01 and §11 agree; revision 5 edits are uncommitted |
+| **2. §1 cross-review labels** | Column "Cross-reviewed (rev. 3)" | Column "Cross-checked by script (rev. 5)" with a note that this is not independent review; independent review is recorded only as you reported it for `4aa540c`; no approval implied |
+| **3. §1 architecture description** | Mentioned §5.1 and §7.9 only | Lists §7.10 DNS and name resolution and the revision 4 additions (§4 run status and profile fields, §7.3 worker denial, §7.8, §11 screenshot limits, §17 blocking items, 32-entry register, §20); other documents' rows list their revision 4 additions |
+| **4. Consistency check** | 119 checks | Re-run with new checks (git description, no independent-review overclaim, five blockers unpassed, no Implemented/Tested wording for worker denial, DNS containment or L2 enforcement); results in §6 |
+
+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; every unresolved limitation and open question is preserved.
+
+### Previous: revision 4 before/after change summary (kept for history)
 
 | Review finding | Before (revision 3) | After (revision 4) |
 |----------------|---------------------|--------------------|
@@ -135,7 +150,13 @@ All resolutions are **Designed**; none is Implemented or Tested.
 | F3-5c CI pre-approved workspace | Resolved as interim (D-42); mechanism **open** (Q-16) |
 | F3-5d Append-only tombstones | Resolved (D-41, AC-43) |
 
-## 5. Work completed (revision 4, then revision 3)
+## 5. Work completed (revision 5, then revision 4, then revision 3)
+
+**Revision 5**
+
+- ✅ §11 git history, header and Q-01 corrected to the two-commit state with author versus co-author kept distinct.
+- ✅ §1 deliverables table relabelled (script cross-check, no independent-review claim) and architecture/other descriptions extended with the revision 4 additions including §7.10.
+- ✅ Fresh cross-document review with new guard checks (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command by this session.
 
 **Revision 4**
 
@@ -157,23 +178,21 @@ All resolutions are **Designed**; none is Implemented or Tested.
 - ✅ Fresh cross-document review (§6).
 - ✅ Constraints respected at the time: Phase 1 not started; nothing installed; no git (the repository appeared later, created by you); no code; no real target; no other project touched.
 
-## 6. Cross-review results (revision 4)
+## 6. Cross-review results (revision 5)
 
-**Method.** A script (`xreview.py`, kept in the session scratchpad, not part of the project) ran 119 mechanical checks across all seven documents and the folder: stale terms and old wording, acceptance-criteria and release-table coverage, Guarantee Register counts and statuses, ID and section references, trace/redaction/audit-only/identity wording, the revision 4 chains (run status, screenshots, workers, DNS), the approval-list coverage of every question needed by Phase 0 to 2, and filesystem safety. The revision 3 script no longer existed in the scratchpad, so this script was **rebuilt**; its regular expressions carry self-tests that must fire on bad sentences before the run, and it was **mutation-tested** (below).
+**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with revision 5 checks and re-run across all seven documents and the folder: everything from the revision 4 review (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers and DNS, approval-list coverage, filesystem safety) plus: the documented git history against the actual repository (two commits, parent link, author and committer versus `Co-Authored-By`, checked-out branch); no "one commit" wording in live text; the §1 table labelling and its absence of independent-review claims; the architecture row's §7.10 and revision 4 additions; no document claiming worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed; and AC-22, AC-46, AC-38, AC-39 and AC-49 not marked passed. This is a script check, **not** an independent review.
 
-**First complete run: 116 checks, 15 failed.** One was a real finding, three led to document corrections, and eleven were defects in the script itself:
-- *Real finding (not a document defect):* a git repository exists in this folder (`.git`, `.gitignore`). It holds one commit, `ddbb7c6` "Initial commit", 2026-11-16 11:28, by your identity; this session never ran a git write command. The checklist header, §5, Q-01, §10 and §11 previously said no git repository existed; they are corrected, and a check now guards the wording.
-- *Document corrections:* `AGENT_ROLES.md` Reporter now names the run status and terminal reason and forbids calling a screenshot secret-free; the checklist statements about git; Q-01.
-- *Script defects fixed, no check weakened:* the history scope for old wording (the checklist legitimately quotes old terms in its before/after tables, decision alternatives, gap tables and in this pasted output); the approval-list check rejected Q-16 as "extra" (it is Phase 3 but its interim default D-42 is confirmed at Phase 0 approval, so it is kept and reported as an INFO line); two audit-only wording patterns missed "audit-only limitation" and "not guaranteed unchanged"; an identity-basis pattern matched "attested" inside `independently_attested`; a window too short for `minIdentityBasis`; the worker-WebSocket detector matched only one word order (caught by its own self-test); a transcript scan that read an unset field.
-- *Observation, not a failure:* a sibling project (`Git/jeevanpulse`) shows file changes and its own commits by your identity. This session issued no Write or Edit there (verified from the transcript); modification times alone cannot prove authorship.
+**Revision 4 run (recorded in commit `4aa540c`):** 119 checks, 0 failed.
 
-**Mutation test.** Six planted regressions were each caught: AC-27 losing `errored`; the old three-status Run model restored; screenshots grouped with `redacted` again; an unqualified "Worker WebSockets are denied" line; Q-04 removed from the approval list; AC-38's DNS requirement removed.
+**Revision 5, first run of the extended script: 130 checks, 1 failed.** The failure was a real wording ambiguity, not a script defect: the Release 0.1 row in `architecture.md` §17 read "with AC-22, AC-38, AC-39, AC-46 and AC-49 passed", which could be taken as a present claim. It now reads "required to pass (each currently unpassed)". No requirement or criterion changed.
 
-**Final run: 119 checks, 0 failed.**
+**Mutation test of the new checks.** Six planted regressions: author/co-author distinction dropped; "one commit" wording restored; "Worker denial is tested" added; "AC-46 passed" added; an independent-review claim added to §1; the §1 label reverted to "rev. 3". The first pass missed two of them because of the test harness and one scope gap: the harness copies the folder without `.git`, which skipped the whole git block (including its text-only checks), and the one-commit check did not scan the checklist header. The text-only checks were moved out of the git block and the scope widened; every planted regression is then caught. No check was weakened.
+
+**Final run: 130 checks, 0 failed.**
 
 ```
 INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
 INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
 INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
 PASS  no stale term: target_attested
@@ -185,6 +204,7 @@ PASS  no stale term: export_events
 PASS  no stale term: `tombstone?`
 PASS  no stale term: Release 0.1 ships with L1
 PASS  no stale term: revision 3, pending approval
+PASS  no stale term: revision 4, pending approval
 PASS  no stale term: revision 2
 PASS  no stale term: Non-interactive and CI use is unresolved
 PASS  no stale term: status (completed | partial | aborted)
@@ -242,7 +262,7 @@ PASS  evidence rows immutable, events append-only, no mutable tombstone field
 PASS  AC-42 present in prd, design_system, arch register
 PASS  no stale phase refs (checklist may quote them only in history)
 PASS  release names present in prd and arch
-PASS  all seven docs say revision 4 in their status line
+PASS  all seven docs say revision 5 in their status line
 PASS  architecture Run model lists the five statuses and terminalReason
 PASS  all nine terminalReason values defined in architecture §4
 PASS  every `ends the run X` names one of the four terminal statuses
@@ -290,18 +310,28 @@ PASS  unverified Chromium DNS flags are labelled unverified in arch §7.10 and �
 PASS  design_system GuardCoveragePanel covers workers, DNS mode and `uncontrolled`
 PASS  no live checklist text claims 'no git repository' (one exists, created by the user)
 PASS  README and the six documents do not claim the absence of git
-PASS  git history is a single user-authored commit that this session did not create (no commit newer than the revision 3 bundle by a non-user identity)
-PASS  no file matches auto-load names (AGENTS.md, CLAUDE.md, CLAUDE.local.md; case-insensitive)
+PASS  §1 deliverables table is labelled as script cross-check for revision 5 and keeps no 'rev. 3' label
+PASS  §1 makes no independent-review claim for any document (each mention is a negation or attributed to the user's report)
+PASS  §1 architecture row lists §7.10 DNS and name resolution and the revision 4 additions
+PASS  §1 does not mark any document approved
+PASS  revision 5 summary exists, is documentation-only, and keeps the blockers unpassed
+PASS  no document claims worker denial, DNS containment or L2 enforcement is implemented, tested, verified or passed
+PASS  no document marks AC-22, AC-46, AC-38, AC-39 or AC-49 as passed
+PASS  the five blockers are still described as unpassed in prd and architecture
+PASS  actual git history matches the documented two commits, parent link, author=committer=user, Claude only as Co-Authored-By trailer, HEAD on `changes`
+PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
+PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
+PASS  README and the checklist header, Q-01 and §11 agree on both commit ids
 PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
 PASS  config/targets, tests, reports are still empty
 PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
 
-TOTAL: 119 checks, 0 failed
+TOTAL: 130 checks, 0 failed
 ```
 
-**Semantic review (manual re-read of the five revision 4 chains).** (1) Screenshots: architecture §11, FR-061, AC-19/32/48, GR-16, Brain principle 9 and the glossary, and design_system RedactionBadge all say that exact-value removal is claimed for text artifacts only and that screenshots are `partially_redacted` with no secret-free claim. (2) Workers: architecture §7.3/§7.8/§7.9, FR-011/012/026, AC-06/22/46, GR-04/31 and §17 agree that L2 cannot block a WebSocket to an allowed origin, that denial of workers is the only mechanism, and that AC-46 is unpassed and blocks the unqualified 0.1. (3) Run status: architecture §4/§7.7/§8/§12, FR-016/017/018/025, NFR-012, AC-27/44/47, GR-10/32, AGENT_ROLES §3.1/§3.5/§3.8/§7 and design_system states use the same five values. (4) DNS: architecture §7.2/§7.9/§7.10/§17, FR-015/027, AC-38/49 and GR-25 agree that only the proxy resolves, that `pinned` makes no DNS query, that `system` cannot pass AC-38, and that missing reliable observation leaves AC-38 and AC-49 unpassed. (5) The approval list contains every unresolved question needed by Phase 0, 1 or 2.
+**Semantic review (manual re-read).** §1, §2, the header, Q-01 and §11 now describe the same git history: `main` at `ddbb7c6`, `changes` at `4aa540c` with parent `ddbb7c6`, both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as a `Co-Authored-By` trailer; revision 5 uncommitted. The deliverables table says "cross-checked by script", marks nothing approved and attributes independent review only to your report about `4aa540c`. The architecture row lists §7.10 and the other revision 4 additions. The four technical chains from revision 4 (screenshots, workers, run status, DNS) were not touched.
 
-**Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. In particular: every register entry is still Designed; the worker-denial mechanism, the DNS design and its observation method, screenshot masking limits, run-status immutability and crash recovery are all untested; and no document can show that Chromium flags or Playwright behavior match the design until the Phase 2 spike.
+**Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
 
 ## 7. Guarantee status summary
 
@@ -321,7 +351,7 @@ No security guarantee is implemented or tested. Anything in the documents that r
 
 | ID | Question | Default if unanswered | Needed by | Status |
 |----|----------|-----------------------|-----------|--------|
-| Q-01 | Git was already initialized by you (initial commit `ddbb7c6`, 2026-11-16 11:28, revision 3 content). Keep that repository as the project's history? Confirm license `UNLICENSED` (private) | Keep it; revision 4 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+| Q-01 | Git already exists (created outside this session): `main` at `ddbb7c6`, `changes` at `4aa540c` (revision 4), both on `origin`; author and committer Gaurav Raj, Claude Sonnet 5.5 only as `Co-Authored-By`. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 5 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
 | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
 | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
 | Q-04 | Allow a login `POST` in audit mode? | No; pre-provisioned session | Phase 2 | ❓ |
@@ -406,5 +436,5 @@ After approval, **Phase 1 still requires its own plan and approval** before any 
 
 - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
 - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
-- **Verified (this folder, revision 4):** a git repository exists with one commit (`ddbb7c6`, by your identity, 11:28), which this session did not create; this session issued only read-only git commands; no file other than Markdown (plus your `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+- **Verified (this folder, revision 5):** Git history: branch `main` is at `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content); branch `changes` (the checked-out branch) is at `4aa540c` ("Update project docs", 2026-11-16 13:14 +0530, revision 4 content), whose parent is `ddbb7c6`; both branches also exist on `origin`. On both commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`log`, `status`, `show`, `branch`, `rev-parse`) and has staged, committed, pushed and branched nothing. Revision 5 edits are uncommitted working-tree changes on `changes`. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
 - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
