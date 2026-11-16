@@ -36,7 +36,7 @@ b20fd72e4caa2982e11f6abf8417f95b918ed58369d06913ac7b4f14212ac8a7  prd.md        
 a395ca42c3e76d797dce85e4312d40438eac6b87cb1baf24754133437fc0f280  design_system.md       181 lines
 8858fd4966119638304d1100cd5568795e8dd983d6b3ec70e739d7e30670f77c  architecture.md        662 lines
 0e52d14c0202600da01d1965d3cf139c712fc15581847724d6dc6b6f4cb17fe9  AGENT_ROLES.md         151 lines
-95fbe8b3fddb784703dadde26c01361fd9fbd35c7bcdfd3c67753510f8066bb6  PHASE_0_CHECKLIST.md   598 lines
+102a3338b7b9caeca738d3c72373b2b056578d4863bd9a5710f5783ed1fbe631  PHASE_0_CHECKLIST.md   598 lines
 c108ffb5efc1378f23adb45b64ee74f6cc4e88c506abf34fc288b048d856fc03  README.md              25 lines
 ```
 
@@ -49,7 +49,7 @@ Change statistics, revision 10 (commit `5659e22`) to revision 10.1 (lines, from 
 | design_system.md | 181 | 181 | +0 / -0 |
 | architecture.md | 662 | 662 | +0 / -0 |
 | AGENT_ROLES.md | 151 | 151 | +0 / -0 |
-| PHASE_0_CHECKLIST.md | 560 | 598 | +67 / -29 |
+| PHASE_0_CHECKLIST.md | 560 | 598 | +68 / -30 |
 | README.md | 25 | 25 | +0 / -0 |
 
 The complete unified diff is embedded in section 11 and also saved outside the project at `/private/tmp/claude-501/-Users-roop-Desktop-myProjects/1dfb48a0-cd59-4868-b259-c02ead363404/scratchpad/PHASE_0_REVISION11.diff`.
@@ -1997,7 +1997,7 @@ W = sole writer · R = may read · — = no access
 The execution engine (`core`, `policy`, `evidence`, `runner-*`, `store`) has no AI dependency, verified by a dependency check. AI reasoning may help a human or a future `ai-assist` package *suggest* checks or summaries, but it can never directly determine whether a test ran, passed, failed or was confirmed. See `architecture.md` §4.2.
 <!-- END FILE: AGENT_ROLES.md -->
 
-<!-- BEGIN FILE: PHASE_0_CHECKLIST.md sha256=95fbe8b3fddb784703dadde26c01361fd9fbd35c7bcdfd3c67753510f8066bb6 -->
+<!-- BEGIN FILE: PHASE_0_CHECKLIST.md sha256=102a3338b7b9caeca738d3c72373b2b056578d4863bd9a5710f5783ed1fbe631 -->
 # QA Sentinel — Phase 0 Checklist
 
 > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
@@ -2009,7 +2009,7 @@ The execution engine (`core`, `policy`, `evidence`, `runner-*`, `store`) has no 
 
 ## 1. Deliverables
 
-| # | File | Written (latest revision) | Cross-checked by script (rev. 10) | Approved |
+| # | File | Written (latest revision) | Cross-checked by script (rev. 10.1) | Approved |
 |---|------|---------------------------|----------------------------------|----------|
 | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 | 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
@@ -2642,6 +2642,13 @@ Context of two lines per hunk. `a/` is the revision 10 snapshot (identical to co
 +> Last updated: 2026-11-16 (revision 10.1, audit trail only, after revision 10 was committed as `5659e22` and `main` was fast-forwarded to it).
  
  **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
+@@ -10,5 +10,5 @@
+ ## 1. Deliverables
+ 
+-| # | File | Written (latest revision) | Cross-checked by script (rev. 10) | Approved |
++| # | File | Written (latest revision) | Cross-checked by script (rev. 10.1) | Approved |
+ |---|------|---------------------------|----------------------------------|----------|
+ | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 @@ -17,11 +17,24 @@
  | 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
  | 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |

@@ -9,7 +9,7 @@
 
 ## 1. Deliverables
 
-| # | File | Written (latest revision) | Cross-checked by script (rev. 10) | Approved |
+| # | File | Written (latest revision) | Cross-checked by script (rev. 10.1) | Approved |
 |---|------|---------------------------|----------------------------------|----------|
 | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 | 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
