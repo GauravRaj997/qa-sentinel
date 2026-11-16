@@ -1,18 +1,18 @@
-# QA Sentinel — Phase 0 Review Bundle (revision 8)
+# QA Sentinel — Phase 0 Review Bundle (revision 9)
 
 This bundle is a **read-only copy** prepared for independent review. It is not one of the six Phase 0 deliverables and it changes none of them. The files in this folder remain authoritative; every embedded copy below carries a SHA-256 so it can be checked against the file on disk.
 
 ## Status statement (read first)
 
 - Phase 0 is **not approved**. Phase 1 has **not started**. No code, dependencies or target connection exists.
-- **Git history (observed read-only at the start of revision 8 with `git status`, `git branch -vv`, `git log --oneline --decorate -5`, `git rev-parse HEAD`, `git rev-parse origin/changes`, `git rev-parse origin/main` and `git ls-remote origin`; documented in PHASE_0_CHECKLIST.md §11):** five commits in a line: `ddbb7c6` ("Initial commit", revision 3) → `4aa540c` ("Update project docs", revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5") → `7ae6732` ("Bump Phase 0 docs to revision 6") → **`20915d3` ("Bump Phase 0 docs to revision 7", parent `7ae6732`)**. Branch **`changes` is checked out**; `HEAD`, `changes`, `origin/changes` and the remote `refs/heads/changes` all equal `20915d3`: **revision 7 is committed and pushed there**; the working tree was clean with nothing staged; `changes` is 2 commits ahead of `main` and 1 ahead of `7ae6732`. **`main`, `origin/main` and the remote default `HEAD` are at `7863d3a` (revision 5); `main` contains neither revision 6 nor revision 7.** On all five commits the **author and committer** is Gaurav Raj; Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer** (co-author, not author). These commits were made outside this session's tool calls. This session ran only read-only git commands and staged, committed, pushed, branched and merged nothing, rewrote no history and force-pushed nothing. **The revision 8 edits, including this bundle, are uncommitted and unpushed working-tree changes on `changes`; committing or pushing them awaits the user's decision.** A document cannot record the SHA of the commit that will contain it.
+- **Git history (observed read-only at the start of revision 9 with `git status`, `git branch -vv`, `git log --oneline --decorate -6`, `git rev-parse` of `HEAD`, `changes`, `origin/changes`, `main` and `origin/main`, and `git ls-remote origin`; documented in PHASE_0_CHECKLIST.md §11):** six commits in a line: `ddbb7c6` ("Initial commit", revision 3) → `4aa540c` ("Update project docs", revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5") → `7ae6732` ("Bump Phase 0 docs to revision 6") → `20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`; the tip of `changes` at the start of revision 8) → **`c5f48e5` ("Bump Phase 0 docs to revision 8", 15:37, parent `20915d3`)**. Branch **`main` is checked out**; `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `refs/heads/main`, `refs/heads/changes` and default `HEAD` **all equal `c5f48e5`**: **revision 8 is committed and pushed on both `main` and `changes`**, the two branches are identical, and `main` now contains revisions 6, 7 and 8 (it was at `7863d3a` at the start of revision 8; it was moved outside this session). The working tree was clean with nothing staged. On all six commits the **author and committer** is Gaurav Raj; Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer** (co-author, not author). These commits and the branch move were made outside this session's tool calls. This session ran only read-only git commands and staged, committed, pushed, branched and merged nothing, rewrote no history and force-pushed nothing. **The revision 9 edits, including this bundle, are uncommitted and unpushed working-tree changes on the checked-out branch `main`; committing or pushing them awaits the user's decision.** A document cannot record the SHA of the commit that will contain it.
 - **No guarantee is Implemented, Tested or Independently verified.** There is no code to implement or test, and no independent review of an implementation has taken place. Every protective mechanism in these documents is **Designed** only. Worker denial, DNS containment and L2 enforcement are **not** implemented or tested.
-- Revision 8 is documentation-only (repository audit trail). It changes no design, requirement, release condition, acceptance criterion, technical limitation or register entry: AC-22, AC-38, AC-39, AC-44, AC-46 and AC-49, the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 7. **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed; the unqualified Release 0.1 is blocked while any of them is.** The independent reviews of revisions 4 to 7 are recorded only as the user reported them; no per-document independent sign-off or approval is recorded.
+- Revision 9 is documentation-only (repository audit trail). It changes no design, requirement, release condition, acceptance criterion, technical limitation or register entry: AC-22, AC-38, AC-39, AC-44, AC-46 and AC-49, the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 8. **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed; the unqualified Release 0.1 is blocked while any of them is.** The independent reviews of revisions 4 to 8 are recorded only as the user reported them; no per-document independent sign-off or approval is recorded.
 
 ## Contents
 
 1. Verification of this bundle (file hashes) and change statistics
-2. Revision 8 before/after change summary (the earlier summaries stay below it in the checklist)
+2. Revision 9 before/after change summary (the earlier summaries stay below it in the checklist)
 3. Open questions register and proposed defaults (complete)
 4. Guarantee Register (complete, each status preserved)
 5. Gap resolution G-01 to G-16 and review-3 findings
@@ -21,7 +21,7 @@ This bundle is a **read-only copy** prepared for independent review. It is not o
 8. Fresh cross-document review output
 9. Known limitations and untested assumptions
 10. Complete documents: Brain.md, prd.md, design_system.md, architecture.md, AGENT_ROLES.md, PHASE_0_CHECKLIST.md, README.md
-11. Unified diff, revision 7 to revision 8
+11. Unified diff, revision 8 to revision 9
 
 ---
 
@@ -30,41 +30,41 @@ This bundle is a **read-only copy** prepared for independent review. It is not o
 File hashes at generation time:
 
 ```
-a811886b380840bfd04320d161cba663666d51fc75041120e1d17701620de75e  Brain.md               100 lines
-0bcad04c03e340bf55864c749aef7d414e3ac222be07ac0724ea3c51284098a9  prd.md                 242 lines
-d6eed3cd2a5712706815bc74ad75e094a311c7dc15509f442f9715773fc6decf  design_system.md       181 lines
-c905fafc7a46aeba4079d33375decb612591cf4744e5fb37eb6600ff009d7342  architecture.md        662 lines
-cf0e0708b81e09c0ebc633852d2a10fdd7db8c52c530b33a218205e5f53e300c  AGENT_ROLES.md         151 lines
-dd14675783bc74b19e369c6f7ecffaff9eaac5d3be545a4ee78be64351c157b2  PHASE_0_CHECKLIST.md   523 lines
-aea9c96e883e8d18bbe3864623094afc235f523f767453f2829a89cd15fd1a3c  README.md              25 lines
+5c5177f61cf7bbfeea759bcb78c9e5dc78319777cbfc6fa53b13447e3e43d809  Brain.md               100 lines
+e46b4d90a747dc2565a289a7e95f8a430e84e052944a929bb2954a7fd604f50f  prd.md                 242 lines
+90e317723998f1b52f8bef980bb26f1c1c595be7e9108c1a556893b4cd85aa75  design_system.md       181 lines
+e826bc4b42c2bac964ac52e4ffc9e2a88b257481e0bceeac227f19e52ed1d7b7  architecture.md        662 lines
+3a68631320ac2e5a7696cae21f4b9e5c11850b12de53084ada3e99df3159b01e  AGENT_ROLES.md         151 lines
+161dfc2e1205a0213952b005d3d24cc6e0821b69fb74bc305485ff771c231514  PHASE_0_CHECKLIST.md   539 lines
+4a471d77f89be060faf40c3e206138edc6e0881cc24fb750a2a4abd29f2c5e97  README.md              25 lines
 ```
 
-Change statistics, revision 7 to revision 8 (lines, from a unified diff of the files):
+Change statistics, revision 8 to revision 9 (lines, from a unified diff of the files):
 
-| File | Rev 7 lines | Rev 8 lines | Added / removed |
+| File | Rev 8 lines | Rev 9 lines | Added / removed |
 |------|-------------|-------------|-----------------|
 | Brain.md | 100 | 100 | +1 / -1 |
 | prd.md | 242 | 242 | +1 / -1 |
 | design_system.md | 181 | 181 | +1 / -1 |
 | architecture.md | 662 | 662 | +1 / -1 |
 | AGENT_ROLES.md | 151 | 151 | +1 / -1 |
-| PHASE_0_CHECKLIST.md | 507 | 523 | +62 / -46 |
+| PHASE_0_CHECKLIST.md | 523 | 539 | +59 / -43 |
 | README.md | 25 | 25 | +1 / -1 |
 
-The complete unified diff is embedded in section 11 and also saved outside the project at `/private/tmp/claude-501/-Users-roop-Desktop-myProjects/1dfb48a0-cd59-4868-b259-c02ead363404/scratchpad/PHASE_0_REVISION8.diff`.
+The complete unified diff is embedded in section 11 and also saved outside the project at `/private/tmp/claude-501/-Users-roop-Desktop-myProjects/1dfb48a0-cd59-4868-b259-c02ead363404/scratchpad/PHASE_0_REVISION9.diff`.
 
 ---
 
-## 2. Revision 8 before/after change summary (verbatim from PHASE_0_CHECKLIST.md §2)
+## 2. Revision 9 before/after change summary (verbatim from PHASE_0_CHECKLIST.md §2)
 
 Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition, technical limitation or register assurance level was changed. No history was rewritten, nothing was force-pushed, and no commit was made to make the documents look consistent.
 
-| Review finding | Before (revision 7, as committed in `20915d3`) | After (revision 8) |
+| Review finding | Before (revision 8, as committed in `c5f48e5`) | After (revision 9) |
 |----------------|-----------------------------------------------|--------------------|
-| **Git audit trail** | Said revision 7 edits are uncommitted and unpushed, `changes` is at `7ae6732`, and four commits exist | Observed facts only: five commits; **revision 7 is committed and pushed as `20915d3` on `changes`** (checked out; `HEAD` = `origin/changes` = remote `refs/heads/changes`; parent `7ae6732`); working tree was clean and nothing staged; `changes` is 2 commits ahead of `main` and 1 ahead of `7ae6732`; `main`, `origin/main` and remote `HEAD` stay at `7863d3a` and contain neither revision 6 nor revision 7. The revision 8 edits are uncommitted and unpushed, awaiting your decision |
-| **Regression checks** | Compared the documents with the repository for four commits and a pending revision 7 | Compare against five commits, the new pointers, containment of revision 7 in `20915d3` and not in `7ae6732`, and the \"2 commits ahead\" fact; revision 7 wording (\"revision 7 edits are uncommitted\", \"`changes` at `7ae6732`\") fails the check |
+| **Git audit trail** | Said the revision 8 edits are uncommitted, `20915d3` (revision 7) is the latest commit, `changes` is checked out, and `main` (`7863d3a`) is 2 commits behind and lacks revisions 6 and 7 | Observed facts only: six commits; **revision 8 is committed and pushed as `c5f48e5`** (parent `20915d3`); `main` is now checked out and `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `main`, `changes` and default `HEAD` all equal `c5f48e5`, so `main` and `changes` are identical and `main` now contains revisions 6 to 8; the working tree was clean, nothing staged. Revision 7 (`20915d3`) is recorded as the previous commit and as the tip of `changes` at the start of revision 8. The revision 9 edits are uncommitted and unpushed, awaiting your decision |
+| **Regression checks** | Compared the documents with five commits, `changes` checked out and ahead of `main` | Compare against six commits, all five local refs and the three remote refs equal to `c5f48e5`, `main` checked out, containment of each revision in its own commit (6 in `7ae6732`, 7 in `20915d3`, 8 in `c5f48e5`) and ancestry of all three in `main`; revision 8 wording (\"revision 8 edits are uncommitted\", `main` at `7863d3a` as current, `changes` ahead of `main`) fails the check |
 
-Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; the acceptance criteria, the 0.1-preview conditions and every register row are byte-identical to revision 7; every limitation and open question is preserved; Phase 1 has not started.
+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; the acceptance criteria, the 0.1-preview conditions and every register row are byte-identical to revision 8; every limitation and open question is preserved; Phase 1 has not started.
 
 ---
 
@@ -72,7 +72,7 @@ Unchanged and re-verified: all 32 register entries are Designed (31) or not clai
 
 | ID | Question | Default if unanswered | Needed by | Status |
 |----|----------|-----------------------|-----------|--------|
-| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`. `changes` (checked out) = `origin/changes` = `20915d3`, which holds revision 7 (and revision 6 below it); `main` = `origin/main` = `7863d3a` (revision 5), 2 commits behind `changes`. Keep this history and branch layout, and should `main` be brought forward (your decision; this session will not merge or push)? Confirm license `UNLICENSED` (private) | Keep it; revision 8 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3` → `c5f48e5`. `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal `c5f48e5` (revision 8). `main` was brought forward outside this session; this session will not merge, commit or push. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 9 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
 | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
 | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
 | Q-04 | Allow a login `POST` in audit mode? | No; pre-provisioned session | Phase 2 | ❓ |
@@ -281,27 +281,27 @@ All resolutions are **Designed**; none is Implemented or Tested.
 
 **Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was updated for the observed repository state and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, the release and preview conditions, filesystem safety). This is a script check, **not** an independent review.
 
-**Revision 7 run:** 154 checks, 0 failed (the documents committed as `20915d3`).
+**Revision 8 run:** 155 checks, 0 failed (the documents committed as `c5f48e5`).
 
-**Checks updated or added (revision 8), run against the live repository with read-only git commands:**
-- Five commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `changes`; `HEAD` = `changes` = `origin/changes` = `20915d3`; `main` = `origin/main` = `7863d3a`; `git ls-remote origin` agrees (`refs/heads/changes` = `20915d3`, `refs/heads/main` = `7863d3a`, remote `HEAD` = `7863d3a`).
-- Repository evidence that revision 7 content is in `20915d3` and not in `7ae6732` (which holds revision 6), that `main` at `7863d3a` has neither revision 6 nor revision 7, and that `changes` is 2 commits ahead of and 0 behind `main`.
-- The header, Q-01 and §11 name all five commit ids; the §11 bullet carries every required fact (checked-out branch, remote pointers, revision 7 committed and pushed, `main` behind, author versus co-author, read-only git use, no force-push, the revision 8 edits uncommitted and not pushed).
-- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 8 edits are uncommitted), and nothing is staged.
-- No live document carries the stale claims (all branches at `7863d3a`, `main` checked out, revision 6 or 7 uncommitted, `changes` at `7ae6732`).
-- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 7.
+**Checks updated (revision 9), run against the live repository with read-only git commands:**
+- Six commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `main`; `HEAD`, `main`, `changes`, `origin/main` and `origin/changes` all equal `c5f48e5`; `git ls-remote origin` agrees (`refs/heads/main`, `refs/heads/changes` and remote `HEAD` all `c5f48e5`).
+- Repository evidence that revision 6 is in `7ae6732`, revision 7 in `20915d3` and revision 8 in `c5f48e5` (each absent from its parent), that all three are ancestors of `main`, and that `main` and `changes` are 0 commits ahead and 0 behind.
+- The header, Q-01 and §11 name all six commit ids; the §11 bullet carries every required fact, **including the historical revision 7 record** (`20915d3`, revision 7, 15:31, parent `7ae6732`, the tip of `changes` at the start of revision 8), the checked-out branch, the remote pointers, revision 8 committed and pushed on both branches, the branches being identical, author versus co-author, read-only git use, no force-push and the revision 9 edits uncommitted and not pushed.
+- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 9 edits are uncommitted), and nothing is staged.
+- No live document carries the stale claims (`main` at `7863d3a` as current, `changes` ahead of `main`, revision 6, 7 or 8 uncommitted, `changes` at `7ae6732` or `20915d3`); the `Revision 8` before/after table and this section keep them only as history.
+- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 8); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 8.
 
-**Revision 8, first run: 155 checks, 0 failed.**
+**Revision 9, first run: 156 checks, 0 failed.**
 
-**Mutation test.** Nine planted regressions were each caught: the revision 7 \"uncommitted\" claim restored; the stale \"`changes` points at `7ae6732`\" restored; \"contains neither revision 6 nor revision 7\" removed; the newest commit id removed from Q-01; the header saying revision 7 is uncommitted; \"force-pushed nothing\" removed; a Guarantee Register row weakened; AC-46 changed; the preview conditions altered.
+**Mutation test.** Ten planted regressions were each caught: the revision 8 \"uncommitted\" claim restored; \"`main` remains at `7863d3a`\" restored in the header; the \"identical\" statement dropped; the newest commit id removed from Q-01; \"`changes` is 2 commits ahead of `main`\" restored; a Guarantee Register row weakened; AC-49 changed; the preview conditions altered; the historical revision 7 record removed from §11. That last one was first **missed**: the id `20915d3` still appeared in the \"parent\" clause, so the check passed. The check now requires the revision 7 record itself, and the mutation is then caught.
 
-**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves the newest edits uncommitted and the next round describes them; the checks will fail, as intended, if the tree state and the documents disagree.
+**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves its newest edits uncommitted and the next round describes them; the checks fail, as intended, if the tree state and the documents disagree.
 
-**Final run: 155 checks, 0 failed.**
+**Final run: 156 checks, 0 failed.**
 
 ```
 INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['c5f48e5 Gaurav Raj 2026-11-16 15:37:25 +0530 Bump Phase 0 docs to revision 8', '20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
 INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
 INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
 PASS  no stale term: target_attested
@@ -317,6 +317,7 @@ PASS  no stale term: revision 4, pending approval
 PASS  no stale term: revision 5, pending approval
 PASS  no stale term: revision 6, pending approval
 PASS  no stale term: revision 7, pending approval
+PASS  no stale term: revision 8, pending approval
 PASS  no stale term: revision 2
 PASS  no stale term: Non-interactive and CI use is unresolved
 PASS  no stale term: status (completed | partial | aborted)
@@ -374,7 +375,7 @@ PASS  evidence rows immutable, events append-only, no mutable tombstone field
 PASS  AC-42 present in prd, design_system, arch register
 PASS  no stale phase refs (checklist may quote them only in history)
 PASS  release names present in prd and arch
-PASS  all seven docs say revision 8 in their status line
+PASS  all seven docs say revision 9 in their status line
 PASS  architecture Run model lists the five statuses and terminalReason
 PASS  all nine terminalReason values defined in architecture §4
 PASS  every `ends the run X` names one of the four terminal statuses
@@ -443,27 +444,27 @@ PASS  every line naming the 0.1-preview carries a conditioning qualifier
 PASS  Q-24 and D-36 are marked revised and keep the Phase 2 owner decision
 PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
 PASS  AC-44 only gained requirements (every revision 5 clause still present)
-PASS  no live document carries the stale git claims (all branches at 7863d3a, main checked out, revision 6 or 7 uncommitted, changes at 7ae6732)
-PASS  documents state that `main` contains neither revision 6 nor revision 7 and that revision 7 is committed and pushed on `changes`
+PASS  no live document carries the stale git claims (main at 7863d3a as current, changes ahead of main, revision 6, 7 or 8 uncommitted, changes at 7ae6732 or 20915d3)
+PASS  documents state that revision 8 is committed and pushed on both `main` and `changes` at c5f48e5 and that the two branches are identical
 PASS  no document claims that this session committed, pushed, branched or merged anything
-PASS  revision 8 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7
-PASS  revision 8 left the 0.1-preview conditions (architecture §17) byte-identical to revision 7
-PASS  revision 8 left every Guarantee Register row byte-identical to revision 7
-PASS  actual git state matches the documentation: five commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `changes`, changes=origin/changes=20915d3, main=origin/main=7863d3a
-PASS  repository evidence: revision 7 is in 20915d3 and not in 7ae6732 (which holds revision 6); main at 7863d3a lacks revisions 6 and 7; changes is 2 commits ahead of main and 0 behind
+PASS  revision 9 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 8
+PASS  revision 9 left the 0.1-preview conditions (architecture §17) byte-identical to revision 8
+PASS  revision 9 left every Guarantee Register row byte-identical to revision 8
+PASS  actual git state matches the documentation: six commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `main`, and HEAD=main=changes=origin/main=origin/changes=c5f48e5
+PASS  repository evidence: revision 6 is in 7ae6732, revision 7 in 20915d3, revision 8 in c5f48e5 (each not in its parent); all three are ancestors of main; main and changes are 0 ahead and 0 behind
 PASS  documented 'uncommitted' status matches the working tree (dirty tree iff documents say the revision 7 edits are uncommitted), and nothing is staged
-PASS  git ls-remote origin agrees: refs/heads/changes=20915d3, refs/heads/main=7863d3a, remote HEAD=7863d3a
+PASS  git ls-remote origin agrees: refs/heads/changes=refs/heads/main=remote HEAD=c5f48e5
 PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
 PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
-PASS  checklist header, Q-01 and §11 agree on the five commit ids
+PASS  checklist header, Q-01 and §11 agree on the six commit ids
 PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
 PASS  config/targets, tests, reports are still empty
 PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
 
-TOTAL: 155 checks, 0 failed
+TOTAL: 156 checks, 0 failed
 ```
 
-**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 7 is committed and pushed as `20915d3` on `changes` (checked out, equal to `origin/changes`, 2 commits ahead of `main`); `main` and `origin/main` stay at `7863d3a` (revision 5); the revision 8 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
+**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 8 is committed and pushed as `c5f48e5`; `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal it; revision 7 (`20915d3`) is the previous commit; the revision 9 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
 
 **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
 
@@ -604,17 +605,17 @@ Exact-value secret-removal claims and acceptance criteria (AC-19, AC-32, GR-16) 
 
 - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
 - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
-- **Verified (this folder, revision 8):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -5`, `git rev-parse HEAD`, `git rev-parse origin/changes`, `git rev-parse origin/main` and `git ls-remote origin` at the start of revision 8: five commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36, parent `7863d3a`) → **`20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`, revision 7 content)**. Branch `changes` is **checked out**; `HEAD`, `changes`, `origin/changes` and the remote's `refs/heads/changes` all equal `20915d3`, so **revision 7 is committed and pushed on `changes`**, and the working tree was clean with nothing staged. `changes` is 2 commits ahead of `main` and 1 commit ahead of `7ae6732` (revision 6). `main`, `origin/main` and the remote's default `HEAD` are at `7863d3a` (revision 5), so **`main` contains neither revision 6 nor revision 7**. On all five commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 8 edits (this audit-trail correction) are uncommitted working-tree changes on `changes`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+- **Verified (this folder, revision 9):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -6`, `git rev-parse HEAD`, `git rev-parse` of `changes`, `origin/changes`, `main` and `origin/main`, and `git ls-remote origin` at the start of revision 9: six commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36) → `20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`; it was the tip of `changes` at the start of revision 8) → **`c5f48e5` ("Bump Phase 0 docs to revision 8", 15:37, parent `20915d3`, revision 8 content)**. Branch `main` is **checked out**; `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `refs/heads/main`, `refs/heads/changes` and default `HEAD` **all equal `c5f48e5`**, so **revision 8 is committed and pushed on both `main` and `changes`**, and `main` and `changes` are identical (0 commits ahead of or behind each other). `main` was at `7863d3a` (revision 5) at the start of revision 8; it now contains revisions 6, 7 and 8 as well (it was moved outside this session). The working tree was clean with nothing staged, and its content equals `c5f48e5`. On all six commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits and the branch move were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`, `merge-base`, `rev-list`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 9 edits (this audit-trail correction) are uncommitted working-tree changes on the checked-out branch `main`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
 - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
 
 ---
 
 ## 10. Complete documents (verbatim copies)
 
-<!-- BEGIN FILE: Brain.md sha256=a811886b380840bfd04320d161cba663666d51fc75041120e1d17701620de75e -->
+<!-- BEGIN FILE: Brain.md sha256=5c5177f61cf7bbfeea759bcb78c9e5dc78319777cbfc6fa53b13447e3e43d809 -->
 # QA Sentinel — Brain
 
-> Status: Phase 0 draft, revision 8, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+> Status: Phase 0 draft, revision 9, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
 
 ## 1. Vision
 
@@ -713,10 +714,10 @@ A developer using any AI tool points QA Sentinel at an app they own, gets a repo
 Authoritative definitions of data shapes live in `architecture.md`.
 <!-- END FILE: Brain.md -->
 
-<!-- BEGIN FILE: prd.md sha256=0bcad04c03e340bf55864c749aef7d414e3ac222be07ac0724ea3c51284098a9 -->
+<!-- BEGIN FILE: prd.md sha256=e46b4d90a747dc2565a289a7e95f8a430e84e052944a929bb2954a7fd604f50f -->
 # QA Sentinel — Product Requirements
 
-> Status: Phase 0 draft, revision 8, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
+> Status: Phase 0 draft, revision 9, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
 >
 > **Assurance language.** Requirements describe what the product must do. A protection is only called a *guarantee* once the related acceptance criteria pass (**Tested**) and, for security claims, an independent review exists (**Independently verified**). Until then it is **Designed**. See `architecture.md` §0.
 
@@ -957,10 +958,10 @@ AI-assisted planning/triage (F17), non-web target kinds and plugin interface (F1
 False-confirmed rate (target: zero known), seeded and held-out defect detection rate, median time to a trustworthy report, share of fix claims verified independently, re-run reproducibility rate, share of runs with complete guard coverage.
 <!-- END FILE: prd.md -->
 
-<!-- BEGIN FILE: design_system.md sha256=d6eed3cd2a5712706815bc74ad75e094a311c7dc15509f442f9715773fc6decf -->
+<!-- BEGIN FILE: design_system.md sha256=90e317723998f1b52f8bef980bb26f1c1c595be7e9108c1a556893b4cd85aa75 -->
 # QA Sentinel — Design System
 
-> Status: Phase 0 draft, revision 8, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
+> Status: Phase 0 draft, revision 9, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
 
 ## 1. Identity
 
@@ -1140,10 +1141,10 @@ Shipped in Release 0.1, before any dashboard. Self-contained single file (inline
 Logo and wordmark; icon set selection (a single open-license set); whether to ship a high-contrast theme in Phase 5; final empty-state illustrations (none planned).
 <!-- END FILE: design_system.md -->
 
-<!-- BEGIN FILE: architecture.md sha256=c905fafc7a46aeba4079d33375decb612591cf4744e5fb37eb6600ff009d7342 -->
+<!-- BEGIN FILE: architecture.md sha256=e826bc4b42c2bac964ac52e4ffc9e2a88b257481e0bceeac227f19e52ed1d7b7 -->
 # QA Sentinel — Architecture
 
-> Status: Phase 0 draft, revision 8, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+> Status: Phase 0 draft, revision 9, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
 
 ## 0. How to read this document (assurance language)
 
@@ -1804,10 +1805,10 @@ New runner → implement `Runner`. New target kind (API contract, mobile, CLI) �
 - **Revision 4 open items:** (1) no mechanism exists to remove secrets from screenshot pixels beyond selector masking, and none is claimed (Q-28); (2) worker-originated WebSockets have no L2 backstop and depend entirely on AC-46 passing (Q-29); (3) the DNS design (`pinned` versus `system`, browser-side resolution suppression, system-wide DNS observation per OS) is unproven and AC-38 and AC-49 are unpassed (Q-25, Q-30); (4) crash-recovery transition of `running` runs to `aborted` and immutability of terminal statuses are untested (AC-47).
 <!-- END FILE: architecture.md -->
 
-<!-- BEGIN FILE: AGENT_ROLES.md sha256=cf0e0708b81e09c0ebc633852d2a10fdd7db8c52c530b33a218205e5f53e300c -->
+<!-- BEGIN FILE: AGENT_ROLES.md sha256=3a68631320ac2e5a7696cae21f4b9e5c11850b12de53084ada3e99df3159b01e -->
 # QA Sentinel — Agent Roles
 
-> Status: Phase 0 draft, revision 8, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
+> Status: Phase 0 draft, revision 9, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
 >
 > Assurance: everything below is **Designed**, none **Implemented**, **Tested** or **Independently verified**. See `architecture.md` §0 and the Guarantee Register (§18). Module boundaries and data shapes are in `architecture.md`; principles in `Brain.md`.
 
@@ -1957,32 +1958,43 @@ W = sole writer · R = may read · — = no access
 The execution engine (`core`, `policy`, `evidence`, `runner-*`, `store`) has no AI dependency, verified by a dependency check. AI reasoning may help a human or a future `ai-assist` package *suggest* checks or summaries, but it can never directly determine whether a test ran, passed, failed or was confirmed. See `architecture.md` §4.2.
 <!-- END FILE: AGENT_ROLES.md -->
 
-<!-- BEGIN FILE: PHASE_0_CHECKLIST.md sha256=dd14675783bc74b19e369c6f7ecffaff9eaac5d3be545a4ee78be64351c157b2 -->
+<!-- BEGIN FILE: PHASE_0_CHECKLIST.md sha256=161dfc2e1205a0213952b005d3d24cc6e0821b69fb74bc305485ff771c231514 -->
 # QA Sentinel — Phase 0 Checklist
 
 > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
-> **Phase 0 status: revision 8 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`; revision 7 is committed and pushed as `20915d3` on branch `changes` (the checked-out branch, equal to `origin/changes`); `main` and `origin/main` remain at `7863d3a` (revision 5); the revision 8 edits are uncommitted (details in §11).**
-> Last updated: 2026-11-16 (revision 8, after the independent review of revision 7, commit `20915d3` on `changes`).
+> **Phase 0 status: revision 9 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3` → `c5f48e5`; revision 8 is committed and pushed as `c5f48e5`, and `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal `c5f48e5`; the revision 9 edits are uncommitted (details in §11).**
+> Last updated: 2026-11-16 (revision 9, after the independent review of revision 8, commit `c5f48e5`).
 
 **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
 **Assurance vocabulary:** Designed (documented only) · Implemented (code exists) · Tested (passing automated tests against a recorded commit) · Independently verified (independent review against a pinned commit). See `architecture.md` §0. **Nothing is above Designed.**
 
 ## 1. Deliverables
 
-| # | File | Written (latest revision) | Cross-checked by script (rev. 8) | Approved |
+| # | File | Written (latest revision) | Cross-checked by script (rev. 9) | Approved |
 |---|------|---------------------------|----------------------------------|----------|
 | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 | 2 | `prd.md` | ✅ (edited; rev. 4: FR-025 run status, FR-026 worker denial, FR-027 DNS, AC-46 to AC-49, narrowed AC-19/22/32/38) | ✅ | ⛔ awaiting you |
 | 3 | `design_system.md` | ✅ (edited; rev. 4: RunStatusBadge, Errored state, screenshot masking note, `uncontrolled` coverage state) | ✅ | ⛔ awaiting you |
 | 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
 | 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
-| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 8: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
+| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 9: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
 | — | `README.md` | ✅ (status line) | ✅ | — |
-| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 8 bundle; not a deliverable) | ✅ | — | — |
+| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 9 bundle; not a deliverable) | ✅ | — | — |
 
-"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) and revision 7 (commit `20915d3`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency, which revision 7 fixed; the revision 7 review found one remaining audit-trail inconsistency (revision 7 was described as uncommitted and unpushed although it is committed and pushed as `20915d3`), fixed in revision 8. No per-document independent sign-off is recorded, and no document is approved.
+"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) revision 7 (commit `20915d3`) and revision 8 (commit `c5f48e5`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency, which revision 7 fixed; the revision 7 review found one remaining audit-trail inconsistency (revision 7 was described as uncommitted and unpushed although it is committed and pushed as `20915d3`), fixed in revision 8; the revision 8 review found the same class of inconsistency again (revision 8 was described as uncommitted although it is committed and pushed as `c5f48e5`, and `main` was described as behind `changes`), fixed in revision 9. No per-document independent sign-off is recorded, and no document is approved.
 
-## 2. Revision 8: before/after change summary
+## 2. Revision 9: before/after change summary
+
+Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition, technical limitation or register assurance level was changed. No history was rewritten, nothing was force-pushed, and no commit was made to make the documents look consistent.
+
+| Review finding | Before (revision 8, as committed in `c5f48e5`) | After (revision 9) |
+|----------------|-----------------------------------------------|--------------------|
+| **Git audit trail** | Said the revision 8 edits are uncommitted, `20915d3` (revision 7) is the latest commit, `changes` is checked out, and `main` (`7863d3a`) is 2 commits behind and lacks revisions 6 and 7 | Observed facts only: six commits; **revision 8 is committed and pushed as `c5f48e5`** (parent `20915d3`); `main` is now checked out and `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `main`, `changes` and default `HEAD` all equal `c5f48e5`, so `main` and `changes` are identical and `main` now contains revisions 6 to 8; the working tree was clean, nothing staged. Revision 7 (`20915d3`) is recorded as the previous commit and as the tip of `changes` at the start of revision 8. The revision 9 edits are uncommitted and unpushed, awaiting your decision |
+| **Regression checks** | Compared the documents with five commits, `changes` checked out and ahead of `main` | Compare against six commits, all five local refs and the three remote refs equal to `c5f48e5`, `main` checked out, containment of each revision in its own commit (6 in `7ae6732`, 7 in `20915d3`, 8 in `c5f48e5`) and ancestry of all three in `main`; revision 8 wording (\"revision 8 edits are uncommitted\", `main` at `7863d3a` as current, `changes` ahead of `main`) fails the check |
+
+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; the acceptance criteria, the 0.1-preview conditions and every register row are byte-identical to revision 8; every limitation and open question is preserved; Phase 1 has not started.
+
+### Previous: revision 8 before/after change summary (kept for history)
 
 Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition, technical limitation or register assurance level was changed. No history was rewritten, nothing was force-pushed, and no commit was made to make the documents look consistent.
 
@@ -2144,7 +2156,11 @@ All resolutions are **Designed**; none is Implemented or Tested.
 | F3-5c CI pre-approved workspace | Resolved as interim (D-42); mechanism **open** (Q-16) |
 | F3-5d Append-only tombstones | Resolved (D-41, AC-43) |
 
-## 5. Work completed (revision 8, then 7, 6, 5, 4, 3)
+## 5. Work completed (revision 9, then 8, 7, 6, 5, 4, 3)
+
+**Revision 9**
+
+- ✅ Git audit trail corrected in the header, Q-01 and §11 from observed facts (revision 8 is on `main` and `changes` at `c5f48e5`; revision 7 is `20915d3`, the previous commit); regression checks updated; fresh cross-document review (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command, history rewrite, force-push or extra commit by this session.
 
 **Revision 8**
 
@@ -2185,31 +2201,31 @@ All resolutions are **Designed**; none is Implemented or Tested.
 - ✅ Fresh cross-document review (§6).
 - ✅ Constraints respected at the time: Phase 1 not started; nothing installed; no git (the repository appeared later, created by you); no code; no real target; no other project touched.
 
-## 6. Cross-review results (revision 8)
+## 6. Cross-review results (revision 9)
 
 **Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was updated for the observed repository state and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, the release and preview conditions, filesystem safety). This is a script check, **not** an independent review.
 
-**Revision 7 run:** 154 checks, 0 failed (the documents committed as `20915d3`).
+**Revision 8 run:** 155 checks, 0 failed (the documents committed as `c5f48e5`).
 
-**Checks updated or added (revision 8), run against the live repository with read-only git commands:**
-- Five commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `changes`; `HEAD` = `changes` = `origin/changes` = `20915d3`; `main` = `origin/main` = `7863d3a`; `git ls-remote origin` agrees (`refs/heads/changes` = `20915d3`, `refs/heads/main` = `7863d3a`, remote `HEAD` = `7863d3a`).
-- Repository evidence that revision 7 content is in `20915d3` and not in `7ae6732` (which holds revision 6), that `main` at `7863d3a` has neither revision 6 nor revision 7, and that `changes` is 2 commits ahead of and 0 behind `main`.
-- The header, Q-01 and §11 name all five commit ids; the §11 bullet carries every required fact (checked-out branch, remote pointers, revision 7 committed and pushed, `main` behind, author versus co-author, read-only git use, no force-push, the revision 8 edits uncommitted and not pushed).
-- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 8 edits are uncommitted), and nothing is staged.
-- No live document carries the stale claims (all branches at `7863d3a`, `main` checked out, revision 6 or 7 uncommitted, `changes` at `7ae6732`).
-- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 7.
+**Checks updated (revision 9), run against the live repository with read-only git commands:**
+- Six commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `main`; `HEAD`, `main`, `changes`, `origin/main` and `origin/changes` all equal `c5f48e5`; `git ls-remote origin` agrees (`refs/heads/main`, `refs/heads/changes` and remote `HEAD` all `c5f48e5`).
+- Repository evidence that revision 6 is in `7ae6732`, revision 7 in `20915d3` and revision 8 in `c5f48e5` (each absent from its parent), that all three are ancestors of `main`, and that `main` and `changes` are 0 commits ahead and 0 behind.
+- The header, Q-01 and §11 name all six commit ids; the §11 bullet carries every required fact, **including the historical revision 7 record** (`20915d3`, revision 7, 15:31, parent `7ae6732`, the tip of `changes` at the start of revision 8), the checked-out branch, the remote pointers, revision 8 committed and pushed on both branches, the branches being identical, author versus co-author, read-only git use, no force-push and the revision 9 edits uncommitted and not pushed.
+- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 9 edits are uncommitted), and nothing is staged.
+- No live document carries the stale claims (`main` at `7863d3a` as current, `changes` ahead of `main`, revision 6, 7 or 8 uncommitted, `changes` at `7ae6732` or `20915d3`); the `Revision 8` before/after table and this section keep them only as history.
+- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 8); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 8.
 
-**Revision 8, first run: 155 checks, 0 failed.**
+**Revision 9, first run: 156 checks, 0 failed.**
 
-**Mutation test.** Nine planted regressions were each caught: the revision 7 \"uncommitted\" claim restored; the stale \"`changes` points at `7ae6732`\" restored; \"contains neither revision 6 nor revision 7\" removed; the newest commit id removed from Q-01; the header saying revision 7 is uncommitted; \"force-pushed nothing\" removed; a Guarantee Register row weakened; AC-46 changed; the preview conditions altered.
+**Mutation test.** Ten planted regressions were each caught: the revision 8 \"uncommitted\" claim restored; \"`main` remains at `7863d3a`\" restored in the header; the \"identical\" statement dropped; the newest commit id removed from Q-01; \"`changes` is 2 commits ahead of `main`\" restored; a Guarantee Register row weakened; AC-49 changed; the preview conditions altered; the historical revision 7 record removed from §11. That last one was first **missed**: the id `20915d3` still appeared in the \"parent\" clause, so the check passed. The check now requires the revision 7 record itself, and the mutation is then caught.
 
-**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves the newest edits uncommitted and the next round describes them; the checks will fail, as intended, if the tree state and the documents disagree.
+**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves its newest edits uncommitted and the next round describes them; the checks fail, as intended, if the tree state and the documents disagree.
 
-**Final run: 155 checks, 0 failed.**
+**Final run: 156 checks, 0 failed.**
 
 ```
 INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['c5f48e5 Gaurav Raj 2026-11-16 15:37:25 +0530 Bump Phase 0 docs to revision 8', '20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
 INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
 INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
 PASS  no stale term: target_attested
@@ -2225,6 +2241,7 @@ PASS  no stale term: revision 4, pending approval
 PASS  no stale term: revision 5, pending approval
 PASS  no stale term: revision 6, pending approval
 PASS  no stale term: revision 7, pending approval
+PASS  no stale term: revision 8, pending approval
 PASS  no stale term: revision 2
 PASS  no stale term: Non-interactive and CI use is unresolved
 PASS  no stale term: status (completed | partial | aborted)
@@ -2282,7 +2299,7 @@ PASS  evidence rows immutable, events append-only, no mutable tombstone field
 PASS  AC-42 present in prd, design_system, arch register
 PASS  no stale phase refs (checklist may quote them only in history)
 PASS  release names present in prd and arch
-PASS  all seven docs say revision 8 in their status line
+PASS  all seven docs say revision 9 in their status line
 PASS  architecture Run model lists the five statuses and terminalReason
 PASS  all nine terminalReason values defined in architecture §4
 PASS  every `ends the run X` names one of the four terminal statuses
@@ -2351,27 +2368,27 @@ PASS  every line naming the 0.1-preview carries a conditioning qualifier
 PASS  Q-24 and D-36 are marked revised and keep the Phase 2 owner decision
 PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
 PASS  AC-44 only gained requirements (every revision 5 clause still present)
-PASS  no live document carries the stale git claims (all branches at 7863d3a, main checked out, revision 6 or 7 uncommitted, changes at 7ae6732)
-PASS  documents state that `main` contains neither revision 6 nor revision 7 and that revision 7 is committed and pushed on `changes`
+PASS  no live document carries the stale git claims (main at 7863d3a as current, changes ahead of main, revision 6, 7 or 8 uncommitted, changes at 7ae6732 or 20915d3)
+PASS  documents state that revision 8 is committed and pushed on both `main` and `changes` at c5f48e5 and that the two branches are identical
 PASS  no document claims that this session committed, pushed, branched or merged anything
-PASS  revision 8 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7
-PASS  revision 8 left the 0.1-preview conditions (architecture §17) byte-identical to revision 7
-PASS  revision 8 left every Guarantee Register row byte-identical to revision 7
-PASS  actual git state matches the documentation: five commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `changes`, changes=origin/changes=20915d3, main=origin/main=7863d3a
-PASS  repository evidence: revision 7 is in 20915d3 and not in 7ae6732 (which holds revision 6); main at 7863d3a lacks revisions 6 and 7; changes is 2 commits ahead of main and 0 behind
+PASS  revision 9 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 8
+PASS  revision 9 left the 0.1-preview conditions (architecture §17) byte-identical to revision 8
+PASS  revision 9 left every Guarantee Register row byte-identical to revision 8
+PASS  actual git state matches the documentation: six commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `main`, and HEAD=main=changes=origin/main=origin/changes=c5f48e5
+PASS  repository evidence: revision 6 is in 7ae6732, revision 7 in 20915d3, revision 8 in c5f48e5 (each not in its parent); all three are ancestors of main; main and changes are 0 ahead and 0 behind
 PASS  documented 'uncommitted' status matches the working tree (dirty tree iff documents say the revision 7 edits are uncommitted), and nothing is staged
-PASS  git ls-remote origin agrees: refs/heads/changes=20915d3, refs/heads/main=7863d3a, remote HEAD=7863d3a
+PASS  git ls-remote origin agrees: refs/heads/changes=refs/heads/main=remote HEAD=c5f48e5
 PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
 PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
-PASS  checklist header, Q-01 and §11 agree on the five commit ids
+PASS  checklist header, Q-01 and §11 agree on the six commit ids
 PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
 PASS  config/targets, tests, reports are still empty
 PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
 
-TOTAL: 155 checks, 0 failed
+TOTAL: 156 checks, 0 failed
 ```
 
-**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 7 is committed and pushed as `20915d3` on `changes` (checked out, equal to `origin/changes`, 2 commits ahead of `main`); `main` and `origin/main` stay at `7863d3a` (revision 5); the revision 8 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
+**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 8 is committed and pushed as `c5f48e5`; `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal it; revision 7 (`20915d3`) is the previous commit; the revision 9 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
 
 **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
 
@@ -2393,7 +2410,7 @@ No security guarantee is implemented or tested. Anything in the documents that r
 
 | ID | Question | Default if unanswered | Needed by | Status |
 |----|----------|-----------------------|-----------|--------|
-| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`. `changes` (checked out) = `origin/changes` = `20915d3`, which holds revision 7 (and revision 6 below it); `main` = `origin/main` = `7863d3a` (revision 5), 2 commits behind `changes`. Keep this history and branch layout, and should `main` be brought forward (your decision; this session will not merge or push)? Confirm license `UNLICENSED` (private) | Keep it; revision 8 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3` → `c5f48e5`. `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal `c5f48e5` (revision 8). `main` was brought forward outside this session; this session will not merge, commit or push. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 9 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
 | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
 | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
 | Q-04 | Allow a login `POST` in audit mode? | No; pre-provisioned session | Phase 2 | ❓ |
@@ -2478,16 +2495,16 @@ After approval, **Phase 1 still requires its own plan and approval** before any 
 
 - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
 - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
-- **Verified (this folder, revision 8):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -5`, `git rev-parse HEAD`, `git rev-parse origin/changes`, `git rev-parse origin/main` and `git ls-remote origin` at the start of revision 8: five commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36, parent `7863d3a`) → **`20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`, revision 7 content)**. Branch `changes` is **checked out**; `HEAD`, `changes`, `origin/changes` and the remote's `refs/heads/changes` all equal `20915d3`, so **revision 7 is committed and pushed on `changes`**, and the working tree was clean with nothing staged. `changes` is 2 commits ahead of `main` and 1 commit ahead of `7ae6732` (revision 6). `main`, `origin/main` and the remote's default `HEAD` are at `7863d3a` (revision 5), so **`main` contains neither revision 6 nor revision 7**. On all five commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 8 edits (this audit-trail correction) are uncommitted working-tree changes on `changes`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+- **Verified (this folder, revision 9):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -6`, `git rev-parse HEAD`, `git rev-parse` of `changes`, `origin/changes`, `main` and `origin/main`, and `git ls-remote origin` at the start of revision 9: six commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36) → `20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`; it was the tip of `changes` at the start of revision 8) → **`c5f48e5` ("Bump Phase 0 docs to revision 8", 15:37, parent `20915d3`, revision 8 content)**. Branch `main` is **checked out**; `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `refs/heads/main`, `refs/heads/changes` and default `HEAD` **all equal `c5f48e5`**, so **revision 8 is committed and pushed on both `main` and `changes`**, and `main` and `changes` are identical (0 commits ahead of or behind each other). `main` was at `7863d3a` (revision 5) at the start of revision 8; it now contains revisions 6, 7 and 8 as well (it was moved outside this session). The working tree was clean with nothing staged, and its content equals `c5f48e5`. On all six commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits and the branch move were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`, `merge-base`, `rev-list`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 9 edits (this audit-trail correction) are uncommitted working-tree changes on the checked-out branch `main`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
 - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
 <!-- END FILE: PHASE_0_CHECKLIST.md -->
 
-<!-- BEGIN FILE: README.md sha256=aea9c96e883e8d18bbe3864623094afc235f523f767453f2829a89cd15fd1a3c -->
+<!-- BEGIN FILE: README.md sha256=4a471d77f89be060faf40c3e206138edc6e0881cc24fb750a2a4abd29f2c5e97 -->
 # qa-sentinel
 
 Independent, evidence-first QA auditor for any application. Standalone product; not connected to any existing project.
 
-**Status: Phase 0 (foundation documents), revision 8, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
+**Status: Phase 0 (foundation documents), revision 9, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
 
 ## Foundation documents
 
@@ -2511,237 +2528,234 @@ Further folders (`packages/`, `fixtures/`, `specs/`, `data/`) are defined in `ar
 
 ---
 
-## 11. Unified diff, revision 7 to revision 8 (documents only)
+## 11. Unified diff, revision 8 to revision 9 (documents only)
 
-Context of two lines per hunk. `a/` is the revision 7 snapshot (identical to commit `20915d3`), `b/` is the current file.
+Context of two lines per hunk. `a/` is the revision 8 snapshot (identical to commit `c5f48e5`), `b/` is the current file.
 
 ~~~~diff
---- a/Brain.md (revision 7)
-+++ b/Brain.md (revision 8)
+--- a/Brain.md (revision 8)
++++ b/Brain.md (revision 9)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Brain
  
--> Status: Phase 0 draft, revision 7, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
-+> Status: Phase 0 draft, revision 8, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+-> Status: Phase 0 draft, revision 8, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
++> Status: Phase 0 draft, revision 9, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
  
  ## 1. Vision
---- a/prd.md (revision 7)
-+++ b/prd.md (revision 8)
+--- a/prd.md (revision 8)
++++ b/prd.md (revision 9)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Product Requirements
  
--> Status: Phase 0 draft, revision 7, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
-+> Status: Phase 0 draft, revision 8, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
+-> Status: Phase 0 draft, revision 8, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
++> Status: Phase 0 draft, revision 9, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
  >
  > **Assurance language.** Requirements describe what the product must do. A protection is only called a *guarantee* once the related acceptance criteria pass (**Tested**) and, for security claims, an independent review exists (**Independently verified**). Until then it is **Designed**. See `architecture.md` §0.
---- a/design_system.md (revision 7)
-+++ b/design_system.md (revision 8)
+--- a/design_system.md (revision 8)
++++ b/design_system.md (revision 9)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Design System
  
--> Status: Phase 0 draft, revision 7, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
-+> Status: Phase 0 draft, revision 8, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
+-> Status: Phase 0 draft, revision 8, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
++> Status: Phase 0 draft, revision 9, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
  
  ## 1. Identity
---- a/architecture.md (revision 7)
-+++ b/architecture.md (revision 8)
+--- a/architecture.md (revision 8)
++++ b/architecture.md (revision 9)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Architecture
  
--> Status: Phase 0 draft, revision 7, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
-+> Status: Phase 0 draft, revision 8, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+-> Status: Phase 0 draft, revision 8, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
++> Status: Phase 0 draft, revision 9, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
  
  ## 0. How to read this document (assurance language)
---- a/AGENT_ROLES.md (revision 7)
-+++ b/AGENT_ROLES.md (revision 8)
+--- a/AGENT_ROLES.md (revision 8)
++++ b/AGENT_ROLES.md (revision 9)
 @@ -1,5 +1,5 @@
  # QA Sentinel — Agent Roles
  
--> Status: Phase 0 draft, revision 7, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
-+> Status: Phase 0 draft, revision 8, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
+-> Status: Phase 0 draft, revision 8, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
++> Status: Phase 0 draft, revision 9, pending approval. This is a **product design document** about the roles *inside* QA Sentinel. It is deliberately **not** named `AGENTS.md` (some AI coding tools auto-load that name as instructions). It is not instructions for any AI tool working in this repository.
  >
  > Assurance: everything below is **Designed**, none **Implemented**, **Tested** or **Independently verified**. See `architecture.md` §0 and the Guarantee Register (§18). Module boundaries and data shapes are in `architecture.md`; principles in `Brain.md`.
---- a/PHASE_0_CHECKLIST.md (revision 7)
-+++ b/PHASE_0_CHECKLIST.md (revision 8)
+--- a/PHASE_0_CHECKLIST.md (revision 8)
++++ b/PHASE_0_CHECKLIST.md (revision 9)
 @@ -2,6 +2,6 @@
  
  > Tracks decisions, completed work, open questions, risks and approvals for Phase 0 (foundation documents).
--> **Phase 0 status: revision 7 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732`; revision 6 is committed and pushed as `7ae6732` on branch `changes` (the checked-out branch, equal to `origin/changes`); `main` and `origin/main` remain at `7863d3a` (revision 5); the revision 7 edits are uncommitted (details in §11).**
--> Last updated: 2026-11-16 (revision 7, after the independent review of revision 6, commit `7ae6732` on `changes`).
-+> **Phase 0 status: revision 8 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`; revision 7 is committed and pushed as `20915d3` on branch `changes` (the checked-out branch, equal to `origin/changes`); `main` and `origin/main` remain at `7863d3a` (revision 5); the revision 8 edits are uncommitted (details in §11).**
-+> Last updated: 2026-11-16 (revision 8, after the independent review of revision 7, commit `20915d3` on `changes`).
+-> **Phase 0 status: revision 8 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`; revision 7 is committed and pushed as `20915d3` on branch `changes` (the checked-out branch, equal to `origin/changes`); `main` and `origin/main` remain at `7863d3a` (revision 5); the revision 8 edits are uncommitted (details in §11).**
+-> Last updated: 2026-11-16 (revision 8, after the independent review of revision 7, commit `20915d3` on `changes`).
++> **Phase 0 status: revision 9 written and cross-checked by script. NOT approved. Phase 1 has not started and must not start until you approve Phase 0 and then a Phase 1 plan. No code, dependencies or target connection exists. Commit chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3` → `c5f48e5`; revision 8 is committed and pushed as `c5f48e5`, and `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal `c5f48e5`; the revision 9 edits are uncommitted (details in §11).**
++> Last updated: 2026-11-16 (revision 9, after the independent review of revision 8, commit `c5f48e5`).
  
  **Status legend:** ✅ done · 🟡 proposed (written, awaiting your approval) · 🔬 needs a spike in a later phase · ❓ open question · ⛔ blocked / not allowed yet
 @@ -10,5 +10,5 @@
  ## 1. Deliverables
  
--| # | File | Written (latest revision) | Cross-checked by script (rev. 7) | Approved |
-+| # | File | Written (latest revision) | Cross-checked by script (rev. 8) | Approved |
+-| # | File | Written (latest revision) | Cross-checked by script (rev. 8) | Approved |
++| # | File | Written (latest revision) | Cross-checked by script (rev. 9) | Approved |
  |---|------|---------------------------|----------------------------------|----------|
  | 1 | `Brain.md` | ✅ (edited; rev. 4: screenshot limit in principle 9, release note naming AC-46/38/49, glossary: run status, worker denial, DNS mode) | ✅ | ⛔ awaiting you |
 @@ -17,11 +17,22 @@
  | 4 | `architecture.md` | ✅ (edited; new §5.1 audit-only, §7.9 guard modes, **§7.10 DNS and name resolution**; rev. 4 additions: §4 run status model and `workers`/`dnsMode`/`dnsPins` profile fields, §7.3 worker-denial mechanism, §7.8 limits, §11 screenshot masking limits and text-only scrubbing, §17 blocking items, §18 register of 32 entries incl. GR-31 and GR-32, §20 revision 4 open items; §10, §11, §17, §18 rewritten earlier) | ✅ | ⛔ awaiting you |
  | 5 | `AGENT_ROLES.md` | ✅ (edited; rev. 4: run-status ownership, worker and screenshot rules, Reporter status display) | ✅ | ⛔ awaiting you |
--| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 7: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
-+| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 8: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
+-| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 8: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
++| 6 | `PHASE_0_CHECKLIST.md` | ✅ (rewritten; rev. 9: header, §1, §2, §5, §6, §11 and Q-01 updated) | ✅ | ⛔ awaiting you |
  | — | `README.md` | ✅ (status line) | ✅ | — |
--| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 7 bundle; not a deliverable) | ✅ | — | — |
+-| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 8 bundle; not a deliverable) | ✅ | — | — |
 -
--"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency fixed in revision 7. No per-document independent sign-off is recorded, and no document is approved.
+-"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) and revision 7 (commit `20915d3`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency, which revision 7 fixed; the revision 7 review found one remaining audit-trail inconsistency (revision 7 was described as uncommitted and unpushed although it is committed and pushed as `20915d3`), fixed in revision 8. No per-document independent sign-off is recorded, and no document is approved.
 -
--## 2. Revision 7: before/after change summary
-+| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 8 bundle; not a deliverable) | ✅ | — | — |
+-## 2. Revision 8: before/after change summary
++| — | `PHASE_0_REVIEW_BUNDLE.md` (revision 9 bundle; not a deliverable) | ✅ | — | — |
 +
-+"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) and revision 7 (commit `20915d3`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency, which revision 7 fixed; the revision 7 review found one remaining audit-trail inconsistency (revision 7 was described as uncommitted and unpushed although it is committed and pushed as `20915d3`), fixed in revision 8. No per-document independent sign-off is recorded, and no document is approved.
++"Cross-checked by script" means the mechanical review in §6. It is **not** an independent review and no row claims one. Independent review is recorded only as you reported it: the reviews of revision 4 (commit `4aa540c`), revision 5 (commit `7863d3a`) and revision 6 (commit `7ae6732`) revision 7 (commit `20915d3`) and revision 8 (commit `c5f48e5`) found the four technical findings substantially addressed; the revision 5 review found the release-condition inconsistency, which revision 6 fixed and the revision 6 review accepted; the revision 6 review found the repository audit-trail inconsistency, which revision 7 fixed; the revision 7 review found one remaining audit-trail inconsistency (revision 7 was described as uncommitted and unpushed although it is committed and pushed as `20915d3`), fixed in revision 8; the revision 8 review found the same class of inconsistency again (revision 8 was described as uncommitted although it is committed and pushed as `c5f48e5`, and `main` was described as behind `changes`), fixed in revision 9. No per-document independent sign-off is recorded, and no document is approved.
 +
-+## 2. Revision 8: before/after change summary
++## 2. Revision 9: before/after change summary
 +
 +Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition, technical limitation or register assurance level was changed. No history was rewritten, nothing was force-pushed, and no commit was made to make the documents look consistent.
 +
-+| Review finding | Before (revision 7, as committed in `20915d3`) | After (revision 8) |
++| Review finding | Before (revision 8, as committed in `c5f48e5`) | After (revision 9) |
 +|----------------|-----------------------------------------------|--------------------|
-+| **Git audit trail** | Said revision 7 edits are uncommitted and unpushed, `changes` is at `7ae6732`, and four commits exist | Observed facts only: five commits; **revision 7 is committed and pushed as `20915d3` on `changes`** (checked out; `HEAD` = `origin/changes` = remote `refs/heads/changes`; parent `7ae6732`); working tree was clean and nothing staged; `changes` is 2 commits ahead of `main` and 1 ahead of `7ae6732`; `main`, `origin/main` and remote `HEAD` stay at `7863d3a` and contain neither revision 6 nor revision 7. The revision 8 edits are uncommitted and unpushed, awaiting your decision |
-+| **Regression checks** | Compared the documents with the repository for four commits and a pending revision 7 | Compare against five commits, the new pointers, containment of revision 7 in `20915d3` and not in `7ae6732`, and the \"2 commits ahead\" fact; revision 7 wording (\"revision 7 edits are uncommitted\", \"`changes` at `7ae6732`\") fails the check |
++| **Git audit trail** | Said the revision 8 edits are uncommitted, `20915d3` (revision 7) is the latest commit, `changes` is checked out, and `main` (`7863d3a`) is 2 commits behind and lacks revisions 6 and 7 | Observed facts only: six commits; **revision 8 is committed and pushed as `c5f48e5`** (parent `20915d3`); `main` is now checked out and `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `main`, `changes` and default `HEAD` all equal `c5f48e5`, so `main` and `changes` are identical and `main` now contains revisions 6 to 8; the working tree was clean, nothing staged. Revision 7 (`20915d3`) is recorded as the previous commit and as the tip of `changes` at the start of revision 8. The revision 9 edits are uncommitted and unpushed, awaiting your decision |
++| **Regression checks** | Compared the documents with five commits, `changes` checked out and ahead of `main` | Compare against six commits, all five local refs and the three remote refs equal to `c5f48e5`, `main` checked out, containment of each revision in its own commit (6 in `7ae6732`, 7 in `20915d3`, 8 in `c5f48e5`) and ancestry of all three in `main`; revision 8 wording (\"revision 8 edits are uncommitted\", `main` at `7863d3a` as current, `changes` ahead of `main`) fails the check |
 +
-+Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; the acceptance criteria, the 0.1-preview conditions and every register row are byte-identical to revision 7; every limitation and open question is preserved; Phase 1 has not started.
++Unchanged and re-verified: all 32 register entries are Designed (31) or not claimed (1); **AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed**; the acceptance criteria, the 0.1-preview conditions and every register row are byte-identical to revision 8; every limitation and open question is preserved; Phase 1 has not started.
 +
-+### Previous: revision 7 before/after change summary (kept for history)
++### Previous: revision 8 before/after change summary (kept for history)
  
- Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition or register assurance level was changed.
-@@ -174,5 +185,9 @@
+ Documentation-only (repository audit trail). No acceptance criterion, requirement, design, release condition, technical limitation or register assurance level was changed. No history was rewritten, nothing was force-pushed, and no commit was made to make the documents look consistent.
+@@ -185,5 +196,9 @@
  | F3-5d Append-only tombstones | Resolved (D-41, AC-43) |
  
--## 5. Work completed (revision 7, then 6, 5, 4, 3)
-+## 5. Work completed (revision 8, then 7, 6, 5, 4, 3)
+-## 5. Work completed (revision 8, then 7, 6, 5, 4, 3)
++## 5. Work completed (revision 9, then 8, 7, 6, 5, 4, 3)
 +
-+**Revision 8**
++**Revision 9**
 +
-+- ✅ Git audit trail corrected in the header, Q-01 and §11 from observed facts (revision 7 is on `changes` at `20915d3`; `main` at `7863d3a`); regression checks updated; fresh cross-document review (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command, history rewrite, force-push or extra commit by this session.
++- ✅ Git audit trail corrected in the header, Q-01 and §11 from observed facts (revision 8 is on `main` and `changes` at `c5f48e5`; revision 7 is `20915d3`, the previous commit); regression checks updated; fresh cross-document review (§6). Constraints respected: Phase 1 not started; nothing installed; no code; no real target; no git write command, history rewrite, force-push or extra commit by this session.
  
- **Revision 7**
-@@ -211,29 +226,29 @@
+ **Revision 8**
+@@ -226,29 +241,29 @@
  - ✅ Constraints respected at the time: Phase 1 not started; nothing installed; no git (the repository appeared later, created by you); no code; no real target; no other project touched.
  
--## 6. Cross-review results (revision 7)
+-## 6. Cross-review results (revision 8)
++## 6. Cross-review results (revision 9)
+ 
+ **Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was updated for the observed repository state and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, the release and preview conditions, filesystem safety). This is a script check, **not** an independent review.
+ 
+-**Revision 7 run:** 154 checks, 0 failed (the documents committed as `20915d3`).
 -
--**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was extended with repository audit-trail checks and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, the revision 6 release and preview conditions, filesystem safety). This is a script check, **not** an independent review.
+-**Checks updated or added (revision 8), run against the live repository with read-only git commands:**
+-- Five commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `changes`; `HEAD` = `changes` = `origin/changes` = `20915d3`; `main` = `origin/main` = `7863d3a`; `git ls-remote origin` agrees (`refs/heads/changes` = `20915d3`, `refs/heads/main` = `7863d3a`, remote `HEAD` = `7863d3a`).
+-- Repository evidence that revision 7 content is in `20915d3` and not in `7ae6732` (which holds revision 6), that `main` at `7863d3a` has neither revision 6 nor revision 7, and that `changes` is 2 commits ahead of and 0 behind `main`.
+-- The header, Q-01 and §11 name all five commit ids; the §11 bullet carries every required fact (checked-out branch, remote pointers, revision 7 committed and pushed, `main` behind, author versus co-author, read-only git use, no force-push, the revision 8 edits uncommitted and not pushed).
+-- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 8 edits are uncommitted), and nothing is staged.
+-- No live document carries the stale claims (all branches at `7863d3a`, `main` checked out, revision 6 or 7 uncommitted, `changes` at `7ae6732`).
+-- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 7.
 -
--**Revision 6 run:** 144 checks, 0 failed (the documents committed as `7ae6732`).
+-**Revision 8, first run: 155 checks, 0 failed.**
 -
--**New checks (revision 7), run against the live repository with read-only git commands:**
--- The four commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `changes`; `changes` = `origin/changes` = `7ae6732`; `main` = `origin/main` = `7863d3a`; `git ls-remote origin` agrees (`refs/heads/changes` = `7ae6732`, `refs/heads/main` = `7863d3a`, remote `HEAD` = `7863d3a`).
--- Repository evidence that revision 6 content is in `7ae6732` and not in `7863d3a`, so `main` lacks it.
--- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 7 edits are uncommitted) and nothing is staged.
--- The header, Q-01 and §11 name all four commit ids; the §11 bullet carries every required fact (checked-out branch, both remote branches, `main` does not contain revision 6, author versus co-author, read-only git use, uncommitted and not pushed).
--- No live document carries the revision 6 claims (all branches at `7863d3a`, `main` checked out, revision 6 uncommitted) or claims this session committed, pushed or merged anything.
--- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 6); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 6.
+-**Mutation test.** Nine planted regressions were each caught: the revision 7 \"uncommitted\" claim restored; the stale \"`changes` points at `7ae6732`\" restored; \"contains neither revision 6 nor revision 7\" removed; the newest commit id removed from Q-01; the header saying revision 7 is uncommitted; \"force-pushed nothing\" removed; a Guarantee Register row weakened; AC-46 changed; the preview conditions altered.
 -
--**Revision 7, first run: 154 checks, 1 failed.** The checklist header named only two of the four commit ids while the check required the whole chain. The header now carries the chain `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732`. No check was weakened.
+-**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves the newest edits uncommitted and the next round describes them; the checks will fail, as intended, if the tree state and the documents disagree.
 -
--**Mutation test.** Ten planted regressions were each caught: the revision 6 \"uncommitted\" claim restored; \"`main` does not contain revision 6\" reversed; the header claiming `main` is checked out; \"not committed or pushed\" dropped; the \"all branches at `7863d3a`\" claim restored; the newest commit id removed from Q-01 (the first attempt left the id elsewhere in the row and so did not remove the fact; the second removed every occurrence); a Guarantee Register row weakened; AC-46 changed; the preview conditions altered.
--
--**Limit of this check.** The documentation describes the repository at one moment. If you commit or push revision 7, the working-tree and \"uncommitted\" checks will fail until the documents are updated, which is the intended behavior. A document also cannot name the SHA of the commit that will contain it.
--
--**Final run: 154 checks, 0 failed.**
-+## 6. Cross-review results (revision 8)
+-**Final run: 155 checks, 0 failed.**
++**Revision 8 run:** 155 checks, 0 failed (the documents committed as `c5f48e5`).
 +
-+**Method.** The mechanical review script (`xreview.py`, kept in the session scratchpad, not part of the project) was updated for the observed repository state and re-run across all seven documents and the folder, together with every earlier check (stale terms, acceptance-criteria and release-table coverage, register counts and statuses, ID and section references, wording chains for traces, redaction, audit-only, identity, run status, screenshots, workers, DNS, the release and preview conditions, filesystem safety). This is a script check, **not** an independent review.
++**Checks updated (revision 9), run against the live repository with read-only git commands:**
++- Six commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `main`; `HEAD`, `main`, `changes`, `origin/main` and `origin/changes` all equal `c5f48e5`; `git ls-remote origin` agrees (`refs/heads/main`, `refs/heads/changes` and remote `HEAD` all `c5f48e5`).
++- Repository evidence that revision 6 is in `7ae6732`, revision 7 in `20915d3` and revision 8 in `c5f48e5` (each absent from its parent), that all three are ancestors of `main`, and that `main` and `changes` are 0 commits ahead and 0 behind.
++- The header, Q-01 and §11 name all six commit ids; the §11 bullet carries every required fact, **including the historical revision 7 record** (`20915d3`, revision 7, 15:31, parent `7ae6732`, the tip of `changes` at the start of revision 8), the checked-out branch, the remote pointers, revision 8 committed and pushed on both branches, the branches being identical, author versus co-author, read-only git use, no force-push and the revision 9 edits uncommitted and not pushed.
++- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 9 edits are uncommitted), and nothing is staged.
++- No live document carries the stale claims (`main` at `7863d3a` as current, `changes` ahead of `main`, revision 6, 7 or 8 uncommitted, `changes` at `7ae6732` or `20915d3`); the `Revision 8` before/after table and this section keep them only as history.
++- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 8); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 8.
 +
-+**Revision 7 run:** 154 checks, 0 failed (the documents committed as `20915d3`).
++**Revision 9, first run: 156 checks, 0 failed.**
 +
-+**Checks updated or added (revision 8), run against the live repository with read-only git commands:**
-+- Five commits, their parent links, author and committer (Gaurav Raj) and the `Co-Authored-By` trailer match the documentation; `HEAD` is on `changes`; `HEAD` = `changes` = `origin/changes` = `20915d3`; `main` = `origin/main` = `7863d3a`; `git ls-remote origin` agrees (`refs/heads/changes` = `20915d3`, `refs/heads/main` = `7863d3a`, remote `HEAD` = `7863d3a`).
-+- Repository evidence that revision 7 content is in `20915d3` and not in `7ae6732` (which holds revision 6), that `main` at `7863d3a` has neither revision 6 nor revision 7, and that `changes` is 2 commits ahead of and 0 behind `main`.
-+- The header, Q-01 and §11 name all five commit ids; the §11 bullet carries every required fact (checked-out branch, remote pointers, revision 7 committed and pushed, `main` behind, author versus co-author, read-only git use, no force-push, the revision 8 edits uncommitted and not pushed).
-+- The documented \"uncommitted\" status matches the working tree (a dirty tree if and only if the documents say the revision 8 edits are uncommitted), and nothing is staged.
-+- No live document carries the stale claims (all branches at `7863d3a`, `main` checked out, revision 6 or 7 uncommitted, `changes` at `7ae6732`).
-+- No acceptance criterion changed (AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7); the 0.1-preview conditions in `architecture.md` §17 and every Guarantee Register row are byte-identical to revision 7.
++**Mutation test.** Ten planted regressions were each caught: the revision 8 \"uncommitted\" claim restored; \"`main` remains at `7863d3a`\" restored in the header; the \"identical\" statement dropped; the newest commit id removed from Q-01; \"`changes` is 2 commits ahead of `main`\" restored; a Guarantee Register row weakened; AC-49 changed; the preview conditions altered; the historical revision 7 record removed from §11. That last one was first **missed**: the id `20915d3` still appeared in the \"parent\" clause, so the check passed. The check now requires the revision 7 record itself, and the mutation is then caught.
 +
-+**Revision 8, first run: 155 checks, 0 failed.**
++**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves its newest edits uncommitted and the next round describes them; the checks fail, as intended, if the tree state and the documents disagree.
 +
-+**Mutation test.** Nine planted regressions were each caught: the revision 7 \"uncommitted\" claim restored; the stale \"`changes` points at `7ae6732`\" restored; \"contains neither revision 6 nor revision 7\" removed; the newest commit id removed from Q-01; the header saying revision 7 is uncommitted; \"force-pushed nothing\" removed; a Guarantee Register row weakened; AC-46 changed; the preview conditions altered.
-+
-+**Limit of this check.** The documentation describes the repository at one moment. A document cannot name the SHA of the commit that contains it, so each correction round leaves the newest edits uncommitted and the next round describes them; the checks will fail, as intended, if the tree state and the documents disagree.
-+
-+**Final run: 155 checks, 0 failed.**
++**Final run: 156 checks, 0 failed.**
  
  ```
  INFO  approval list also includes later-phase question(s) deliberately: ['Q-16'] (Q-16 is Phase 3, but its interim default D-42 is part of Phase 0 approval)
--INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
-+INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
+-INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
++INFO  a git repository exists in qa-sentinel. It was NOT created by this session (this session ran only read-only git commands). Commits: ['c5f48e5 Gaurav Raj 2026-11-16 15:37:25 +0530 Bump Phase 0 docs to revision 8', '20915d3 Gaurav Raj 2026-11-16 15:31:07 +0530 Bump Phase 0 docs to revision 7', '7ae6732 Gaurav Raj 2026-11-16 13:36:20 +0530 Bump Phase 0 docs to revision 6', '7863d3a Gaurav Raj 2026-11-16 13:24:20 +0530 Bump Phase 0 docs to revision 5', '4aa540c Gaurav Raj 2026-11-16 13:14:20 +0530 Update project docs', 'ddbb7c6 Gaurav Raj 2026-11-16 11:28:13 +0530 Initial commit']
  INFO  sibling project file changed recently (mtime only; cannot show who changed it): ('Git', '/Users/roop/Desktop/myProjects/Git/jeevanpulse/infra/terraform/environments/dev/outputs.tf')
  INFO  Write/Edit attempt outside qa-sentinel and the scratchpad (blocked by a hook; path exists on disk: False): /private/tmp/claude-501/-Users-roop/Desktop-myProjects/placeholder.txt
-@@ -250,4 +265,5 @@
- PASS  no stale term: revision 5, pending approval
+@@ -266,4 +281,5 @@
  PASS  no stale term: revision 6, pending approval
-+PASS  no stale term: revision 7, pending approval
+ PASS  no stale term: revision 7, pending approval
++PASS  no stale term: revision 8, pending approval
  PASS  no stale term: revision 2
  PASS  no stale term: Non-interactive and CI use is unresolved
-@@ -307,5 +323,5 @@
+@@ -323,5 +339,5 @@
  PASS  no stale phase refs (checklist may quote them only in history)
  PASS  release names present in prd and arch
--PASS  all seven docs say revision 7 in their status line
-+PASS  all seven docs say revision 8 in their status line
+-PASS  all seven docs say revision 8 in their status line
++PASS  all seven docs say revision 9 in their status line
  PASS  architecture Run model lists the five statuses and terminalReason
  PASS  all nine terminalReason values defined in architecture §4
-@@ -376,25 +392,25 @@
+@@ -392,25 +408,25 @@
  PASS  no acceptance criterion weakened: AC-22, AC-39, AC-46, AC-49 byte-identical to revision 5; AC-38 differs only by the added 'like AC-39 and AC-49' clause
  PASS  AC-44 only gained requirements (every revision 5 clause still present)
--PASS  no live document carries the revision 6 git claims (all branches at 7863d3a, main checked out, revision 6 uncommitted)
--PASS  documents state that `main` does not contain revision 6 and that revision 6 is committed and pushed on `changes`
-+PASS  no live document carries the stale git claims (all branches at 7863d3a, main checked out, revision 6 or 7 uncommitted, changes at 7ae6732)
-+PASS  documents state that `main` contains neither revision 6 nor revision 7 and that revision 7 is committed and pushed on `changes`
+-PASS  no live document carries the stale git claims (all branches at 7863d3a, main checked out, revision 6 or 7 uncommitted, changes at 7ae6732)
+-PASS  documents state that `main` contains neither revision 6 nor revision 7 and that revision 7 is committed and pushed on `changes`
++PASS  no live document carries the stale git claims (main at 7863d3a as current, changes ahead of main, revision 6, 7 or 8 uncommitted, changes at 7ae6732 or 20915d3)
++PASS  documents state that revision 8 is committed and pushed on both `main` and `changes` at c5f48e5 and that the two branches are identical
  PASS  no document claims that this session committed, pushed, branched or merged anything
--PASS  revision 7 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 6
--PASS  revision 7 left the 0.1-preview conditions (architecture §17) byte-identical to revision 6
--PASS  revision 7 left every Guarantee Register row byte-identical to revision 6
--PASS  actual git state matches the documentation: four commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `changes`, changes=origin/changes=7ae6732, main=origin/main=7863d3a
--PASS  repository evidence: revision 6 content is in 7ae6732 and not in 7863d3a (so `main` at 7863d3a lacks it)
-+PASS  revision 8 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7
-+PASS  revision 8 left the 0.1-preview conditions (architecture §17) byte-identical to revision 7
-+PASS  revision 8 left every Guarantee Register row byte-identical to revision 7
-+PASS  actual git state matches the documentation: five commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `changes`, changes=origin/changes=20915d3, main=origin/main=7863d3a
-+PASS  repository evidence: revision 7 is in 20915d3 and not in 7ae6732 (which holds revision 6); main at 7863d3a lacks revisions 6 and 7; changes is 2 commits ahead of main and 0 behind
+-PASS  revision 8 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 7
+-PASS  revision 8 left the 0.1-preview conditions (architecture §17) byte-identical to revision 7
+-PASS  revision 8 left every Guarantee Register row byte-identical to revision 7
+-PASS  actual git state matches the documentation: five commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `changes`, changes=origin/changes=20915d3, main=origin/main=7863d3a
+-PASS  repository evidence: revision 7 is in 20915d3 and not in 7ae6732 (which holds revision 6); main at 7863d3a lacks revisions 6 and 7; changes is 2 commits ahead of main and 0 behind
++PASS  revision 9 changed no acceptance criterion: AC-22, AC-38, AC-39, AC-44, AC-46, AC-49 byte-identical to revision 8
++PASS  revision 9 left the 0.1-preview conditions (architecture §17) byte-identical to revision 8
++PASS  revision 9 left every Guarantee Register row byte-identical to revision 8
++PASS  actual git state matches the documentation: six commits, parent links, author=committer=user, Claude only as Co-Authored-By, HEAD on `main`, and HEAD=main=changes=origin/main=origin/changes=c5f48e5
++PASS  repository evidence: revision 6 is in 7ae6732, revision 7 in 20915d3, revision 8 in c5f48e5 (each not in its parent); all three are ancestors of main; main and changes are 0 ahead and 0 behind
  PASS  documented 'uncommitted' status matches the working tree (dirty tree iff documents say the revision 7 edits are uncommitted), and nothing is staged
--PASS  git ls-remote origin agrees: refs/heads/changes=7ae6732, refs/heads/main=7863d3a, remote HEAD=7863d3a
-+PASS  git ls-remote origin agrees: refs/heads/changes=20915d3, refs/heads/main=7863d3a, remote HEAD=7863d3a
+-PASS  git ls-remote origin agrees: refs/heads/changes=20915d3, refs/heads/main=7863d3a, remote HEAD=7863d3a
++PASS  git ls-remote origin agrees: refs/heads/changes=refs/heads/main=remote HEAD=c5f48e5
  PASS  checklist §11 git bullet names both commits, parent link, author/committer versus Co-Authored-By, branches, and read-only git use
  PASS  no live document says the repository has one/a single commit (checklist header and live sections, other docs)
--PASS  checklist header, Q-01 and §11 agree on the four commit ids
-+PASS  checklist header, Q-01 and §11 agree on the five commit ids
+-PASS  checklist header, Q-01 and §11 agree on the five commit ids
++PASS  checklist header, Q-01 and §11 agree on the six commit ids
  PASS  no code or dependency artifacts in qa-sentinel (only .md files plus .gitignore; no node_modules)
  PASS  config/targets, tests, reports are still empty
  PASS  no Write/Edit this session issued targeted a sibling project, and no stray-path attempt created a file
  
--TOTAL: 154 checks, 0 failed
-+TOTAL: 155 checks, 0 failed
+-TOTAL: 155 checks, 0 failed
++TOTAL: 156 checks, 0 failed
  ```
  
--**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 6 is committed and pushed as `7ae6732` on `changes` (checked out, equal to `origin/changes`); `main` and `origin/main` stay at `7863d3a` (revision 5); the revision 7 edits are uncommitted and unpushed; this session wrote nothing to git. Whether to bring `main` forward, and whether to commit or push revision 7, are your decisions and are asked (Q-01), not assumed. No technical content changed.
-+**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 7 is committed and pushed as `20915d3` on `changes` (checked out, equal to `origin/changes`, 2 commits ahead of `main`); `main` and `origin/main` stay at `7863d3a` (revision 5); the revision 8 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
+-**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 7 is committed and pushed as `20915d3` on `changes` (checked out, equal to `origin/changes`, 2 commits ahead of `main`); `main` and `origin/main` stay at `7863d3a` (revision 5); the revision 8 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
++**Semantic review (manual re-read).** The header, Q-01, §1 note, §2 summary, §5 and §11 now say one thing: revision 8 is committed and pushed as `c5f48e5`; `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal it; revision 7 (`20915d3`) is the previous commit; the revision 9 edits are uncommitted and unpushed; this session wrote nothing to git. No technical content changed.
  
  **Remaining weaknesses the review could not close** are listed in §8 (open questions) and in `architecture.md` §20. Every register entry is still Designed; worker denial, the DNS design, screenshot masking limits, run-status immutability and crash recovery are untested; AC-22, AC-46, AC-38, AC-39 and AC-49 remain unpassed.
-@@ -418,5 +434,5 @@
+@@ -434,5 +450,5 @@
  | ID | Question | Default if unanswered | Needed by | Status |
  |----|----------|-----------------------|-----------|--------|
--| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732`. `changes` (checked out) = `origin/changes` = `7ae6732`, which holds revision 6; `main` = `origin/main` = `7863d3a` (revision 5). Keep this history and branch layout, and should `main` be brought forward to revision 6 (your decision; this session will not merge or push)? Confirm license `UNLICENSED` (private) | Keep it; revision 7 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
-+| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`. `changes` (checked out) = `origin/changes` = `20915d3`, which holds revision 7 (and revision 6 below it); `main` = `origin/main` = `7863d3a` (revision 5), 2 commits behind `changes`. Keep this history and branch layout, and should `main` be brought forward (your decision; this session will not merge or push)? Confirm license `UNLICENSED` (private) | Keep it; revision 8 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
+-| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3`. `changes` (checked out) = `origin/changes` = `20915d3`, which holds revision 7 (and revision 6 below it); `main` = `origin/main` = `7863d3a` (revision 5), 2 commits behind `changes`. Keep this history and branch layout, and should `main` be brought forward (your decision; this session will not merge or push)? Confirm license `UNLICENSED` (private) | Keep it; revision 8 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
++| Q-01 | Git already exists (created outside this session): `ddbb7c6` → `4aa540c` → `7863d3a` → `7ae6732` → `20915d3` → `c5f48e5`. `main` (checked out), `changes`, `origin/main` and `origin/changes` all equal `c5f48e5` (revision 8). `main` was brought forward outside this session; this session will not merge, commit or push. Keep this history and branch layout? Confirm license `UNLICENSED` (private) | Keep it; revision 9 stays uncommitted until you decide; `UNLICENSED` | Phase 1 | ❓ confirm default (revised) |
  | Q-02 | Windows support level | Best-effort, restricted capture disabled without app-level encryption | Phase 1 | ❓ confirm default |
  | Q-03 | Node policy | `engines >=22` | Phase 1 | ❓ confirm default |
-@@ -503,5 +519,5 @@
+@@ -519,5 +535,5 @@
  - **Verified (documents):** cross-references, numbering and vocabulary by script (§6); file rename and absence of stale references; that every register claim is Designed; that no document states a guarantee above Designed.
  - **Verified (public docs, earlier this session):** Playwright documents `serviceWorkers: 'block'`, WebSocket routing since v1.48 with close-without-connect, and no redaction option in HAR recording.
--- **Verified (this folder, revision 7):** Git history, observed read-only with `git status`, `git branch -vv`, `git log`, `git rev-parse` and `git ls-remote origin` at the start of revision 7: four commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24, revision 5) → **`7ae6732` ("Bump Phase 0 docs to revision 6", 13:36, parent `7863d3a`, revision 6 content)**. Branch `changes` is **checked out** and, together with `origin/changes`, points at `7ae6732`; **revision 6 is committed and pushed on `changes`** (verified: the status line of each document says revision 6 in `7ae6732` and revision 5 in `7863d3a`). Branch `main` and `origin/main` are at `7863d3a` (revision 5), and the remote's default `HEAD` also resolves to `7863d3a`, so **`main` does not contain revision 6**. The working tree was clean at the start of revision 7. On all four commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`) and has staged, committed, pushed, branched and merged nothing. **The revision 7 edits (this audit-trail correction) are uncommitted working-tree changes on `changes`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
-+- **Verified (this folder, revision 8):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -5`, `git rev-parse HEAD`, `git rev-parse origin/changes`, `git rev-parse origin/main` and `git ls-remote origin` at the start of revision 8: five commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36, parent `7863d3a`) → **`20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`, revision 7 content)**. Branch `changes` is **checked out**; `HEAD`, `changes`, `origin/changes` and the remote's `refs/heads/changes` all equal `20915d3`, so **revision 7 is committed and pushed on `changes`**, and the working tree was clean with nothing staged. `changes` is 2 commits ahead of `main` and 1 commit ahead of `7ae6732` (revision 6). `main`, `origin/main` and the remote's default `HEAD` are at `7863d3a` (revision 5), so **`main` contains neither revision 6 nor revision 7**. On all five commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 8 edits (this audit-trail correction) are uncommitted working-tree changes on `changes`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
+-- **Verified (this folder, revision 8):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -5`, `git rev-parse HEAD`, `git rev-parse origin/changes`, `git rev-parse origin/main` and `git ls-remote origin` at the start of revision 8: five commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36, parent `7863d3a`) → **`20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`, revision 7 content)**. Branch `changes` is **checked out**; `HEAD`, `changes`, `origin/changes` and the remote's `refs/heads/changes` all equal `20915d3`, so **revision 7 is committed and pushed on `changes`**, and the working tree was clean with nothing staged. `changes` is 2 commits ahead of `main` and 1 commit ahead of `7ae6732` (revision 6). `main`, `origin/main` and the remote's default `HEAD` are at `7863d3a` (revision 5), so **`main` contains neither revision 6 nor revision 7**. On all five commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 8 edits (this audit-trail correction) are uncommitted working-tree changes on `changes`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
++- **Verified (this folder, revision 9):** Git history, observed read-only with `git status`, `git branch -vv`, `git log --oneline --decorate -6`, `git rev-parse HEAD`, `git rev-parse` of `changes`, `origin/changes`, `main` and `origin/main`, and `git ls-remote origin` at the start of revision 9: six commits in a line. `ddbb7c6` ("Initial commit", 2026-11-16 11:28 +0530, revision 3 content) → `4aa540c` ("Update project docs", 13:14, revision 4) → `7863d3a` ("Bump Phase 0 docs to revision 5", 13:24) → `7ae6732` ("Bump Phase 0 docs to revision 6", 13:36) → `20915d3` ("Bump Phase 0 docs to revision 7", 15:31, parent `7ae6732`; it was the tip of `changes` at the start of revision 8) → **`c5f48e5` ("Bump Phase 0 docs to revision 8", 15:37, parent `20915d3`, revision 8 content)**. Branch `main` is **checked out**; `HEAD`, `main`, `changes`, `origin/main`, `origin/changes` and the remote's `refs/heads/main`, `refs/heads/changes` and default `HEAD` **all equal `c5f48e5`**, so **revision 8 is committed and pushed on both `main` and `changes`**, and `main` and `changes` are identical (0 commits ahead of or behind each other). `main` was at `7863d3a` (revision 5) at the start of revision 8; it now contains revisions 6, 7 and 8 as well (it was moved outside this session). The working tree was clean with nothing staged, and its content equals `c5f48e5`. On all six commits the **author and committer** is Gaurav Raj (your identity); Claude Sonnet 5.5 appears only as a **`Co-Authored-By` trailer**, i.e. co-author, not author. These commits and the branch move were made outside this session's tool calls: this session ran only read-only git commands (`status`, `branch`, `log`, `rev-parse`, `ls-remote`, `show`, `diff`, `merge-base`, `rev-list`) and has staged, committed, pushed, branched and merged nothing, rewritten no history and force-pushed nothing. **The revision 9 edits (this audit-trail correction) are uncommitted working-tree changes on the checked-out branch `main`; they are not committed or pushed, and committing or pushing them awaits your decision.** A document cannot record the SHA of the commit that will contain it, so this description is accurate only for the state observed above. No file other than Markdown (plus `.gitignore`) exists; `config/targets`, `tests` and `reports` are empty; the transcript shows no Write or Edit by this session outside this folder and the scratchpad (one mistaken write to a stray `/private/tmp` path was blocked by a hook and created nothing). A sibling project (`Git/jeevanpulse`) shows recent file changes and its own commits by your identity; this session did not touch it, but a modification time cannot prove who made a change.
  - **Not verified (nothing is built):** every guarantee in the register; Chromium proxy, WebRTC and QUIC flags; worker denial (AC-46) and therefore worker-originated WebSocket prevention; DNS pinning and system-wide DNS observation (AC-38, AC-49); screenshot masking limits (AC-48); run-status immutability and crash recovery (AC-47); `sendBeacon` routing; independent outbound observation for AC-38; keychain access without a native module; redaction completeness; confirmation on real flaky targets; that `AGENT_ROLES.md` is not auto-loaded in a fresh session.
  
---- a/README.md (revision 7)
-+++ b/README.md (revision 8)
+--- a/README.md (revision 8)
++++ b/README.md (revision 9)
 @@ -3,5 +3,5 @@
  Independent, evidence-first QA auditor for any application. Standalone product; not connected to any existing project.
  
--**Status: Phase 0 (foundation documents), revision 7, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
-+**Status: Phase 0 (foundation documents), revision 8, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
+-**Status: Phase 0 (foundation documents), revision 8, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
++**Status: Phase 0 (foundation documents), revision 9, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
  
  ## Foundation documents
 ~~~~
