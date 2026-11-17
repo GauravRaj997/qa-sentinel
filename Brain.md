@@ -1,6 +1,6 @@
 # QA Sentinel — Brain
 
-> Status: Phase 0 draft, revision 10, pending approval. Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
+> Status: Phase 0, revision 11, approved by the owner on 2026-11-17 (record: `PHASE_0_CHECKLIST.md` §10; the approval passes no gate and does not approve Phase 1). Source of truth for *why* QA Sentinel exists and what it will never become. Other documents implement this one; if they conflict, this file wins and the conflict is a bug.
 
 ## 1. Vision
 
@@ -42,7 +42,7 @@ It exists because the people and tools that build software are poorly placed to 
 - NG2. Not a replacement for unit tests or a developer's own test suite.
 - NG3. Not a vulnerability scanner for hostile use, and never to be pointed at systems the user does not own or lack permission to test. Scope allowlists are mandatory.
 - NG4. Not a load or performance benchmarking platform.
-- NG5. Not a hosted multi-tenant SaaS. Distribution is **private** (packages marked private, license `UNLICENSED`) until the owner decides otherwise.
+- NG5. Not a hosted multi-tenant SaaS. Distribution is **unpublished and unlicensed** (packages marked private, no registry publishing, license `UNLICENSED`: all rights reserved) until the owner decides otherwise. The source repository on GitHub is **public** (owner decision, 2026-11-17); being public grants no license.
 - NG6. Not tied to any specific target project. No real application is connected during Phase 0 or while QA Sentinel itself is being built.
 - NG7. No proof of absence of bugs. A clean run means "nothing found by these checks", and reports say exactly which checks ran and which protections were active.
 - NG8. Not a proof of human identity. Human approvals record how they were given, and are not identity verification.

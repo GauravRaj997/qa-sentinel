@@ -1,6 +1,6 @@
 # QA Sentinel — Design System
 
-> Status: Phase 0 draft, revision 10, pending approval. Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
+> Status: Phase 0, revision 11, approved by the owner on 2026-11-17 (record: `PHASE_0_CHECKLIST.md` §10; the approval passes no gate and does not approve Phase 1). Applies to the HTML reports (Release 0.1), the dashboard (Release 0.3) and, in spirit, CLI output. Product rules: `prd.md`. Architecture: `architecture.md`. Roles: `AGENT_ROLES.md`. No UI is built yet; accessibility and security properties named here are **Designed**, not Tested (`architecture.md` §0).
 
 ## 1. Identity
 

@@ -2,7 +2,7 @@
 
 Independent, evidence-first QA auditor for any application. Standalone product; not connected to any existing project.
 
-**Status: Phase 0 (foundation documents), revision 10, pending approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
+**Status: Phase 0 (foundation documents), revision 11, approved by the owner on 2026-11-17; Phase 1 has not started and needs its own plan and approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
 
 ## Foundation documents
 

@@ -1,6 +1,6 @@
 # QA Sentinel — Architecture
 
-> Status: Phase 0 draft, revision 10, pending approval. Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
+> Status: Phase 0, revision 11, approved by the owner on 2026-11-17 (record: `PHASE_0_CHECKLIST.md` §10; the approval passes no gate and does not approve Phase 1). Implements the principles in `Brain.md`. Requirements: `prd.md`. Agent roles: `AGENT_ROLES.md`. Dashboard visuals: `design_system.md`. **Nothing here is implemented yet.**
 
 ## 0. How to read this document (assurance language)
 
@@ -571,7 +571,7 @@ qa-sentinel abort <run>
 | Logging | pino (JSON) | console + own formatter. |
 | Reports | JSON canonical; Markdown; self-contained HTML | SARIF/JUnit later. |
 | AI integration | None in the engine; optional `ai-assist` proposals post-MVP | Vendor SDKs inside core (rejected). |
-| Distribution | **Private**: packages marked `private`, no registry publishing, license `UNLICENSED` (all rights reserved) until the owner decides (G-10) | MIT/Apache-2.0 open source; scoped private registry. |
+| Distribution | **Unpublished and unlicensed**: packages marked `private`, no registry publishing, license `UNLICENSED` (all rights reserved) until the owner decides (G-10); the source repository on GitHub is public (owner decision, 2026-11-17), which grants no license | MIT/Apache-2.0 open source; scoped private registry. |
 
 ## 16. Built-in check packs (no model required)
 

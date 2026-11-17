@@ -1,6 +1,6 @@
 # QA Sentinel — Product Requirements
 
-> Status: Phase 0 draft, revision 10, pending approval. Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
+> Status: Phase 0, revision 11, approved by the owner on 2026-11-17 (record: `PHASE_0_CHECKLIST.md` §10; the approval passes no gate and does not approve Phase 1). Vision and principles: `Brain.md`. Design: `architecture.md`, `AGENT_ROLES.md`, `design_system.md`. Requirement IDs (FR / NFR / AC) are stable references used in the checklist and the Guarantee Register (`architecture.md` §18).
 >
 > **Assurance language.** Requirements describe what the product must do. A protection is only called a *guarantee* once the related acceptance criteria pass (**Tested**) and, for security claims, an independent review exists (**Independently verified**). Until then it is **Designed**. See `architecture.md` §0.
 
@@ -153,7 +153,7 @@ Software built with AI assistants is often judged by the same assistant that bui
 - NFR-011 **Dependencies:** minimal and pinned, lockfile committed. The core, CLI, runner and reporter keep a small runtime dependency set with no postinstall scripts other than the browser install. Dashboard dependencies live in the optional `dashboard` package and do not affect Releases 0.1–0.2.
 - NFR-012 **Data integrity:** run history survives crashes; a crashed run is detected on the next start and marked `aborted` (`terminalReason: crash_detected`), never `completed`; terminal statuses cannot be changed afterwards.
 - NFR-013 **Assurance honesty:** documentation, reports and UI follow the assurance vocabulary; every Guarantee Register entry names the acceptance criteria that move it to Tested.
-- NFR-014 **Distribution:** private tool; packages marked `private`; license `UNLICENSED` (all rights reserved) until the owner decides otherwise.
+- NFR-014 **Distribution:** unpublished tool; packages marked `private`; no registry publishing; license `UNLICENSED` (all rights reserved) until the owner decides otherwise. The source repository on GitHub is public (owner decision, 2026-11-17); that grants no license.
 
 ## 7. Assumptions and constraints
 
