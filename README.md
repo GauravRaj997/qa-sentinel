@@ -2,7 +2,7 @@
 
 Independent, evidence-first QA auditor for any application. Standalone product; not connected to any existing project.
 
-**Status: Phase 0 (foundation documents), revision 11, approved by the owner on 2026-11-17; Phase 1 has not started and needs its own plan and approval. No code yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified).**
+**Status: Phase 0 (foundation documents) approved by the owner on 2026-11-17 (revision 11). Phase 1 is in progress: D1 (workspace skeleton) and D2 (`@qa-sentinel/schema` with its tests) are done and on `main`; D3 (`packages/store`) is blocked until the SQLite spike is reported and the owner chooses the driver and Node floor. The only code is the schema package and its tests: no store, runner, guard, CLI or fixtures exist yet. Every protective mechanism is Designed only (not Implemented, Tested or Independently verified), and AC-22, AC-38, AC-39, AC-46 and AC-49 remain unpassed.**
 
 ## Foundation documents
 
@@ -18,7 +18,10 @@ Independent, evidence-first QA auditor for any application. Standalone product; 
 ## Folders
 
 - `config/targets/` target profiles (one file per application under test)
-- `tests/` tests of QA Sentinel itself (not of target apps)
+- `packages/schema/` zod schemas and types for the records (Phase 1, D2)
+- `tests/` tests of QA Sentinel itself (not of target apps); `tests/schema/` covers the schema package
 - `reports/` exported run reports
 
-Further folders (`packages/`, `fixtures/`, `specs/`, `data/`) are defined in `architecture.md` and created in Phase 1.
+Run the checks with `npm install` (install scripts are disabled in `.npmrc`) and `npm run check`. Supported Node versions are `^22.12.0 || ^24.0.0 || >=26.0.0`, the range the pinned Vitest requires; only Node 24 has been exercised so far.
+
+Further folders (`packages/store`, `fixtures/`, `specs/`, `data/`) are defined in `architecture.md` and are created in later Phase 1 steps or later phases.
