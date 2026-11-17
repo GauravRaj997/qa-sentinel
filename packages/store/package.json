@@ -1,0 +1,17 @@
+{
+  "name": "@qa-sentinel/store",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@qa-sentinel/schema": "0.0.0",
+    "better-sqlite3": "13.2.0"
+  }
+}

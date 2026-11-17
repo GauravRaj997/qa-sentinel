@@ -1,0 +1,113 @@
+import Database from "better-sqlite3";
+import { afterEach, describe, expect, it } from "vitest";
+import { openStore } from "@qa-sentinel/store";
+import * as f from "../schema/factories.js";
+import { cleanup, dbFile, decisionInput, eventInput, makeEvidence, makeRun } from "./helpers.js";
+
+afterEach(cleanup);
+
+/** A store file with one row in every table, then closed. Raw connections below use DEFAULT pragmas,
+ *  so these tests prove the schema protects itself and does not rely on the store's own settings. */
+const seeded = (): string => {
+  const p = dbFile();
+  const s = openStore(p);
+  const run = makeRun(1);
+  s.insertRun(run);
+  const ev = makeEvidence();
+  s.insertEvidence(ev);
+  s.appendEvidenceEvent(eventInput(ev.id));
+  s.appendPolicyDecision(decisionInput(run.id));
+  s.close();
+  return p;
+};
+const codeOf = (db: Database, sql: string, ...params: unknown[]): string => {
+  try {
+    db.prepare(sql).run(...params);
+  } catch (e) {
+    return (e as { code: string }).code;
+  }
+  return "no error";
+};
+const count = (db: Database, table: string): unknown => db.prepare(`select count(*) c from ${table}`).get();
+const TRIGGER = "SQLITE_CONSTRAINT_TRIGGER";
+const CHECK = "SQLITE_CONSTRAINT_CHECK";
+
+describe.each([
+  ["evidence", "kind = 'dom'"],
+  ["evidence_events", "type = 'created'"],
+  ["policy_decisions", "subject = 'spec'"],
+  ["schema_migrations", "name = 'changed'"],
+])("%s is append-only for any connection", (table, set) => {
+  it("rejects UPDATE, DELETE, INSERT OR REPLACE and REPLACE INTO, and keeps its rows", () => {
+    const db = new Database(seeded());
+    const before = db.prepare(`select * from ${table}`).all();
+    expect(codeOf(db, `update ${table} set ${set}`)).toBe(TRIGGER);
+    expect(codeOf(db, `delete from ${table}`)).toBe(TRIGGER);
+    expect(codeOf(db, `insert or replace into ${table} select * from ${table}`)).toBe(TRIGGER);
+    expect(codeOf(db, `replace into ${table} select * from ${table}`)).toBe(TRIGGER);
+    expect(db.prepare(`select * from ${table}`).all()).toEqual(before);
+    db.close();
+  });
+});
+
+describe("runs", () => {
+  const insertRaw = `insert into runs (id, mode, guard_mode, status, terminal_reason, started_at, ended_at, data)
+                     values (?, ?, ?, ?, ?, ?, ?, '{}')`;
+  it("cannot be deleted or replaced, and a running run can still be updated", () => {
+    const db = new Database(seeded());
+    expect(codeOf(db, "delete from runs")).toBe(TRIGGER);
+    expect(codeOf(db, "insert or replace into runs select * from runs")).toBe(TRIGGER);
+    expect(codeOf(db, "update runs set data = '{}'")).toBe("no error");
+    db.close();
+  });
+  it("is fully immutable once terminal", () => {
+    const p = seeded();
+    const s = openStore(p);
+    s.finishRun(makeRun(1).id, { status: "completed", terminalReason: "completed", endedAt: "2026-11-17T10:05:00.000Z" });
+    s.close();
+    const db = new Database(p);
+    expect(codeOf(db, "update runs set status = 'errored'")).toBe(TRIGGER);
+    expect(codeOf(db, "update runs set status = status")).toBe(TRIGGER);
+    expect(codeOf(db, "update runs set data = '{}'")).toBe(TRIGGER);
+    db.close();
+  });
+  it("accepts only audit mode and only consistent status, reason and end time", () => {
+    const db = new Database(seeded());
+    const t = f.NOW;
+    expect(codeOf(db, insertRaw, f.uuid(1), "authorized", "full", "running", null, t, null)).toBe(CHECK);
+    expect(codeOf(db, insertRaw, f.uuid(2), "audit", "none", "running", null, t, null)).toBe(CHECK);
+    expect(codeOf(db, insertRaw, f.uuid(3), "audit", "full", "running", "completed", t, null)).toBe(CHECK);
+    expect(codeOf(db, insertRaw, f.uuid(4), "audit", "full", "completed", "budget_exhausted", t, t)).toBe(CHECK);
+    expect(codeOf(db, insertRaw, f.uuid(5), "audit", "full", "completed", "completed", t, null)).toBe(CHECK);
+    expect(codeOf(db, insertRaw, f.uuid(6), "audit", "full", "errored", "user_abort", t, t)).toBe(CHECK);
+    expect(codeOf(db, insertRaw, f.uuid(7), "audit", "full", "aborted", "crash_detected", t, t)).toBe("no error");
+    db.close();
+  });
+});
+
+describe("evidence and decisions: audit-only and labelling rules in the schema", () => {
+  const insertEvidence = `insert into evidence (id, kind, class, encrypted, redaction_status, expires_at, execution_record_id, data)
+                          values (?, ?, ?, ?, ?, ?, ?, '{}')`;
+  it("rejects restricted evidence that is not encrypted", () => {
+    const db = new Database(seeded());
+    const args = (id: string, kind: string, cls: string, enc: number, red: string) =>
+      [id, kind, cls, enc, red, f.NOW, f.uuid(5)] as const;
+    expect(codeOf(db, insertEvidence, ...args(f.hex("1"), "console", "restricted", 0, "redacted"))).toBe(CHECK);
+    expect(codeOf(db, insertEvidence, ...args(f.hex("2"), "trace", "public", 0, "not_redacted"))).toBe(CHECK);
+    expect(codeOf(db, insertEvidence, ...args(f.hex("3"), "trace", "restricted", 1, "redacted"))).toBe(CHECK);
+    expect(codeOf(db, insertEvidence, ...args(f.hex("4"), "screenshot", "public", 0, "redacted"))).toBe(CHECK);
+    expect(codeOf(db, insertEvidence, ...args("short", "console", "public", 0, "redacted"))).toBe(CHECK);
+    expect(codeOf(db, insertEvidence, ...args(f.hex("5"), "trace", "restricted", 1, "not_redacted"))).toBe("no error");
+    db.close();
+  });
+  it("rejects an allow decision for A2 or A3", () => {
+    const db = new Database(seeded());
+    const ins = `insert into policy_decisions (id, run_id, subject, decision, action_class, at, prev_hash, hash, data)
+                 values (?, ?, 'request', ?, ?, ?, null, ?, '{}')`;
+    expect(codeOf(db, ins, f.uuid(40), makeRun(1).id, "allow", "A2", f.NOW, f.hex("a"))).toBe(CHECK);
+    expect(codeOf(db, ins, f.uuid(41), makeRun(1).id, "allow", "A3", f.NOW, f.hex("a"))).toBe(CHECK);
+    expect(codeOf(db, ins, f.uuid(42), makeRun(1).id, "allow", "A1", f.NOW, f.hex("a"))).toBe("no error");
+    expect(count(db, "policy_decisions")).toEqual({ c: 2 });
+    db.close();
+  });
+});
