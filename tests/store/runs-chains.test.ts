@@ -158,7 +158,8 @@ describe("hash chains", () => {
   const dropGuards = "drop trigger evidence_events_no_update; drop trigger evidence_events_no_delete;";
   it("detects an edited record", () => {
     const { p, s } = seededChain();
-    tamper(p, `${dropGuards} update evidence_events set data = replace(data, '"accessed"', '"exported"') where seq = 2`);
+    // actor.label has no column of its own, so this isolates the hash check from the column check.
+    tamper(p, `${dropGuards} update evidence_events set data = replace(data, '"label":"runner"', '"label":"intruder"') where seq = 2`);
     expect(s.verifyChains()).toEqual([expect.objectContaining({ table: "evidence_events", seq: 2, problem: "hash_mismatch" })]);
     s.close();
   });
@@ -180,6 +181,91 @@ describe("hash chains", () => {
     expect(s.verifyChains().map((x) => x.problem)).toContain("column_mismatch");
     tamper(p, "update evidence_events set data = '{}' where seq = 1");
     expect(s.verifyChains().map((x) => x.problem)).toContain("invalid_record");
+    s.close();
+  });
+});
+
+// Each duplicated column of the two chained tables must agree with the hashed record. The columns are what
+// SQL (CHECKs, indexes, queries by type or decision) sees, so editing one without touching `data` must not
+// go unnoticed. These tampers run on a raw connection after dropping the update guard, so they test
+// detection, not prevention (same-user tampering is not claimed: GR-23).
+describe("duplicated columns must match the record", () => {
+  const seedEvents = () => {
+    const p = dbFile();
+    const s = openStore(p);
+    const ev = withEvidence(s);
+    for (let i = 0; i < 3; i++) s.appendEvidenceEvent(eventInput(ev.id));
+    return { p, s };
+  };
+  // deny / A1 so that a flip to allow (A0/A1 only) still satisfies the table CHECK.
+  const seedDecisions = () => {
+    const p = dbFile();
+    const s = openStore(p);
+    const run = makeRun(1);
+    s.insertRun(run);
+    for (let i = 0; i < 3; i++) s.appendPolicyDecision(decisionInput(run.id, `rule-${i}`, "A1"));
+    return { p, s };
+  };
+  const LATER = "'2030-01-01T00:00:00.000Z'";
+  const OTHER_HASH = `'${f.hex("0")}'`;
+
+  it("a clean store reports nothing", () => {
+    const e = seedEvents();
+    const d = seedDecisions();
+    expect(e.s.verifyChains()).toEqual([]);
+    expect(d.s.verifyChains()).toEqual([]);
+    e.s.close();
+    d.s.close();
+  });
+
+  it.each([
+    ["id", "'forged-id'"],
+    ["type", "'exported'"],
+    ["at", LATER],
+    ["hash", OTHER_HASH],
+    ["prev_hash", OTHER_HASH],
+  ])("evidence_events.%s edited on its own is reported once, as column_mismatch", (col, value) => {
+    const { p, s } = seedEvents();
+    tamper(p, `drop trigger evidence_events_no_update; update evidence_events set ${col} = ${value} where seq = 2`);
+    expect(s.verifyChains()).toEqual([expect.objectContaining({ table: "evidence_events", seq: 2, problem: "column_mismatch" })]);
+    s.close();
+  });
+
+  it.each([
+    ["id", "'forged-id'"],
+    ["subject", "'spec'"],
+    ["decision", "'allow'"],
+    ["action_class", "'A0'"],
+    ["at", LATER],
+    ["hash", OTHER_HASH],
+    ["prev_hash", OTHER_HASH],
+  ])("policy_decisions.%s edited on its own is reported once, as column_mismatch", (col, value) => {
+    const { p, s } = seedDecisions();
+    tamper(p, `drop trigger policy_decisions_no_update; update policy_decisions set ${col} = ${value} where seq = 2`);
+    expect(s.verifyChains()).toEqual([expect.objectContaining({ table: "policy_decisions", seq: 2, problem: "column_mismatch" })]);
+    s.close();
+  });
+
+  it("moving a row to another chain by its key column is reported as column_mismatch", () => {
+    // The new parent must exist: foreign keys are enforced even on a raw connection with default pragmas.
+    const e = seedEvents();
+    const otherEvidence = withEvidence(e.s, "2");
+    tamper(e.p, `drop trigger evidence_events_no_update; update evidence_events set evidence_id = '${otherEvidence.id}' where seq = 2`);
+    expect(e.s.verifyChains()).toContainEqual(expect.objectContaining({ table: "evidence_events", seq: 2, problem: "column_mismatch" }));
+    e.s.close();
+    const d = seedDecisions();
+    const otherRun = makeRun(2);
+    d.s.insertRun(otherRun);
+    tamper(d.p, `drop trigger policy_decisions_no_update; update policy_decisions set run_id = '${otherRun.id}' where seq = 2`);
+    expect(d.s.verifyChains()).toContainEqual(expect.objectContaining({ table: "policy_decisions", seq: 2, problem: "column_mismatch" }));
+    d.s.close();
+  });
+
+  it("editing a duplicated field inside data is reported twice: the hash and the column", () => {
+    const { p, s } = seedEvents();
+    tamper(p, `drop trigger evidence_events_no_update; update evidence_events set data = replace(data, '"type":"accessed"', '"type":"exported"') where seq = 2`);
+    const found = s.verifyChains().filter((x) => x.seq === 2).map((x) => x.problem).sort();
+    expect(found).toEqual(["column_mismatch", "hash_mismatch"]);
     s.close();
   });
 });

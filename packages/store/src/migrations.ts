@@ -101,6 +101,20 @@ ${appendOnly("policy_decisions", ["seq", "id"])}`;
 
 export const MIGRATIONS: readonly Migration[] = [{ version: 1, name: "initial", sql: INITIAL_SQL }];
 
+/** Reads the ledger and refuses one that is newer than this code or was edited. Returns the applied versions. */
+function checkLedger(db: Db, migrations: readonly Migration[]): Set<number> {
+  const applied = db.prepare("SELECT version, checksum FROM schema_migrations ORDER BY version").all() as {
+    version: number;
+    checksum: string;
+  }[];
+  for (const a of applied) {
+    const m = migrations.find((x) => x.version === a.version);
+    if (!m) throw new StoreError("migration_mismatch", `the database has migration ${a.version}, which this version does not know (database is newer)`);
+    if (sha256Hex(m.sql) !== a.checksum) throw new StoreError("migration_mismatch", `migration ${a.version} was changed after it was applied`);
+  }
+  return new Set(applied.map((a) => a.version));
+}
+
 /** Brings a database to the latest version, refusing one that was edited, is newer, or fails a migration. */
 export function applyMigrations(db: Db, migrations: readonly Migration[], now: () => Date): void {
   migrations.forEach((m, i) => {
@@ -113,19 +127,13 @@ export function applyMigrations(db: Db, migrations: readonly Migration[], now: (
     if (!has) db.exec(BOOTSTRAP_SQL);
   }).immediate();
 
-  const applied = db.prepare("SELECT version, checksum FROM schema_migrations ORDER BY version").all() as {
-    version: number;
-    checksum: string;
-  }[];
-  for (const a of applied) {
-    const m = migrations.find((x) => x.version === a.version);
-    if (!m) throw new StoreError("migration_mismatch", `the database has migration ${a.version}, which this version does not know (database is newer)`);
-    if (sha256Hex(m.sql) !== a.checksum) throw new StoreError("migration_mismatch", `migration ${a.version} was changed after it was applied`);
-  }
-  const done = new Set(applied.map((a) => a.version));
+  // Fast path: an up-to-date database never takes the write lock.
+  const done = checkLedger(db, migrations);
   for (const m of migrations) {
     if (done.has(m.version)) continue;
     db.transaction(() => {
+      // Another opener may have applied this migration since the read above, so look again under the write lock.
+      if (checkLedger(db, migrations).has(m.version)) return;
       db.exec(m.sql);
       db.prepare("INSERT INTO schema_migrations (version, name, checksum, applied_at) VALUES (?, ?, ?, ?)").run(
         m.version,

@@ -60,17 +60,6 @@ describe("runs", () => {
     expect(codeOf(db, "update runs set data = '{}'")).toBe("no error");
     db.close();
   });
-  it("is fully immutable once terminal", () => {
-    const p = seeded();
-    const s = openStore(p);
-    s.finishRun(makeRun(1).id, { status: "completed", terminalReason: "completed", endedAt: "2026-11-17T10:05:00.000Z" });
-    s.close();
-    const db = new Database(p);
-    expect(codeOf(db, "update runs set status = 'errored'")).toBe(TRIGGER);
-    expect(codeOf(db, "update runs set status = status")).toBe(TRIGGER);
-    expect(codeOf(db, "update runs set data = '{}'")).toBe(TRIGGER);
-    db.close();
-  });
   it("accepts only audit mode and only consistent status, reason and end time", () => {
     const db = new Database(seeded());
     const t = f.NOW;
@@ -81,6 +70,79 @@ describe("runs", () => {
     expect(codeOf(db, insertRaw, f.uuid(5), "audit", "full", "completed", "completed", t, null)).toBe(CHECK);
     expect(codeOf(db, insertRaw, f.uuid(6), "audit", "full", "errored", "user_abort", t, t)).toBe(CHECK);
     expect(codeOf(db, insertRaw, f.uuid(7), "audit", "full", "aborted", "crash_detected", t, t)).toBe("no error");
+    db.close();
+  });
+});
+
+// Terminal runs are immutable (AC-47, store level). Two kinds of case are kept apart on purpose:
+//  A. changes that also violate a table CHECK. They show what the CHECKs do on their own and say nothing about the trigger.
+//  B. changes that satisfy every CHECK, so only runs_terminal_immutable can stop them. Each B case is proven on a
+//     disposable comparison database with the trigger dropped (the change succeeds) and then on the normal database
+//     (the same change fails with the trigger's own error and leaves the row unchanged).
+// Every case is a separate test, so one failing assertion cannot hide another.
+describe("terminal runs: what the CHECKs reject, and what only the trigger rejects", () => {
+  const END = "2026-11-17T10:05:00.000Z";
+  const C = makeRun(1).id; // finished as completed
+  const D = makeRun(2).id; // finished as aborted / user_abort
+  const terminalDb = (): string => {
+    const p = dbFile();
+    const s = openStore(p);
+    s.insertRun(makeRun(1));
+    s.insertRun(makeRun(2));
+    s.finishRun(C, { status: "completed", terminalReason: "completed", endedAt: END });
+    s.finishRun(D, { status: "aborted", terminalReason: "user_abort", endedAt: END });
+    s.close();
+    return p;
+  };
+  // "if exists": the comparison database must still be built when the trigger is missing from the schema, so that a
+  // missing trigger fails the assertion on the normal database and not this setup step.
+  const withoutTrigger = (): Database => {
+    const db = new Database(terminalDb());
+    db.exec("drop trigger if exists runs_terminal_immutable");
+    return db;
+  };
+  const rowOf = (db: Database, id: string): Record<string, unknown> =>
+    db.prepare("select * from runs where id = ?").get(id) as Record<string, unknown>;
+
+  const CHECK_INVALID: [string, string][] = [
+    ["status errored while terminal_reason stays completed", "update runs set status = 'errored' where id = ?"],
+    ["ended_at removed from a terminal run", "update runs set ended_at = null where id = ?"],
+  ];
+  it.each(CHECK_INVALID)("A1 (trigger dropped): the CHECK rejects: %s", (_name, sql) => {
+    const db = withoutTrigger();
+    expect(codeOf(db, sql, C)).toBe(CHECK);
+    db.close();
+  });
+  it.each(CHECK_INVALID)("A2 (normal database): rejected by some constraint, row unchanged (defence in depth, not trigger proof): %s", (_name, sql) => {
+    const db = new Database(terminalDb());
+    const before = rowOf(db, C);
+    expect([TRIGGER, CHECK]).toContain(codeOf(db, sql, C));
+    expect(rowOf(db, C)).toEqual(before);
+    db.close();
+  });
+
+  // [name, run to change, statement, columns expected to differ afterwards]. Every statement satisfies all CHECKs.
+  const TRIGGER_ONLY: [string, string, string, Record<string, unknown>][] = [
+    ["status and reason flipped consistently (completed to aborted/user_abort)", C,
+      "update runs set status = 'aborted', terminal_reason = 'user_abort' where id = ?", { status: "aborted", terminal_reason: "user_abort" }],
+    ["terminal_reason changed within aborted (user_abort to crash_detected)", D,
+      "update runs set terminal_reason = 'crash_detected' where id = ?", { terminal_reason: "crash_detected" }],
+    ["ended_at changed", C, "update runs set ended_at = '2026-11-17T10:06:00.000Z' where id = ?", { ended_at: "2026-11-17T10:06:00.000Z" }],
+    ["no-op status write", C, "update runs set status = status where id = ?", {}],
+    ["data rewritten", C, "update runs set data = '{}' where id = ?", { data: "{}" }],
+  ];
+  it.each(TRIGGER_ONLY)("B: only the trigger stops: %s", (_name, id, sql, changed) => {
+    // Comparison database, trigger dropped: the change must succeed, so no CHECK or other trigger is in the way.
+    const cmp = withoutTrigger();
+    const pre = rowOf(cmp, id);
+    expect(cmp.prepare(sql).run(id).changes).toBe(1);
+    expect(rowOf(cmp, id)).toEqual({ ...pre, ...changed });
+    cmp.close();
+    // Normal database: the same change fails with the trigger's own error and the row is untouched.
+    const db = new Database(terminalDb());
+    const before = rowOf(db, id);
+    expect(codeOf(db, sql, id)).toBe(TRIGGER);
+    expect(rowOf(db, id)).toEqual(before);
     db.close();
   });
 });

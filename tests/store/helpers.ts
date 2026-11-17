@@ -30,11 +30,11 @@ export const eventInput = (evidenceId: string, type = "accessed") => ({
   at: f.NOW,
 });
 
-export const decisionInput = (runId: string, rule = "non-safe-method") => ({
+export const decisionInput = (runId: string, rule = "non-safe-method", actionClass: "A0" | "A1" | "A2" | "A3" = "A2") => ({
   runId,
   subject: "request" as const,
   decision: "deny" as const,
-  actionClass: "A2" as const,
+  actionClass,
   rule,
   reason: "POST is not a safe method",
   at: f.NOW,

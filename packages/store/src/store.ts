@@ -46,7 +46,11 @@ export interface Store {
   insertRun(run: Run): void;
   getRun(id: string): Run | undefined;
   finishRun(id: string, outcome: RunOutcome): Run;
-  /** Marks every run still `running` as aborted/crash_detected. Call only at start-up, when no run is active. */
+  /**
+   * Marks every run still `running` as aborted/crash_detected. Call only at start-up, when no run is active.
+   * Requires the workspace lock (architecture.md: one run at a time per workspace), which does not exist in D3: the
+   * runner's start path must acquire it before calling this, and readers must never call it.
+   */
   recoverCrashedRuns(endedAt?: string): string[];
   insertEvidence(evidence: Evidence): void;
   getEvidence(id: string): Evidence | undefined;
@@ -54,9 +58,19 @@ export interface Store {
   listEvidenceEvents(evidenceId: string): EvidenceEvent[];
   appendPolicyDecision(input: NewPolicyDecision): PolicyDecision;
   listPolicyDecisions(runId: string): PolicyDecision[];
-  /** Re-reads every chained row and checks links, hashes and columns. A removed last row is detected only
-   *  through the AUTOINCREMENT counter; nothing outside the database anchors the chain, so a same-user
-   *  attacker who rewrites everything consistently is not detected (GR-23 is not claimed). */
+  /**
+   * Re-reads every row of the two hash-chained tables (evidence_events, policy_decisions) and reports:
+   * - invalid_record: `data` does not parse as the record schema.
+   * - column_mismatch: a duplicated column differs from its record field. evidence_events: id, evidence_id,
+   *   type, at, prev_hash, hash. policy_decisions: id, run_id, subject, decision, action_class, at, prev_hash, hash.
+   * - prev_hash_mismatch: a row's prevHash is not the previous row's hash within its chain.
+   * - hash_mismatch: the stored hash is not sha256 of the canonical record without its hash.
+   * - rows_missing_at_end: the AUTOINCREMENT counter is above the table's highest seq.
+   * Not detected: deletion of an entire chain, or removal of a chain's last row, unless the removed rows include
+   * the table's highest seq (the AUTOINCREMENT counter check); a consistent rewrite of rows, hashes and counter by a
+   * same-user attacker (nothing outside the database anchors the chain; GR-23 is not claimed). Not covered: the
+   * columns of runs and evidence.
+   */
   verifyChains(): ChainProblem[];
   /** Compares the live tables, triggers and indexes with a freshly migrated database. */
   verifySchema(): SchemaProblem[];
@@ -64,9 +78,24 @@ export interface Store {
   close(): void;
 }
 
+// `columns` lists every column that duplicates a field of the hashed record, as [column, record field].
+// seq has no record field and is not listed. verifyChains compares each of these with the record.
 const CHAINS = [
-  { table: "evidence_events", col: "evidence_id", field: "evidenceId", schema: evidenceEventSchema },
-  { table: "policy_decisions", col: "run_id", field: "runId", schema: policyDecisionSchema },
+  {
+    table: "evidence_events",
+    col: "evidence_id",
+    schema: evidenceEventSchema,
+    columns: [["id", "id"], ["evidence_id", "evidenceId"], ["type", "type"], ["at", "at"], ["prev_hash", "prevHash"], ["hash", "hash"]],
+  },
+  {
+    table: "policy_decisions",
+    col: "run_id",
+    schema: policyDecisionSchema,
+    columns: [
+      ["id", "id"], ["run_id", "runId"], ["subject", "subject"], ["decision", "decision"],
+      ["action_class", "actionClass"], ["at", "at"], ["prev_hash", "prevHash"], ["hash", "hash"],
+    ],
+  },
 ] as const;
 
 const parseRun = (text: string): Run => runSchema.parse(JSON.parse(text));
@@ -196,10 +225,10 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
 
     verifyChains() {
       const problems: ChainProblem[] = [];
-      for (const { table, col, field, schema } of CHAINS) {
+      for (const { table, col, schema, columns } of CHAINS) {
         const rows = db
-          .prepare(`SELECT seq, ${col} AS chain, prev_hash, hash, data FROM ${table} ORDER BY ${col}, seq`)
-          .all() as { seq: number; chain: string; prev_hash: string | null; hash: string; data: string }[];
+          .prepare(`SELECT seq, ${col} AS chain, ${columns.map(([c]) => c).join(", ")}, data FROM ${table} ORDER BY ${col}, seq`)
+          .all() as ({ seq: number; chain: string; hash: string; data: string } & Record<string, unknown>)[];
         let currentChain: string | null = null;
         let expectedPrev: string | null = null;
         for (const row of rows) {
@@ -216,7 +245,7 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
             expectedPrev = row.hash;
             continue;
           }
-          if (row.hash !== rec["hash"] || row.prev_hash !== rec["prevHash"] || row.chain !== rec[field]) report("column_mismatch");
+          if (columns.some(([column, field]) => row[column] !== rec[field])) report("column_mismatch");
           if (rec["prevHash"] !== expectedPrev) report("prev_hash_mismatch");
           const { hash, ...rest } = rec;
           if (sha256Hex(canonicalJson(rest)) !== hash) report("hash_mismatch");
