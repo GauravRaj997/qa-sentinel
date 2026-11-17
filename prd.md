@@ -145,7 +145,7 @@ Software built with AI assistants is often judged by the same assistant that bui
 - NFR-003 **Safety:** all safety rules live in code paths independent of any model or client input.
 - NFR-004 **Privacy:** local-first; no telemetry designed in; network access only to in-scope targets (and a model provider only if a profile opts in, post-MVP).
 - NFR-005 **Security:** dashboard/API bound to loopback with token, `Host`/`Origin` checks and CSRF on writes.
-- NFR-006 **Portability:** macOS and Linux supported; Windows best-effort with the restrictions in FR-063. Node.js `>=22`.
+- NFR-006 **Portability:** macOS and Linux supported; Windows best-effort with the restrictions in FR-063. Node.js `>=22`. *Phase 1 compatibility note (2026-11-17): the toolchain pinned in Phase 1 (Vitest 5.1.0 with Vite and rolldown) supports Node `^22.12.0 || ^24.0.0 || >=26.0.0`, which is the `engines` range in the root `package.json`; only Node 24 has been exercised so far. This is a toolchain-compatibility note only.*
 - NFR-007 **Performance (targets to validate, not promises):** a bounded audit of the reference fixture completes within a few minutes on a developer laptop; dashboard lists render within one second for 10,000 findings.
 - NFR-008 **Accessibility:** dashboard and HTML reports meet WCAG 2.2 AA (`design_system.md` §9).
 - NFR-009 **Maintainability:** strict TypeScript, schema-first records, versioned migrations, documented module boundaries.

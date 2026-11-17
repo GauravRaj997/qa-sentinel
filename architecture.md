@@ -555,7 +555,7 @@ qa-sentinel abort <run>
 
 | Area | Initial choice | Alternatives and trade-offs |
 |------|----------------|------------------------------|
-| Language / runtime | TypeScript (strict) on Node.js, `engines >=22` | Python + pytest-playwright (strong QA ecosystem, split-language dashboard); Go (single binary, weak browser tooling). |
+| Language / runtime | TypeScript (strict) on Node.js, `engines >=22` *(Phase 1 compatibility note, 2026-11-17: the pinned toolchain supports `^22.12.0 \|\| ^24.0.0 \|\| >=26.0.0`, the range in the root `package.json`; toolchain compatibility only)* | Python + pytest-playwright (strong QA ecosystem, split-language dashboard); Go (single binary, weak browser tooling). |
 | Browser automation | **Playwright library**, used directly | *Playwright Test runner* (built-in reporters/retries/traces, but its execution model makes our records, guard and "never claim passed" control harder); Cypress; Selenium/WebDriver; Puppeteer. |
 | Egress proxy | Own small loopback proxy on Node stdlib (`node:http`/`node:net`) | Mature proxy library (more features, bigger supply chain); OS firewall only (L3). HTTPS inspection (MITM CA) rejected for the MVP: needs a trusted CA and enlarges risk. |
 | Spec format | Declarative JSON/YAML steps + assertions; scripted escape hatch later | TS scripts (hard to classify/hash); Gherkin. |
