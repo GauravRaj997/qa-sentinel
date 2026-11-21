@@ -77,13 +77,17 @@ export interface Store {
    *   stored link and its own hash (the first such row links to a genesis value). Removing any row, including the last
    *   row of a chain such as a tombstone, or altering a link, is reported at the next row (at the row itself too when
    *   its own link was altered). A row whose own record was edited consistently keeps a stale link and is reported.
+   *   Also reported at a row whose seq does not follow its predecessor (the first one must be boundary_seq + 1), which
+   *   exposes a removed final row followed by a later append: AUTOINCREMENT keeps counting past the removed number.
+   *   The store itself refuses such an append (integrity_error) when the counter and the highest seq disagree.
    * - legacy_boundary_mismatch: for rows that existed when migration 2 ran (seq <= the recorded boundary): a row
-   *   carries a link, the number of such rows differs from the recorded count, or the boundary record is missing.
+   *   carries a link, the number of such rows differs from the recorded count, the boundary record is missing, or
+   *   the AUTOINCREMENT counter is below the boundary.
    * Limits. Rows from before migration 2 are covered by the per-chain checks only: the recorded count detects a changed
    * number of them, but not which row was replaced or edited consistently, so a count-preserving replacement of legacy
    * rows is not guaranteed to be detected; their history cannot be verified further. A forged tail whose hash and link
    * are both computed correctly is not detected. Nothing outside the database anchors the chain, so a same-user
-   * attacker who rewrites rows, hashes, links, boundary records and counter consistently is not detected (GR-23 is
+   * attacker who rewrites rows, hashes, links, boundary records and counter (including sqlite_sequence) consistently is not detected (GR-23 is
    * not claimed). Not covered: the columns of runs and evidence.
    */
   verifyChains(): ChainProblem[];
@@ -163,11 +167,23 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
   const listEvents = db.prepare("SELECT data FROM evidence_events WHERE evidence_id = ? ORDER BY seq");
   const listDecisions = db.prepare("SELECT data FROM policy_decisions WHERE run_id = ? ORDER BY seq");
 
-  /** The row_link for a new row of `table`; call inside the append's write transaction, before the insert. */
+  const counterOf = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = ?");
+  const counterSeq = (table: string): number => (counterOf.get(table) as { seq: number } | undefined)?.seq ?? 0;
+
+  /**
+   * The row_link for a new row of `table`; call inside the append's write transaction, before the insert.
+   * Refuses to append (integrity_error) unless the table tail is consistent: the AUTOINCREMENT counter must equal
+   * the highest surviving seq and must not be below the migration boundary. Otherwise the new row would be linked
+   * over a removed final row, which no later check could tell apart from a clean append.
+   */
   const linkFor = (table: keyof typeof tableHead, hash: string): string => {
     const boundary = boundaryOf.get(table) as { boundary_seq: number } | undefined;
     if (boundary === undefined) throw new StoreError("integrity_error", `the row-link boundary record for ${table} is missing`);
     const head = tableHead[table].get() as { seq: number; row_link: string } | undefined;
+    const counter = counterSeq(table);
+    if (counter < boundary.boundary_seq || counter !== (head?.seq ?? 0)) {
+      throw new StoreError("integrity_error", `${table} tail is inconsistent: counter ${counter}, highest seq ${head?.seq ?? 0}, boundary ${boundary.boundary_seq}`);
+    }
     const previous = head !== undefined && head.seq > boundary.boundary_seq ? head.row_link : genesisLink(table, boundary.boundary_seq);
     return nextLink(previous, hash);
   };
@@ -268,6 +284,7 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
           row_link: string;
         }[];
         let previous = genesisLink(table, boundarySeq);
+        let expectedSeq = boundarySeq + 1; // post-migration rows are consecutive, the first at boundary_seq + 1
         let legacyRows = 0;
         for (const row of rows) {
           const report = (problem: ChainProblem["problem"]): void => void problems.push({ table, seq: row.seq, chain: row.chain, problem });
@@ -276,9 +293,12 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
             if (row.row_link !== "") report("legacy_boundary_mismatch");
             continue;
           }
-          if (row.row_link !== nextLink(previous, row.hash)) report("row_link_mismatch");
+          // One report per row, whether its link or its seq is off; a gap is reported once, at the row after it.
+          if (row.seq !== expectedSeq || row.row_link !== nextLink(previous, row.hash)) report("row_link_mismatch");
+          expectedSeq = row.seq + 1;
           previous = row.row_link;
         }
+        if (boundary !== undefined && counterSeq(table) < boundarySeq) problems.push({ table, seq: null, chain: null, problem: "legacy_boundary_mismatch" });
         if (boundary !== undefined && legacyRows !== boundary.legacy_rows) problems.push({ table, seq: null, chain: null, problem: "legacy_boundary_mismatch" });
       };
       for (const { table, col, schema, columns } of CHAINS) {

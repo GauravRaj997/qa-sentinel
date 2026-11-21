@@ -356,3 +356,241 @@ describe("row_link_boundaries is append-only for any connection", () => {
     d.close();
   });
 });
+
+// Final-row deletion followed by an append (D3 review finding). AUTOINCREMENT keeps counting past a removed final row, so
+// without a tail check the new row would link over the gap and verifyChains would see a clean chain. Two guards close it:
+// the append refuses an inconsistent tail, and verifyChains requires consecutive seq numbers after the boundary.
+type Ctx = { ev?: { id: string }; run?: { id: string } };
+const TABLES = [
+  {
+    table: "evidence_events",
+    drop: DROP_EVENTS,
+    seed: seedEvents,
+    append: (s: Store, ctx: Ctx) => s.appendEvidenceEvent(eventInput(ctx.ev!.id)),
+    // An append that fails inside its transaction: the evidence item does not exist (foreign key).
+    failAppend: (s: Store) => s.appendEvidenceEvent(eventInput(makeEvidence("9").id)),
+  },
+  {
+    table: "policy_decisions",
+    drop: DROP_DECISIONS,
+    seed: seedDecisions,
+    append: (s: Store, ctx: Ctx) => s.appendPolicyDecision(decisionInput(ctx.run!.id, "later", "A1")),
+    // An append that fails inside its transaction: the run does not exist (foreign key).
+    failAppend: (s: Store) => s.appendPolicyDecision(decisionInput(makeRun(99).id, "failing", "A1")),
+  },
+] as const;
+const count = (p: string, table: string): number => query(p, `select count(*) c from ${table}`)[0]!["c"] as number;
+const counterOf = (p: string, table: string): unknown => query(p, `select seq from sqlite_sequence where name = '${table}'`)[0]?.["seq"];
+
+/** Reproduces what an append did before the guard: the row `seq` moves to `newSeq` with a link computed over the survivor before it. */
+const reinsertAt = (p: string, table: string, seq: number, newSeq: number): void => {
+  const d = new Database(p);
+  try {
+    const row = d.prepare(`select * from ${table} where seq = ?`).get(seq) as Record<string, unknown>;
+    const prev = d.prepare(`select row_link from ${table} where seq < ? order by seq desc limit 1`).get(seq) as { row_link: string };
+    d.exec(`${table === "evidence_events" ? DROP_EVENTS : DROP_DECISIONS} DELETE FROM ${table} WHERE seq = ${seq}`);
+    const cols = Object.keys(row);
+    d.prepare(`INSERT INTO ${table} (${cols.join(", ")}) VALUES (${cols.map((c) => "@" + c).join(", ")})`).run({
+      ...row,
+      seq: newSeq,
+      row_link: LINK(prev.row_link, row["hash"] as string),
+    });
+  } finally {
+    d.close();
+  }
+};
+
+describe.each(TABLES)("final-row deletion then append: $table", ({ table, drop, seed, append, failAppend }) => {
+  it("deleting the final row and appending is refused with integrity_error, and nothing is written", () => {
+    const { p, s, ...ctx } = seed();
+    tamper(p, `${drop} DELETE FROM ${table} WHERE seq = 3`);
+    expect(codeOf(() => append(s, ctx))).toBe("integrity_error");
+    expect(count(p, table)).toBe(2);
+    expect(counterOf(p, table)).toBe(3);
+    expect(pick(s.verifyChains())).toEqual([[null, "rows_missing_at_end"]]);
+    s.close();
+  });
+
+  it("a counter below the surviving tail (counter edited down, no row removed) is refused too", () => {
+    const { p, s, ...ctx } = seed();
+    tamper(p, `UPDATE sqlite_sequence SET seq = 2 WHERE name = '${table}'`);
+    expect(codeOf(() => append(s, ctx))).toBe("integrity_error");
+    expect(count(p, table)).toBe(3);
+    s.close();
+  });
+
+  it("a multi-row gap (the last two rows deleted) is refused too, and stays refused on every retry", () => {
+    const { p, s, ...ctx } = seed();
+    tamper(p, `${drop} DELETE FROM ${table} WHERE seq >= 2`);
+    expect(codeOf(() => append(s, ctx))).toBe("integrity_error");
+    expect(codeOf(() => append(s, ctx))).toBe("integrity_error");
+    expect(count(p, table)).toBe(1);
+    s.close();
+  });
+
+  it("every row deleted: the counter is above an empty table, so the append is refused", () => {
+    const { p, s, ...ctx } = seed();
+    tamper(p, `${drop} DELETE FROM ${table}`);
+    expect(codeOf(() => append(s, ctx))).toBe("integrity_error");
+    expect(count(p, table)).toBe(0);
+    s.close();
+  });
+
+  it("a gap that is already in the database (a row linked over a removed one) is reported at the row after it", () => {
+    const { p, s } = seed();
+    reinsertAt(p, table, 3, 4); // rows 1, 2, 4: links valid, seq 3 missing
+    expect(pick(s.verifyChains())).toEqual([[4, "row_link_mismatch"]]);
+    s.close();
+  });
+
+  it("a gap of several numbers is reported once, and a later consistent append does not add reports", () => {
+    const { p, s, ...ctx } = seed();
+    reinsertAt(p, table, 3, 6); // rows 1, 2, 6
+    expect(pick(s.verifyChains())).toEqual([[6, "row_link_mismatch"]]);
+    append(s, ctx); // seq 7 follows 6 and the counter is consistent
+    expect(pick(s.verifyChains())).toEqual([[6, "row_link_mismatch"]]);
+    s.close();
+  });
+
+  it("a clean store keeps appending and verifying, and its seq numbers are consecutive", () => {
+    const { p, s, ...ctx } = seed();
+    append(s, ctx);
+    append(s, ctx);
+    expect(s.verifyChains()).toEqual([]);
+    expect(query(p, `select seq from ${table} order by seq`).map((r) => r["seq"])).toEqual([1, 2, 3, 4, 5]);
+    s.close();
+  });
+
+  it("a failed append leaves no gap: the counter rolls back with the transaction", () => {
+    const { p, s, ...ctx } = seed();
+    expect(() => failAppend(s)).toThrow();
+    expect(counterOf(p, table)).toBe(3);
+    expect(count(p, table)).toBe(3);
+    append(s, ctx);
+    expect(counterOf(p, table)).toBe(4);
+    expect(s.verifyChains()).toEqual([]);
+    s.close();
+  });
+});
+
+describe("final-row deletion: a tombstone", () => {
+  it("deleting the final tombstone and appending an event for another item is refused, and the deletion stays reported", () => {
+    const p = dbFile();
+    const s = openStore(p);
+    const a = makeEvidence("a");
+    const b = makeEvidence("b");
+    s.insertEvidence(a);
+    s.insertEvidence(b);
+    s.appendEvidenceEvent(eventInput(b.id, "created"));
+    s.appendEvidenceEvent(eventInput(a.id, "created"));
+    s.appendEvidenceEvent({
+      ...eventInput(a.id, "tombstoned"),
+      detail: { hash: a.id, kind: "console", size: 10, deletedAt: "2026-11-17T10:00:00.000Z", reason: "retention expired", method: "unlink" },
+    });
+    tamper(p, `${DROP_EVENTS} DELETE FROM evidence_events WHERE seq = 3`);
+    expect(codeOf(() => s.appendEvidenceEvent(eventInput(b.id, "accessed")))).toBe("integrity_error");
+    expect(query(p, "select count(*) c from evidence_events where type = 'tombstoned'")).toEqual([{ c: 0 }]);
+    expect(pick(s.verifyChains())).toEqual([[null, "rows_missing_at_end"]]);
+    s.close();
+  });
+
+  it("a final tombstone already replaced by a row linked over the gap is reported (AC-43)", () => {
+    const { p, s } = seedTombstone(); // A created(1), A tombstoned(2), B created(3)
+    reinsertAt(p, "evidence_events", 3, 4); // B's row moves to seq 4: the tail no longer follows the tombstone
+    expect(pick(s.verifyChains())).toEqual([[4, "row_link_mismatch"]]);
+    s.close();
+  });
+});
+
+describe("final-row deletion: databases upgraded from migration 1", () => {
+  const upgraded = () => {
+    const l = legacy();
+    opened(l.p).close();
+    return l;
+  };
+
+  it("control: a nonzero boundary with no post-migration rows verifies clean, and the first append is boundary + 1", () => {
+    const { p, a, run } = upgraded();
+    const s = opened(p);
+    expect(s.verifyChains()).toEqual([]);
+    const e = s.appendEvidenceEvent(eventInput(a.id));
+    const d = s.appendPolicyDecision(decisionInput(run.id, "after", "A1"));
+    expect(query(p, `select seq from evidence_events where id = '${e.id}'`)).toEqual([{ seq: 4 }]);
+    expect(query(p, `select seq from policy_decisions where id = '${d.id}'`)).toEqual([{ seq: 3 }]);
+    expect(s.verifyChains()).toEqual([]);
+    s.close();
+  });
+
+  it("control: appends after the boundary stay consecutive and clean", () => {
+    const { p, a } = upgraded();
+    const s = opened(p);
+    for (let i = 0; i < 4; i++) s.appendEvidenceEvent(eventInput(a.id));
+    expect(query(p, "select seq from evidence_events order by seq").map((r) => r["seq"])).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(s.verifyChains()).toEqual([]);
+    s.close();
+  });
+
+  it("deleting the last legacy row (counter above the surviving tail) refuses the append", () => {
+    const { p, a } = upgraded();
+    tamper(p, `${DROP_EVENTS} DELETE FROM evidence_events WHERE seq = 3`);
+    const s = opened(p);
+    expect(codeOf(() => s.appendEvidenceEvent(eventInput(a.id)))).toBe("integrity_error");
+    expect(pick(s.verifyChains())).toContainEqual([null, "legacy_boundary_mismatch"]);
+    s.close();
+  });
+
+  it("deleting the only post-migration row and appending is refused", () => {
+    const { p, a } = upgraded();
+    const s = opened(p);
+    s.appendEvidenceEvent(eventInput(a.id));
+    tamper(p, `${DROP_EVENTS} DELETE FROM evidence_events WHERE seq = 4`);
+    expect(codeOf(() => s.appendEvidenceEvent(eventInput(a.id)))).toBe("integrity_error");
+    expect(pick(s.verifyChains())).toEqual([[null, "rows_missing_at_end"]]);
+    s.close();
+  });
+
+  it("a first post-migration row that is not boundary + 1 is reported", () => {
+    const { p, a } = upgraded();
+    const s = opened(p);
+    s.appendEvidenceEvent(eventInput(a.id));
+    reinsertAt(p, "evidence_events", 4, 5);
+    expect(pick(s.verifyChains())).toEqual([[5, "row_link_mismatch"]]);
+    s.close();
+  });
+
+  it("a counter below the boundary is reported, and the append is refused even when the counter matches the surviving tail", () => {
+    const { p, a } = upgraded();
+    // Legacy row 3 removed and the counter lowered to match the surviving tail (2): equality holds, the boundary (3) is above it.
+    tamper(p, `${DROP_EVENTS} DELETE FROM evidence_events WHERE seq = 3; UPDATE sqlite_sequence SET seq = 2 WHERE name = 'evidence_events'`);
+    const s = opened(p);
+    expect(pick(s.verifyChains())).toContainEqual([null, "legacy_boundary_mismatch"]);
+    expect(codeOf(() => s.appendEvidenceEvent(eventInput(a.id)))).toBe("integrity_error");
+    s.close();
+  });
+
+  it("a missing sqlite_sequence row over an empty table below a nonzero boundary is refused and reported", () => {
+    const { p, a } = upgraded();
+    tamper(p, `${DROP_EVENTS} DELETE FROM evidence_events; DELETE FROM sqlite_sequence WHERE name = 'evidence_events'`);
+    const s = opened(p);
+    expect(pick(s.verifyChains())).toContainEqual([null, "legacy_boundary_mismatch"]);
+    expect(codeOf(() => s.appendEvidenceEvent(eventInput(a.id)))).toBe("integrity_error");
+    s.close();
+  });
+
+  it("a counter lowered below an intact table is reported on its own, and the append is refused", () => {
+    const { p, a } = upgraded();
+    tamper(p, "UPDATE sqlite_sequence SET seq = 1 WHERE name = 'evidence_events'"); // no row removed: only the counter is wrong
+    const s = opened(p);
+    expect(pick(s.verifyChains())).toEqual([[null, "legacy_boundary_mismatch"]]);
+    expect(codeOf(() => s.appendEvidenceEvent(eventInput(a.id)))).toBe("integrity_error");
+    s.close();
+  });
+
+  it("policy_decisions: deleting the last legacy decision refuses the append", () => {
+    const { p, run } = upgraded();
+    tamper(p, `${DROP_DECISIONS} DELETE FROM policy_decisions WHERE seq = 2`);
+    const s = opened(p);
+    expect(codeOf(() => s.appendPolicyDecision(decisionInput(run.id, "x", "A1")))).toBe("integrity_error");
+    s.close();
+  });
+});
