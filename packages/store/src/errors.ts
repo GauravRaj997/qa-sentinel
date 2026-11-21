@@ -3,7 +3,8 @@ export type StoreErrorCode =
   | "invalid_transition"
   | "invalid_record"
   | "migration_mismatch"
-  | "invalid_migrations";
+  | "invalid_migrations"
+  | "integrity_error";
 
 /** Errors the store raises itself. Driver errors (for example SQLITE_BUSY) pass through unchanged. */
 export class StoreError extends Error {

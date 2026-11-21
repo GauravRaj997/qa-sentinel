@@ -37,6 +37,7 @@ describe.each([
   ["evidence_events", "type = 'created'"],
   ["policy_decisions", "subject = 'spec'"],
   ["schema_migrations", "name = 'changed'"],
+  ["row_link_boundaries", "boundary_seq = 99"],
 ])("%s is append-only for any connection", (table, set) => {
   it("rejects UPDATE, DELETE, INSERT OR REPLACE and REPLACE INTO, and keeps its rows", () => {
     const db = new Database(seeded());

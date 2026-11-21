@@ -99,7 +99,30 @@ CREATE TABLE policy_decisions (
 CREATE INDEX policy_decisions_chain ON policy_decisions (run_id, seq);
 ${appendOnly("policy_decisions", ["seq", "id"])}`;
 
-export const MIGRATIONS: readonly Migration[] = [{ version: 1, name: "initial", sql: INITIAL_SQL }];
+// Migration 2: table-wide row links (AC-43). Migration 1 above must never change: its checksum is in every ledger.
+// row_link chains every row of a hash-chained table to the previous row of the TABLE (not of its own chain), so removing
+// a row, including a chain's last event such as a tombstone, breaks the next row's link. Rows that exist when this
+// migration runs are "legacy": they are not backfilled (their link stays ''), and row_link_boundaries records, filled by
+// this SQL itself, the table's AUTOINCREMENT counter (boundary_seq) and row count (legacy_rows) at that moment.
+// Link format: first row after the boundary  sha256("qa-sentinel/row-link-genesis/v1\n" + table + "\n" + boundary_seq)
+// is the "previous link"; every row stores sha256("qa-sentinel/row-link/v1\n" + previous stored link + "\n" + its hash).
+const ROW_LINKS_SQL = `
+ALTER TABLE evidence_events ADD COLUMN row_link TEXT NOT NULL DEFAULT '';
+ALTER TABLE policy_decisions ADD COLUMN row_link TEXT NOT NULL DEFAULT '';
+CREATE TABLE row_link_boundaries (
+  table_name TEXT PRIMARY KEY CHECK (table_name IN ('evidence_events', 'policy_decisions')),
+  boundary_seq INTEGER NOT NULL CHECK (boundary_seq >= 0),
+  legacy_rows INTEGER NOT NULL CHECK (legacy_rows >= 0)
+) STRICT;
+${appendOnly("row_link_boundaries", ["table_name"])}
+INSERT INTO row_link_boundaries (table_name, boundary_seq, legacy_rows) VALUES
+  ('evidence_events', COALESCE((SELECT seq FROM sqlite_sequence WHERE name = 'evidence_events'), 0), (SELECT COUNT(*) FROM evidence_events)),
+  ('policy_decisions', COALESCE((SELECT seq FROM sqlite_sequence WHERE name = 'policy_decisions'), 0), (SELECT COUNT(*) FROM policy_decisions));`;
+
+export const MIGRATIONS: readonly Migration[] = [
+  { version: 1, name: "initial", sql: INITIAL_SQL },
+  { version: 2, name: "row_links", sql: ROW_LINKS_SQL },
+];
 
 /** Reads the ledger and refuses one that is newer than this code or was edited. Returns the applied versions. */
 function checkLedger(db: Db, migrations: readonly Migration[]): Set<number> {

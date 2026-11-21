@@ -166,7 +166,11 @@ describe("hash chains", () => {
   it("detects a removed middle row", () => {
     const { p, s } = seededChain();
     tamper(p, `${dropGuards} delete from evidence_events where seq = 2`);
-    expect(s.verifyChains()).toEqual([expect.objectContaining({ seq: 3, problem: "prev_hash_mismatch" })]);
+    // Seq 3 loses its chain predecessor, and its table-wide link no longer follows the row before it.
+    expect(s.verifyChains()).toEqual([
+      expect.objectContaining({ seq: 3, problem: "prev_hash_mismatch" }),
+      expect.objectContaining({ seq: 3, problem: "row_link_mismatch" }),
+    ]);
     s.close();
   });
   it("detects a removed last row", () => {
@@ -222,7 +226,6 @@ describe("duplicated columns must match the record", () => {
     ["id", "'forged-id'"],
     ["type", "'exported'"],
     ["at", LATER],
-    ["hash", OTHER_HASH],
     ["prev_hash", OTHER_HASH],
   ])("evidence_events.%s edited on its own is reported once, as column_mismatch", (col, value) => {
     const { p, s } = seedEvents();
@@ -237,12 +240,25 @@ describe("duplicated columns must match the record", () => {
     ["decision", "'allow'"],
     ["action_class", "'A0'"],
     ["at", LATER],
-    ["hash", OTHER_HASH],
     ["prev_hash", OTHER_HASH],
   ])("policy_decisions.%s edited on its own is reported once, as column_mismatch", (col, value) => {
     const { p, s } = seedDecisions();
     tamper(p, `drop trigger policy_decisions_no_update; update policy_decisions set ${col} = ${value} where seq = 2`);
     expect(s.verifyChains()).toEqual([expect.objectContaining({ table: "policy_decisions", seq: 2, problem: "column_mismatch" })]);
+    s.close();
+  });
+
+  // The hash column also feeds the table-wide row link, so editing it on its own is reported twice at that row.
+  it.each([
+    ["evidence_events", "evidence_events_no_update", seedEvents],
+    ["policy_decisions", "policy_decisions_no_update", seedDecisions],
+  ] as const)("%s.hash edited on its own is reported as column_mismatch and as row_link_mismatch", (table, trigger, seed) => {
+    const { p, s } = seed();
+    tamper(p, `drop trigger ${trigger}; update ${table} set hash = ${OTHER_HASH} where seq = 2`);
+    expect(s.verifyChains()).toEqual([
+      expect.objectContaining({ table, seq: 2, problem: "column_mismatch" }),
+      expect.objectContaining({ table, seq: 2, problem: "row_link_mismatch" }),
+    ]);
     s.close();
   });
 
