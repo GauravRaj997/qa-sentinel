@@ -367,12 +367,16 @@ const TABLES = [
     drop: DROP_EVENTS,
     seed: seedEvents,
     append: (s: Store, ctx: Ctx) => s.appendEvidenceEvent(eventInput(ctx.ev!.id)),
+    // An append that fails inside its transaction: the evidence item does not exist (foreign key).
+    failAppend: (s: Store) => s.appendEvidenceEvent(eventInput(makeEvidence("9").id)),
   },
   {
     table: "policy_decisions",
     drop: DROP_DECISIONS,
     seed: seedDecisions,
     append: (s: Store, ctx: Ctx) => s.appendPolicyDecision(decisionInput(ctx.run!.id, "later", "A1")),
+    // An append that fails inside its transaction: the run does not exist (foreign key).
+    failAppend: (s: Store) => s.appendPolicyDecision(decisionInput(makeRun(99).id, "failing", "A1")),
   },
 ] as const;
 const count = (p: string, table: string): number => query(p, `select count(*) c from ${table}`)[0]!["c"] as number;
@@ -396,7 +400,7 @@ const reinsertAt = (p: string, table: string, seq: number, newSeq: number): void
   }
 };
 
-describe.each(TABLES)("final-row deletion then append: $table", ({ table, drop, seed, append }) => {
+describe.each(TABLES)("final-row deletion then append: $table", ({ table, drop, seed, append, failAppend }) => {
   it("deleting the final row and appending is refused with integrity_error, and nothing is written", () => {
     const { p, s, ...ctx } = seed();
     tamper(p, `${drop} DELETE FROM ${table} WHERE seq = 3`);
@@ -459,9 +463,11 @@ describe.each(TABLES)("final-row deletion then append: $table", ({ table, drop, 
 
   it("a failed append leaves no gap: the counter rolls back with the transaction", () => {
     const { p, s, ...ctx } = seed();
-    expect(() => s.appendEvidenceEvent(eventInput(makeEvidence("9").id))).toThrow(); // unknown evidence: foreign key
+    expect(() => failAppend(s)).toThrow();
     expect(counterOf(p, table)).toBe(3);
+    expect(count(p, table)).toBe(3);
     append(s, ctx);
+    expect(counterOf(p, table)).toBe(4);
     expect(s.verifyChains()).toEqual([]);
     s.close();
   });
