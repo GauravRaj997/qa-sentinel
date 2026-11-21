@@ -33,7 +33,14 @@ export interface ChainProblem {
   table: "evidence_events" | "policy_decisions";
   seq: number | null;
   chain: string | null;
-  problem: "prev_hash_mismatch" | "hash_mismatch" | "column_mismatch" | "invalid_record" | "rows_missing_at_end";
+  problem:
+    | "prev_hash_mismatch"
+    | "hash_mismatch"
+    | "column_mismatch"
+    | "invalid_record"
+    | "rows_missing_at_end"
+    | "row_link_mismatch"
+    | "legacy_boundary_mismatch";
 }
 export interface SchemaProblem {
   object: string;
@@ -66,10 +73,18 @@ export interface Store {
    * - prev_hash_mismatch: a row's prevHash is not the previous row's hash within its chain.
    * - hash_mismatch: the stored hash is not sha256 of the canonical record without its hash.
    * - rows_missing_at_end: the AUTOINCREMENT counter is above the table's highest seq.
-   * Not detected: deletion of an entire chain, or removal of a chain's last row, unless the removed rows include
-   * the table's highest seq (the AUTOINCREMENT counter check); a consistent rewrite of rows, hashes and counter by a
-   * same-user attacker (nothing outside the database anchors the chain; GR-23 is not claimed). Not covered: the
-   * columns of runs and evidence.
+   * - row_link_mismatch: a row appended after migration 2 has a row_link that is not sha256 of the previous TABLE row's
+   *   stored link and its own hash (the first such row links to a genesis value). Removing any row, including the last
+   *   row of a chain such as a tombstone, or altering a link, is reported at the next row (at the row itself too when
+   *   its own link was altered). A row whose own record was edited consistently keeps a stale link and is reported.
+   * - legacy_boundary_mismatch: for rows that existed when migration 2 ran (seq <= the recorded boundary): a row
+   *   carries a link, the number of such rows differs from the recorded count, or the boundary record is missing.
+   * Limits. Rows from before migration 2 are covered by the per-chain checks only: the recorded count detects a changed
+   * number of them, but not which row was replaced or edited consistently, so a count-preserving replacement of legacy
+   * rows is not guaranteed to be detected; their history cannot be verified further. A forged tail whose hash and link
+   * are both computed correctly is not detected. Nothing outside the database anchors the chain, so a same-user
+   * attacker who rewrites rows, hashes, links, boundary records and counter consistently is not detected (GR-23 is
+   * not claimed). Not covered: the columns of runs and evidence.
    */
   verifyChains(): ChainProblem[];
   /** Compares the live tables, triggers and indexes with a freshly migrated database. */
@@ -97,6 +112,9 @@ const CHAINS = [
     ],
   },
 ] as const;
+
+const genesisLink = (table: string, boundarySeq: number): string => sha256Hex(`qa-sentinel/row-link-genesis/v1\n${table}\n${boundarySeq}`);
+const nextLink = (previousLink: string, hash: string): string => sha256Hex(`qa-sentinel/row-link/v1\n${previousLink}\n${hash}`);
 
 const parseRun = (text: string): Run => runSchema.parse(JSON.parse(text));
 const dataOf = (row: unknown): string => (row as { data: string }).data;
@@ -130,16 +148,29 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
   );
   const selectEvidence = db.prepare("SELECT data FROM evidence WHERE id = ?");
   const insertEventRow = db.prepare(
-    "INSERT INTO evidence_events (id, evidence_id, type, at, prev_hash, hash, data) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO evidence_events (id, evidence_id, type, at, prev_hash, hash, data, row_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
   );
   const insertDecisionRow = db.prepare(
-    "INSERT INTO policy_decisions (id, run_id, subject, decision, action_class, at, prev_hash, hash, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO policy_decisions (id, run_id, subject, decision, action_class, at, prev_hash, hash, data, row_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   const headEvent = db.prepare("SELECT hash FROM evidence_events WHERE evidence_id = ? ORDER BY seq DESC LIMIT 1");
   const headDecision = db.prepare("SELECT hash FROM policy_decisions WHERE run_id = ? ORDER BY seq DESC LIMIT 1");
+  const tableHead = {
+    evidence_events: db.prepare("SELECT seq, row_link FROM evidence_events ORDER BY seq DESC LIMIT 1"),
+    policy_decisions: db.prepare("SELECT seq, row_link FROM policy_decisions ORDER BY seq DESC LIMIT 1"),
+  };
+  const boundaryOf = db.prepare("SELECT boundary_seq, legacy_rows FROM row_link_boundaries WHERE table_name = ?");
   const listEvents = db.prepare("SELECT data FROM evidence_events WHERE evidence_id = ? ORDER BY seq");
   const listDecisions = db.prepare("SELECT data FROM policy_decisions WHERE run_id = ? ORDER BY seq");
 
+  /** The row_link for a new row of `table`; call inside the append's write transaction, before the insert. */
+  const linkFor = (table: keyof typeof tableHead, hash: string): string => {
+    const boundary = boundaryOf.get(table) as { boundary_seq: number } | undefined;
+    if (boundary === undefined) throw new StoreError("integrity_error", `the row-link boundary record for ${table} is missing`);
+    const head = tableHead[table].get() as { seq: number; row_link: string } | undefined;
+    const previous = head !== undefined && head.seq > boundary.boundary_seq ? head.row_link : genesisLink(table, boundary.boundary_seq);
+    return nextLink(previous, hash);
+  };
   const headOf = (stmt: Statement, key: string): string | null => (stmt.get(key) as { hash: string } | undefined)?.hash ?? null;
   const toIso = (): string => now().toISOString();
 
@@ -202,7 +233,7 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
         .transaction(() => {
           const base = { ...input, id: randomUUID(), schemaVersion: SCHEMA_VERSION, createdAt: toIso(), prevHash: headOf(headEvent, input.evidenceId) };
           const full = evidenceEventSchema.parse({ ...base, hash: sha256Hex(canonicalJson(base)) });
-          insertEventRow.run(full.id, full.evidenceId, full.type, full.at, full.prevHash, full.hash, JSON.stringify(full));
+          insertEventRow.run(full.id, full.evidenceId, full.type, full.at, full.prevHash, full.hash, JSON.stringify(full), linkFor("evidence_events", full.hash));
           return full;
         })
         .immediate();
@@ -215,7 +246,7 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
         .transaction(() => {
           const base = { ...input, id: randomUUID(), schemaVersion: SCHEMA_VERSION, createdAt: toIso(), prevHash: headOf(headDecision, input.runId) };
           const full = policyDecisionSchema.parse({ ...base, hash: sha256Hex(canonicalJson(base)) });
-          insertDecisionRow.run(full.id, full.runId, full.subject, full.decision, full.actionClass, full.at, full.prevHash, full.hash, JSON.stringify(full));
+          insertDecisionRow.run(full.id, full.runId, full.subject, full.decision, full.actionClass, full.at, full.prevHash, full.hash, JSON.stringify(full), linkFor("policy_decisions", full.hash));
           return full;
         })
         .immediate();
@@ -225,6 +256,31 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
 
     verifyChains() {
       const problems: ChainProblem[] = [];
+      // Table-wide links, in seq order over the whole table (see the Store.verifyChains comment).
+      const verifyRowLinks = (table: ChainProblem["table"], col: string): void => {
+        const boundary = boundaryOf.get(table) as { boundary_seq: number; legacy_rows: number } | undefined;
+        if (boundary === undefined) problems.push({ table, seq: null, chain: null, problem: "legacy_boundary_mismatch" });
+        const boundarySeq = boundary?.boundary_seq ?? 0;
+        const rows = db.prepare(`SELECT seq, ${col} AS chain, hash, row_link FROM ${table} ORDER BY seq`).all() as {
+          seq: number;
+          chain: string;
+          hash: string;
+          row_link: string;
+        }[];
+        let previous = genesisLink(table, boundarySeq);
+        let legacyRows = 0;
+        for (const row of rows) {
+          const report = (problem: ChainProblem["problem"]): void => void problems.push({ table, seq: row.seq, chain: row.chain, problem });
+          if (boundary !== undefined && row.seq <= boundarySeq) {
+            legacyRows++;
+            if (row.row_link !== "") report("legacy_boundary_mismatch");
+            continue;
+          }
+          if (row.row_link !== nextLink(previous, row.hash)) report("row_link_mismatch");
+          previous = row.row_link;
+        }
+        if (boundary !== undefined && legacyRows !== boundary.legacy_rows) problems.push({ table, seq: null, chain: null, problem: "legacy_boundary_mismatch" });
+      };
       for (const { table, col, schema, columns } of CHAINS) {
         const rows = db
           .prepare(`SELECT seq, ${col} AS chain, ${columns.map(([c]) => c).join(", ")}, data FROM ${table} ORDER BY ${col}, seq`)
@@ -251,6 +307,7 @@ export function openStore(path: string, options: StoreOptions = {}): Store {
           if (sha256Hex(canonicalJson(rest)) !== hash) report("hash_mismatch");
           expectedPrev = typeof hash === "string" ? hash : row.hash;
         }
+        verifyRowLinks(table, col);
         // AUTOINCREMENT never reuses a number, so a counter above the highest row means rows were removed at the end.
         const counter = db.prepare("SELECT seq FROM sqlite_sequence WHERE name = ?").get(table) as { seq: number } | undefined;
         const max = db.prepare(`SELECT max(seq) AS m FROM ${table}`).get() as { m: number | null };

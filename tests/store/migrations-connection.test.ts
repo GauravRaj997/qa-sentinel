@@ -38,13 +38,14 @@ describe("migrations", () => {
     openStore(p).close();
     expect(rows(p, "select version, name, checksum from schema_migrations")).toEqual([
       { version: 1, name: first.name, checksum: sha256Hex(first.sql) },
+      { version: 2, name: MIGRATIONS[1]!.name, checksum: sha256Hex(MIGRATIONS[1]!.sql) },
     ]);
   });
   it("is idempotent when the database is reopened", () => {
     const p = dbFile();
     openStore(p).close();
     openStore(p).close();
-    expect(rows(p, "select count(*) c from schema_migrations")).toEqual([{ c: 1 }]);
+    expect(rows(p, "select count(*) c from schema_migrations")).toEqual([{ c: 2 }]);
   });
   it("refuses a database whose recorded checksum differs from the code (edited migration)", () => {
     const p = dbFile();
@@ -55,7 +56,7 @@ describe("migrations", () => {
   it("refuses a database that is newer than the code", () => {
     const p = dbFile();
     openStore(p).close();
-    exec(p, "insert into schema_migrations values (2, 'future', 'x', 'now')");
+    exec(p, "insert into schema_migrations values (3, 'future', 'x', 'now')");
     expect(codeOf(() => openStore(p))).toBe("migration_mismatch");
   });
   it("rolls a failing migration back as a unit", () => {
@@ -75,7 +76,7 @@ describe("migrations", () => {
 describe("connection settings", () => {
   it("uses WAL, enforces foreign keys and turns recursive triggers on", () => {
     const s = openStore(dbFile());
-    expect(s.diagnostics()).toEqual({ journalMode: "wal", foreignKeys: true, recursiveTriggers: true, schemaVersion: 1 });
+    expect(s.diagnostics()).toEqual({ journalMode: "wal", foreignKeys: true, recursiveTriggers: true, schemaVersion: 2 });
     s.close();
   });
   it("works in memory", () => {

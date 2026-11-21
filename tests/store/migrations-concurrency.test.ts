@@ -5,7 +5,7 @@ import { MIGRATIONS, StoreError, openStore, sha256Hex, type Migration, type Stor
 // needs to run applyMigrations on a connection it controls.
 import { openDriver, type Db } from "../../packages/store/src/driver.js";
 import { applyMigrations } from "../../packages/store/src/migrations.js";
-import { cleanup, dbFile } from "./helpers.js";
+import { cleanup, dbFile, legacyV1Db } from "./helpers.js";
 
 afterEach(cleanup);
 
@@ -75,6 +75,7 @@ describe("migrations when another opener finishes inside the read-to-write windo
     expect(race.fired()).toBe(1);
     expect(rows(b, "select version, name, checksum from schema_migrations")).toEqual([
       { version: 1, name: first.name, checksum: sha256Hex(first.sql) },
+      { version: 2, name: MIGRATIONS[1]!.name, checksum: sha256Hex(MIGRATIONS[1]!.sql) },
     ]);
     expect(a?.verifySchema()).toEqual([]);
     a?.close();
@@ -82,10 +83,10 @@ describe("migrations when another opener finishes inside the read-to-write windo
   });
 
   it("upgrade: two openers of the same new version apply it exactly once", () => {
-    const extra: Migration = { version: 2, name: "extra", sql: "CREATE TABLE extra_t (x INTEGER) STRICT;" };
+    const extra: Migration = { version: 3, name: "extra", sql: "CREATE TABLE extra_t (x INTEGER) STRICT;" };
     const both = [...MIGRATIONS, extra];
     const p = dbFile();
-    openStore(p).close(); // the database is at version 1
+    openStore(p).close(); // the database is at the latest built-in version (2)
 
     const b = openDriver(p, 1000);
     let a: Store | undefined;
@@ -96,7 +97,8 @@ describe("migrations when another opener finishes inside the read-to-write windo
     expect(race.fired()).toBe(1);
     expect(rows(b, "select version, name, checksum from schema_migrations order by version")).toEqual([
       { version: 1, name: first.name, checksum: sha256Hex(first.sql) },
-      { version: 2, name: "extra", checksum: sha256Hex(extra.sql) },
+      { version: 2, name: MIGRATIONS[1]!.name, checksum: sha256Hex(MIGRATIONS[1]!.sql) },
+      { version: 3, name: "extra", checksum: sha256Hex(extra.sql) },
     ]);
     expect(rows(b, "select name from sqlite_master where name = 'extra_t'")).toEqual([{ name: "extra_t" }]);
     a?.close();
@@ -110,14 +112,35 @@ describe("migrations when another opener finishes inside the read-to-write windo
     const b = openDriver(p, 1000);
     let a: Store | undefined;
     const race = withPeerAfterFirstLedgerRead(b, () => {
-      a = openStore(p, { migrations: [divergent] });
+      a = openStore(p, { migrations: [divergent, MIGRATIONS[1]!] });
     });
     expect(codeOf(() => applyMigrations(race.db, MIGRATIONS, NOW))).toBe("migration_mismatch");
     expect(race.fired()).toBe(1);
-    // Only the peer's migration is recorded; the late opener added no ledger row and ran none of its own SQL.
+    // Only the peer's migrations are recorded; the late opener added no ledger row and ran none of its own SQL.
     expect(rows(b, "select version, checksum from schema_migrations")).toEqual([
       { version: 1, checksum: sha256Hex(divergent.sql) },
+      { version: 2, checksum: sha256Hex(MIGRATIONS[1]!.sql) },
     ]);
+    a?.close();
+    b.close();
+  });
+
+  it("populated version-1 database: two openers upgrade it once and the boundary is recorded once with the legacy counts", () => {
+    const { p } = legacyV1Db(); // 3 events and 2 decisions, no link column
+    const b = openDriver(p, 1000);
+    let a: Store | undefined;
+    const race = withPeerAfterFirstLedgerRead(b, () => {
+      a = openStore(p);
+    });
+    expect(() => applyMigrations(race.db, MIGRATIONS, NOW)).not.toThrow();
+    expect(race.fired()).toBe(1);
+    expect(rows(b, "select version from schema_migrations order by version")).toEqual([{ version: 1 }, { version: 2 }]);
+    expect(rows(b, "select table_name, boundary_seq, legacy_rows from row_link_boundaries order by table_name")).toEqual([
+      { table_name: "evidence_events", boundary_seq: 3, legacy_rows: 3 },
+      { table_name: "policy_decisions", boundary_seq: 2, legacy_rows: 2 },
+    ]);
+    expect(a?.verifyChains()).toEqual([]);
+    expect(a?.verifySchema()).toEqual([]);
     a?.close();
     b.close();
   });

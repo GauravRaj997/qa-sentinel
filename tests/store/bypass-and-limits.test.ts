@@ -209,7 +209,11 @@ describe("same-user bypass: PRAGMA ignore_check_constraints", () => {
     expect(codeOf(db, `insert into policy_decisions (id, run_id, subject, decision, action_class, at, prev_hash, hash, data)
                        values (?, ?, ?, 'allow', 'A3', ?, ?, ?, ?)`, f.uuid(900), last.runId, last.subject, last.at, last.hash, hash, data)).toBe("no error");
     db.close();
-    expect(s.verifyChains()).toEqual([expect.objectContaining({ table: "policy_decisions", problem: "invalid_record" })]);
+    // The raw insert also carries no row link (the column default), so the row is reported twice.
+    expect(s.verifyChains()).toEqual([
+      expect.objectContaining({ table: "policy_decisions", problem: "invalid_record" }),
+      expect.objectContaining({ table: "policy_decisions", problem: "row_link_mismatch" }),
+    ]);
     s.close();
   });
 
