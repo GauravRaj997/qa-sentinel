@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "fixture": "demo-shop",
+  "set": "heldout",
+  "checksFrozenAtCommit": null,
+  "defects": []
+}
