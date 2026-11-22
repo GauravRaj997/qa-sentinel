@@ -118,17 +118,13 @@ describe("seeded-defect manifest: text fields", () => {
     expect(entryOk(reach({ [field]: " " + "x".repeat(max) }))).toBe(false); // would fit only if it were trimmed
   });
 
-  it.each(FIELDS)("%s: the exported JSON Schema states the same constraints and agrees with the zod schema", (field, max) => {
+  // Agreement between zod and the exported JSON Schema is checked with a real JSON Schema validator (Ajv 2020-12) in
+  // seeded-defects-json-schema.test.ts, including code-point boundaries. This test only pins what the schema states.
+  it.each(FIELDS)("%s: the exported JSON Schema states the basic text constraints", (field, max) => {
     const json = exportSeededDefectJsonSchema() as { properties: { defects: { items: { properties: Record<string, Obj> } } } };
     const sch = json.properties.defects.items.properties[field] as { type: string; minLength: number; maxLength: number; pattern: string };
     expect(sch).toMatchObject({ type: "string", minLength: 1, maxLength: max });
     expect(sch.pattern).toBe("\\S");
-    const jsonOk = (s: string): boolean => s.length >= sch.minLength && s.length <= sch.maxLength && new RegExp(sch.pattern).test(s);
-    const samples = [
-      "", " ", "\t\n", " ", " ", "​", "a", "  a  ", "x".repeat(max), "x".repeat(max + 1),
-      " ".repeat(max - 1) + "x", " ".repeat(max + 1) + "x", " ".repeat(max),
-    ];
-    for (const s of samples) expect(entryOk(reach({ [field]: s })), JSON.stringify(s.slice(0, 12))).toBe(jsonOk(s));
   });
 });
 

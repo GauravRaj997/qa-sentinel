@@ -80,6 +80,10 @@ export const CATEGORY_ID_TOKEN: Readonly<Record<SeededDefectCategory, string>> =
 const FIXTURE_ID = /^[a-z][a-z0-9-]{1,31}$/;
 // No .trim(): that would transform parsed values, and JSON Schema cannot express a transformation. The constraints are
 // plain: 1..max characters of the raw string, at least one non-whitespace character. Valid strings are kept as given.
+// Lengths are Unicode code points: zod's min/max count code points in the pinned zod, which is what JSON Schema
+// minLength/maxLength count, and tests/schema/seeded-defects-json-schema.test.ts checks the two against an independent
+// JSON Schema validator. A zod upgrade must re-run that test. Strings that are not well-formed Unicode (lone surrogates)
+// are outside that check and are not part of any compatibility guarantee.
 const text = (max: number) =>
   z
     .string()
