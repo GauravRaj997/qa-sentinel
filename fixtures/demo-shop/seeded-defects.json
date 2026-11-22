@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "fixture": "demo-shop",
+  "set": "development",
+  "checksFrozenAtCommit": null,
+  "defects": [
+    {
+      "id": "SD-reach-001",
+      "category": "reachability",
+      "title": "Archived products link returns 404",
+      "description": "The main navigation links to /products/archive, which the defective variant answers with 404.",
+      "locations": [{ "method": "GET", "path": "/products/archive" }],
+      "detectable": true,
+      "observable": "http-status",
+      "rationale": "A client following the navigation link sees status 404. Fixture probe: structural ground truth only; detection by a QA Sentinel check is measured later."
+    },
+    {
+      "id": "SD-reach-002",
+      "category": "reachability",
+      "title": "Checkout confirmation link returns 500",
+      "description": "The cart page links to /checkout/confirm, which the defective variant answers with 500.",
+      "locations": [{ "method": "GET", "path": "/checkout/confirm" }],
+      "detectable": true,
+      "observable": "http-status",
+      "rationale": "A client following the cart page link sees status 500. Fixture probe: structural ground truth only."
+    },
+    {
+      "id": "SD-rt-001",
+      "category": "runtime-error",
+      "title": "Cart script throws when evaluated",
+      "description": "/js/cart.js throws an error when evaluated in the defective variant. The page references it with a script tag.",
+      "locations": [{ "method": "GET", "path": "/js/cart.js" }],
+      "detectable": true,
+      "observable": "script-evaluation",
+      "rationale": "The served script text throws under bare V8 evaluation (node:vm, not a security boundary). This does not show that a browser raises a page error; browser runtime-error detection is the browser pack's job."
+    },
+    {
+      "id": "SD-rt-002",
+      "category": "runtime-error",
+      "title": "Promo script logs console.error",
+      "description": "/js/promo.js calls console.error when evaluated in the defective variant. The page references it with a script tag.",
+      "locations": [{ "method": "GET", "path": "/js/promo.js" }],
+      "detectable": true,
+      "observable": "script-evaluation",
+      "rationale": "The served script text calls console.error under bare V8 evaluation with a stub console. It does not show that a browser surfaces a console message; that is the browser pack's job."
+    },
+    {
+      "id": "SD-rt-003",
+      "category": "runtime-error",
+      "title": "Home page references a missing stylesheet",
+      "description": "The home page references /assets/missing.css, which the defective variant answers with 404.",
+      "locations": [{ "method": "GET", "path": "/assets/missing.css" }],
+      "detectable": true,
+      "observable": "http-status",
+      "rationale": "The referenced asset returns 404. Capturing it as a failed network request in a browser is the browser pack's job."
+    },
+    {
+      "id": "SD-a11y-001",
+      "category": "accessibility",
+      "title": "Product image has no alt attribute",
+      "description": "The products page renders a product image without an alt attribute in the defective variant. The axe-core rule expected to flag it is image-alt.",
+      "locations": [{ "method": "GET", "path": "/products" }],
+      "detectable": true,
+      "observable": "html-structure",
+      "rationale": "Structural ground truth only: the defect is planted in the markup. That axe-core detects it is unconfirmed until the browser pack runs @axe-core/playwright (Phase 2 or 3); if it does not, this entry must be reclassified by a reviewed change."
+    },
+    {
+      "id": "SD-a11y-002",
+      "category": "accessibility",
+      "title": "Search input has no label",
+      "description": "The home page renders the search input without an accessible label in the defective variant. The axe-core rule expected to flag it is label.",
+      "locations": [{ "method": "GET", "path": "/" }],
+      "detectable": true,
+      "observable": "html-structure",
+      "rationale": "Structural ground truth only: the defect is planted in the markup. That axe-core detects it is unconfirmed until the browser pack runs @axe-core/playwright (Phase 2 or 3); if it does not, this entry must be reclassified by a reviewed change."
+    },
+    {
+      "id": "SD-sec-001",
+      "category": "security-headers",
+      "title": "Home page lacks X-Content-Type-Options",
+      "description": "The defective variant omits X-Content-Type-Options from the response for /. The clean variant sends it.",
+      "locations": [{ "method": "GET", "path": "/" }],
+      "detectable": true,
+      "observable": "response-header",
+      "rationale": "A client sees that the header is absent on the response. Fixture probe: structural ground truth only."
+    },
+    {
+      "id": "SD-sec-002",
+      "category": "security-headers",
+      "title": "Products page lacks Content-Security-Policy",
+      "description": "The defective variant omits Content-Security-Policy from the response for /products. The clean variant sends it.",
+      "locations": [{ "method": "GET", "path": "/products" }],
+      "detectable": true,
+      "observable": "response-header",
+      "rationale": "A client sees that the header is absent on the response. Fixture probe: structural ground truth only."
+    },
+    {
+      "id": "SD-perf-001",
+      "category": "response-size-time",
+      "title": "Catalog export is oversized",
+      "description": "/catalog/export returns a 2 MiB (2097152 byte) body in the defective variant and a 4096 byte body in the clean variant.",
+      "locations": [{ "method": "GET", "path": "/catalog/export" }],
+      "detectable": true,
+      "observable": "response-size",
+      "rationale": "The byte length is deterministic and differs between variants. Size is evaluated separately from time."
+    },
+    {
+      "id": "SD-perf-002",
+      "category": "response-size-time",
+      "title": "Daily report responds slowly",
+      "description": "/reports/daily waits 1500 ms before responding in the defective variant. The clean variant responds immediately with an identical body.",
+      "locations": [{ "method": "GET", "path": "/reports/daily" }],
+      "detectable": true,
+      "observable": "response-time",
+      "rationale": "Measured with a monotonic clock against a 1000 ms threshold with a generous margin; sensitive to machine load and not a claim about general performance reliability."
+    },
+    {
+      "id": "SD-form-001",
+      "category": "form-structure",
+      "title": "Newsletter form has no submit control",
+      "description": "The newsletter page renders a signup form without any submit control in the defective variant.",
+      "locations": [{ "method": "GET", "path": "/newsletter" }],
+      "detectable": true,
+      "observable": "html-structure",
+      "rationale": "Structural ground truth only: the defect is planted in the markup. Read-only form structure inspection by the browser pack is a later measurement."
+    },
+    {
+      "id": "SD-logic-001",
+      "category": "business-logic",
+      "title": "Cart total ignores line quantity",
+      "description": "/cart computes its total from unit prices without multiplying by quantity in the defective variant.",
+      "locations": [{ "method": "GET", "path": "/cart" }],
+      "detectable": false,
+      "observable": "authored-expectation",
+      "rationale": "Recognising it needs an independent authored expectation; no built-in pack has one. Reported as its own group, outside the AC-01 detectable denominator. The manifest carries no expected value."
+    },
+    {
+      "id": "SD-logic-002",
+      "category": "business-logic",
+      "title": "Order discount applied twice",
+      "description": "/cart/summary applies the order discount twice in the defective variant.",
+      "locations": [{ "method": "GET", "path": "/cart/summary" }],
+      "detectable": false,
+      "observable": "authored-expectation",
+      "rationale": "Recognising it needs an independent authored expectation; no built-in pack has one. Reported as its own group, outside the AC-01 detectable denominator. The manifest carries no expected value."
+    }
+  ]
+}

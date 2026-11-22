@@ -1,0 +1,138 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`seeded-defect manifest: not a stored record > matches its own committed JSON Schema snapshot 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "checksFrozenAtCommit": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "defects": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "enum": [
+              "reachability",
+              "runtime-error",
+              "accessibility",
+              "security-headers",
+              "response-size-time",
+              "form-structure",
+              "business-logic",
+            ],
+            "type": "string",
+          },
+          "description": {
+            "maxLength": 500,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string",
+          },
+          "detectable": {
+            "type": "boolean",
+          },
+          "id": {
+            "pattern": "^SD-[a-z0-9]+-\\d{3}$",
+            "type": "string",
+          },
+          "locations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "enum": [
+                    "GET",
+                    "POST",
+                  ],
+                  "type": "string",
+                },
+                "path": {
+                  "maxLength": 200,
+                  "pattern": "^\\/(?!\\/)[^\\s?#]*$",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "method",
+                "path",
+              ],
+              "type": "object",
+            },
+            "minItems": 1,
+            "type": "array",
+          },
+          "observable": {
+            "enum": [
+              "http-status",
+              "script-evaluation",
+              "html-structure",
+              "response-header",
+              "response-size",
+              "response-time",
+              "authored-expectation",
+            ],
+            "type": "string",
+          },
+          "rationale": {
+            "maxLength": 500,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string",
+          },
+          "title": {
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "category",
+          "title",
+          "description",
+          "locations",
+          "detectable",
+          "observable",
+          "rationale",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "fixture": {
+      "pattern": "^[a-z][a-z0-9-]{1,31}$",
+      "type": "string",
+    },
+    "schemaVersion": {
+      "const": 1,
+      "type": "number",
+    },
+    "set": {
+      "enum": [
+        "development",
+        "heldout",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "schemaVersion",
+    "fixture",
+    "set",
+    "checksFrozenAtCommit",
+    "defects",
+  ],
+  "type": "object",
+}
+`;
